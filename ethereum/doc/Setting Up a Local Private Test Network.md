@@ -57,7 +57,7 @@ To initialize the the first node with the custom genesis block, execute the foll
 $ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --ipcdisable --port 30301 --rpcport 8101 --networkid="12345" init ./CustomGenesis.json 2>> ./Node01.log
 ```
 
-where the name of the node is '''Node01''', the data directory is '''./Node01''', the unique id of the network is '''12345'''.
+where the name of the node is `Node01`, the data directory is `./Node01`, the unique id of the network is `12345`.
 
 ### Interact with the Node
 
@@ -110,7 +110,7 @@ The result will be something like this:
 }
 ```
 
-Note that '''genesis''' and '''head''' have the same value since there is no block yet in the blockchain, but '''genesis'''.
+Note that `genesis` and `head` have the same value since there is no block yet in the blockchain, but `genesis`.
 
 If we only get the enode, type the following command:
 
@@ -120,7 +120,7 @@ If we only get the enode, type the following command:
 >
 ```
 
-To be sure that '''Node01''' is listening to the network, type:
+To be sure that `Node01` is listening to the network, type:
 
 ``` js
 > net.listening
@@ -143,7 +143,7 @@ Now it is time to do some real stuff like making transactions. However, the node
 
 In fact, the node do not even have any accounts for holding ethers, and they should have at least one. So, lets start from creating accounts for this node.
 
-Creating account is accomplised by using the personal.newAccount("password") command with a given password. Come back to the console of '''Node01''' and type that command with a simple passwords three times to create three accounts:
+Creating account is accomplised by using the `personal.newAccount("password")` command with a given password. Come back to the console of `Node01` and type that command with a simple passwords three times to create three accounts:
 
 ``` js
 > personal.newAccount("Node01Account01") 
@@ -165,9 +165,9 @@ Note that, nodes may have several accounts (at least one) and they can be listed
 > 
 ```
 
-===Allocate Initial Ethers to the Accounts===
+### Allocate Initial Ethers to the Accounts
 
-To allocate initial ethers to the accounts, the genesis block (which is inside CustomGenesis.json) should be modified as below:
+To allocate initial ethers to the accounts, the genesis block (which is inside `CustomGenesis.json`) should be modified as below:
 
 ``` js
 {
@@ -205,7 +205,7 @@ Then we can interact with it as before.
 $ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --ipcdisable --port 30301 --rpcport 8101 --networkid="12345" console 2>> ./Node01.log
 ``` 
 
-To veirfy if the accounts are initialized with the correct balance values we specified in the Custom Genesis Block, use the '''eth.getBalance()''' command on the console of each node using their associated account numbers (which can be retrieved by the '''personal.listAccounts''' command).
+To veirfy if the accounts are initialized with the correct balance values we specified in the Custom Genesis Block, use the `eth.getBalance()` command on the console of each node using their associated account numbers (which can be retrieved by the `personal.listAccounts` command).
 
 ``` js
 > eth.getBalance(personal.listAccounts[0])
@@ -217,7 +217,7 @@ To veirfy if the accounts are initialized with the correct balance values we spe
 > 
 ``` 
 
-Note that '''getBalance()''' returns ether in wei which is like 1 trillionth of an ether.
+Note that `getBalance()` returns ether in wei which is like 1 trillionth of an ether.
 To check the balance in terms of ether, type the following command:
 
 ``` js
@@ -228,7 +228,7 @@ To check the balance in terms of ether, type the following command:
 
 Perfect! Now it is time to play around in our small private test network.
 
-===Start Ethereum Mining===
+### Start Ethereum Mining
 
 The ethereum network needs a mining node to process transactions:
 
@@ -238,13 +238,13 @@ function()
 >
 ``` 
 
-The first time you run geth on your machine, it will generate a DAG. This can take several minutes depending upon the speed of your CPU. Once it finishes generating the DAG, it will start mining and generating messages like this:
+The first time you run geth on your machine, it will generate a `DAG`. This can take several minutes depending upon the speed of your CPU. Once it finishes generating the DAG, it will start mining and generating messages like this:
 
-The mining node ('''Node01''') deposits ethereum into the first account (unless changed).
+The mining node (`Node01`) deposits ethereum into the first account by default (unless changed).
 
 ### Make a Transaction: Send ether from one account to another
 
-Suppose, we want to send  1.23 ethers from the first account to the second one. To do so, we need to create a transaction object first:
+Suppose, we want to send  `1.23` ethers from the first account to the second one. To do so, we need to create a transaction object first:
 
 ``` js
 > var tx = {from:  personal.listAccounts[0], to: personal.listAccounts[1], value: web3.toWei(1.23, "ether")}
@@ -252,7 +252,7 @@ undefined
 > 
 ``` 
 
-Do not take into account the message "undefined". The transaction object '''tx''' is created. Now we can execute this transaction as follows (by providing the password of the sender account):
+Do not take into account the message "undefined". The transaction object `tx` is created. Now we can execute this transaction as follows (by providing the password of the sender account):
 
 ``` js
 > personal.sendTransaction(tx, "Node01Account01")
