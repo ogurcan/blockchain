@@ -59,12 +59,20 @@ where the name of the node is `Node01`, the data directory is `./Node01`, the un
 
 ## Interact with the Node
 
-Now we can interact with the node through [https://github.com/ethereum/go-ethereum/wiki/JavaScript-Console the Geth JavaScript console]. 
+We can interact with the node through [https://github.com/ethereum/go-ethereum/wiki/JavaScript-Console the Geth JavaScript console]. 
 
-To do so enter:
+To do so first enter:
 
 ``` bash
-$ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --port 30301 --rpcport 8101 --networkid="12345" console 2>> ./Node01.log
+$ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --port 30301 --rpcport 8101 --networkid="12345" --nodiscover
+```
+
+This will start a geth instance with a node named `Node01` whose `--datadir` is `./Node01`. Upon the execution of this geth instance, a `geth.ipc` file is created under the data directory (ipc stands for inter-process communication).  
+
+Open another terminal window and attach to the running geth instance:
+
+``` bash
+$ geth attach ipc:///Users/ogurcan/ethereum_test_networks/local_private_network/Node01/geth.ipc
 ```
 
 This will open a console as below:
