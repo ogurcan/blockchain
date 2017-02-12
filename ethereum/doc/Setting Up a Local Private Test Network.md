@@ -252,10 +252,10 @@ To see if the node is mining, you can time to time check the balance of the coin
 
 ## Make a Transaction: Send ether from one account to another
 
-Suppose, we want to send  `1.23` ethers from the first account to the second one. To do so, we need to create a transaction object first:
+Suppose, we want to send  `1.23` ethers from `Account 1` to `Account 2`. To do so, we need to create a transaction object `tx` first:
 
 ``` js
-> var tx = {from:  personal.listAccounts[0], to: personal.listAccounts[1], value: web3.toWei(1.23, "ether")}
+> var tx = {from:  personal.listAccounts[1], to: personal.listAccounts[2], value: web3.toWei(1.23, "ether")}
 undefined
 > 
 ``` 
@@ -268,7 +268,7 @@ Do not take into account the message "undefined". The transaction object `tx` is
 > 
 ``` 
 
-Voila! The transaction is on the way. It can be seen inside pending transactions:
+Voila! The transaction is on the way. It can be seen inside pending transactions. Howeber, with a fast enough computer, you will see this list empty since the transaction has already been performed.
 
 ``` js
 > eth.pendingTransactions
@@ -292,6 +292,25 @@ Voila! The transaction is on the way. It can be seen inside pending transactions
 ``` 
 
 Check the balances of the two accounts and verify the transaction about ether transfer.
+
+``` js
+> eth.getBalance(personal.listAccounts[1])
+18769580000000000000
+> eth.getBalance(personal.listAccounts[2])
+31230000000000000000
+```
+
+These values are a bit hard to read. So we check the balances as ethers.
+
+``` js
+> web3.fromWei(eth.getBalance(personal.listAccounts[1]), "ether")
+18.76958
+> web3.fromWei(eth.getBalance(personal.listAccounts[2]), "ether")
+31.23000
+>
+``` 
+
+The balanca of `Account 1` is reduced by `1.23042` and the balance of `Account 2` is increase by `1.23`.
 
 ## Create, Deploy and Use a Contract
 
