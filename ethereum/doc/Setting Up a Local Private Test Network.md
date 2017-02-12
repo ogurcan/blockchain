@@ -1,8 +1,24 @@
 # Setting Up a Local Private Test Network with One Node
 
-In this example, we will create a local private test network with a single node which has several accounts. The objective is to show you how to initialize a node, how to interact with that node, how to create accounts, how to set initial ethers for the accounts, how to make transactions (e.g., to send ethers) and how to create, deploy and execute contracts.
+## Before you begin
+
+This example is prepared by using the geth version `1.5.7-stable` which is using Go version `go1.7.4` and tested on `macOS Sierra`. 
+
+``` bash
+Geth
+Version: 1.5.7-stable
+Git Commit: da2a22c384a9b621ec853fe4b1aa651d606cf42b
+Protocol Versions: [63 62]
+Network Id: 1
+Go Version: go1.7.4
+OS: darwin
+GOPATH=
+GOROOT=/usr/local/Cellar/go/1.7.4_2/libexec
+```
 
 ## Introduction
+
+In this example, we will create a local private test network with a single node which has several accounts. The objective is to show you how to initialize a node, how to interact with that node, how to create accounts, how to set initial ethers for the accounts, how to make transactions (e.g., to send ethers) and how to create, deploy and execute contracts.
 
 The things that are required to specify in a private chain are:
 
