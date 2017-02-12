@@ -67,9 +67,16 @@ To do so first enter:
 $ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --port 30301 --rpcport 8101 --networkid="12345" --nodiscover
 ```
 
-This will start a geth instance with a node named `Node01` whose `--datadir` is `./Node01`. The `--nodiscover` flag turns off peer discovery and prevents geth from trying to find peers for your network id on the internet. Upon the execution of this geth instance, a `geth.ipc` file is created under the data directory (ipc stands for inter-process communication).  
+This will start a geth instance with a node named `Node01` whose `--datadir` is `./Node01`. The `--nodiscover` flag turns off peer discovery and prevents geth from trying to find peers for your network id on the internet. Upon the execution of this geth instance, a `geth.ipc` file is created under the data directory (ipc stands for inter-process communication) and its absolute path is verbosed on the terminal as something like this:
 
-Open another terminal window and attach to the running geth instance:
+``` bash
+...
+I0213 00:37:21.613819 node/node.go:341] IPC endpoint opened: /Users/ogurcan/ethereum_test_networks/deneme/Node01/geth.ipc
+...
+```
+
+
+Open another terminal window and attach to the running geth instance using this `ipc` file:
 
 ``` bash
 $ geth attach ipc:///Users/ogurcan/ethereum_test_networks/local_private_network/Node01/geth.ipc
