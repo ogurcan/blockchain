@@ -22,9 +22,7 @@ Then enter to this directory.
 $ cd local_private_network
 ```
 
-## Setting Up The Node
-
-### Create the Genesis File
+## Create the Genesis File
 
 The genesis block is the start of the blockchain - the first block, block 0, and the only block that does not point to a predecessor block. The protocol ensures that no other node will agree with your version of the blockchain unless they have the same genesis block, so you can make as many private testnet blockchains as you’d like!
 
@@ -49,7 +47,7 @@ Paste the following code, save and exit:
 }
 ```
 
-### Initialize the Node
+## Initialize the Node
 
 To initialize the the first node with the custom genesis block, execute the following command:
 
@@ -59,7 +57,7 @@ $ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --ipcdisable --port
 
 where the name of the node is `Node01`, the data directory is `./Node01`, the unique id of the network is `12345`.
 
-### Interact with the Node
+## Interact with the Node
 
 Now we can interact with the node through [https://github.com/ethereum/go-ethereum/wiki/JavaScript-Console the Geth JavaScript console]. 
 
@@ -138,7 +136,7 @@ However, no peers will be added since this is a private network:
 >
 ```
 
-### Create Accounts
+## Create Accounts
 Now it is time to do some real stuff like making transactions. However, the node initiated above do not have any [[Ether|ethers]] for making transactions, in addition it is not possible to mine to earn ethers.
 
 In fact, the node do not even have any accounts for holding ethers, and they should have at least one. So, lets start from creating accounts for this node.
@@ -165,7 +163,7 @@ Note that, nodes may have several accounts (at least one) and they can be listed
 > 
 ```
 
-### Allocate Initial Ethers to the Accounts
+## Allocate Initial Ethers to the Accounts
 
 To allocate initial ethers to the accounts, the genesis block (which is inside `CustomGenesis.json`) should be modified as below:
 
@@ -228,7 +226,7 @@ To check the balance in terms of ether, type the following command:
 
 Perfect! Now it is time to play around in our small private test network.
 
-### Start Ethereum Mining
+## Start Ethereum Mining
 
 The ethereum network needs a mining node to process transactions:
 
@@ -242,7 +240,7 @@ The first time you run geth on your machine, it will generate a `DAG`. This can 
 
 The mining node (`Node01`) deposits ethereum into the first account by default (unless changed).
 
-### Make a Transaction: Send ether from one account to another
+## Make a Transaction: Send ether from one account to another
 
 Suppose, we want to send  `1.23` ethers from the first account to the second one. To do so, we need to create a transaction object first:
 
@@ -285,5 +283,5 @@ Voila! The transaction is on the way. It can be seen inside pending transactions
 
 Check the balances of the two accounts and verify the transaction about ether transfer.
 
-### Create, Deploy and Use a Contract
+## Create, Deploy and Use a Contract
 
