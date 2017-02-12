@@ -238,7 +238,17 @@ function()
 
 The first time you run geth on your machine, it will generate a `DAG`. This can take several minutes depending upon the speed of your CPU. Once it finishes generating the DAG, it will start mining and generating messages like this:
 
-The mining node (`Node01`) deposits ethereum into the first account by default (unless changed).
+The mining node (`Node01`) deposits ethereum into its coinbase (`eth.coinbase`). By default, the coinbase of a node is its first account (`personal.listAccounts[0]`).
+
+To see if the node is mining, you can time to time check the balance of the coinbase or the first account.
+
+``` js
+> eth.getBalance(eth.coinbase)
+220781250000000000000
+> eth.getBalance(personal.listAccounts[0])
+220781250000000000000
+>
+``` 
 
 ## Make a Transaction: Send ether from one account to another
 
