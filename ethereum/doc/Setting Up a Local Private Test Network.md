@@ -1,5 +1,7 @@
 # Setting Up a Local Private Test Network with One Node
 
+In this example, we will create a local private test network with a single node which has several accounts. The objective is to show you how to initialize a node, how to interact with that node, how to create accounts, how to set initial ethers in accounts, how to make transactions and how to create, deploy and execute contracts.
+
 ## Introduction
 
 The things that are required to specify in a private chain are:
