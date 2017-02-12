@@ -206,17 +206,7 @@ To allocate initial ethers to the accounts, the genesis block (which is inside `
 }
 ``` 
 
-Now we need to reinitialize the node as shown before.
-
-``` bash
-$ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --ipcdisable --port 30301 --rpcport 8101 --networkid="12345" init ./CustomGenesis.json 2>> ./Node01.log
-``` 
-
-Then we can interact with it as before.
-
-``` bash
-$ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --ipcdisable --port 30301 --rpcport 8101 --networkid="12345" console 2>> ./Node01.log
-``` 
+Now we need to reinitialize the node and attach to it as shown above before.
 
 To veirfy if the accounts are initialized with the correct balance values we specified in the Custom Genesis Block, use the `eth.getBalance()` command on the console of each node using their associated account numbers (which can be retrieved by the `personal.listAccounts` command).
 
