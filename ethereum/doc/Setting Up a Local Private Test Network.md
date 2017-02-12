@@ -10,25 +10,29 @@ The things that are required to specify in a private chain are:
 
 We also need to create a directory for the test network. 
 
-    $ mkdir local_private_network
+``` bash
+$ mkdir local_private_network
+```
 
 Then enter to this directory. 
 
-    $ cd local_private_network
-    
+``` bash
+$ cd local_private_network
+```
+
 ## Setting Up The Node
 
 ### Create the Genesis File
 
 The genesis block is the start of the blockchain - the first block, block 0, and the only block that does not point to a predecessor block. The protocol ensures that no other node will agree with your version of the blockchain unless they have the same genesis block, so you can make as many private testnet blockchains as you’d like!
 
-<source lang="java">
+``` bash
 $ nano CustomGenesis.json
-</source><br>
+```
 
 Paste the following code, save and exit:
 
-<source lang="java">
+``` javascript 
 {
    "nonce": "0x0000000000000042",
    "timestamp": "0x0",
@@ -41,15 +45,15 @@ Paste the following code, save and exit:
    "alloc": {
    }
 }
-</source><br>
+```
 
 ### Initialize the Node
 
 To initialize the the first node with the custom genesis block, execute the following command:
 
-<source lang="java">
+``` bash
 $ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --ipcdisable --port 30301 --rpcport 8101 --networkid="12345" init ./CustomGenesis.json 2>> ./Node01.log
-</source><br>
+```
 
 where the name of the node is '''Node01''', the data directory is '''./Node01''', the unique id of the network is '''12345'''.
 
@@ -59,30 +63,30 @@ Now we can interact with the node through [https://github.com/ethereum/go-ethere
 
 To do so enter:
 
-<source lang="java">
+``` bash
 $ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --ipcdisable --port 30301 --rpcport 8101 --networkid="12345" console 2>> ./Node01.log
-</source><br>
+```
 
 This will open a console as below:
 
-<source lang="java">
+``` bash
 Welcome to the Geth JavaScript console!
 
 instance: Geth/node01/v1.5.7-stable-da2a22c3/linux/go1.7.3
  modules: admin:1.0 debug:1.0 eth:1.0 miner:1.0 net:1.0 personal:1.0 rpc:1.0 txpool:1.0 web3:1.0
 
 > 
-</source><br>
+```
 
 To be able to interact, you can use the commands listed in the “Management API Reference” section in [2]. For example, to get the info about the node, type the following command:
 
-<source lang="java">
+``` js
 > admin.nodeInfo
-</source><br>
+```
 
 The result will be something like this:
 
-<source lang="java">
+``` js
 {
   enode: "enode://7d1c6e5ea7e79ceb8123847a61aecc817683f0a715f4ccf342e6cdb516e42a7dab6ddab0c807f92cca1b28f068b4917899f58c1faae21c15e4618fc29571844f@[::]:30301",
   id: "7d1c6e5ea7e79ceb8123847a61aecc817683f0a715f4ccf342e6cdb516e42a7dab6ddab0c807f92cca1b28f068b4917899f58c1faae21c15e4618fc29571844f",
@@ -102,35 +106,35 @@ The result will be something like this:
     }
   }
 }
-</source><br>
+```
 
 Note that '''genesis''' and '''head''' have the same value since there is no block yet in the blockchain, but '''genesis'''.
 
 If we only get the enode, type the following command:
 
-<source lang="java">
+``` js
 > admin.nodeInfo.enode
 "enode://7d1c6e5ea7e79ceb8123847a61aecc817683f0a715f4ccf342e6cdb516e42a7dab6ddab0c807f92cca1b28f068b4917899f58c1faae21c15e4618fc29571844f@[::]:30301"
 >
-</source><br>
+```
 
 To be sure that '''Node01''' is listening to the network, type:
 
-<source lang="java">
+``` js
 > net.listening
 true
 > 
-</source><br>
+```
 
 However, no peers will be added since this is a private network:
 
-<source lang="java">
+``` js
 > net.peerCount
 0
 > admin.peers
 []
 >
-</source><br>
+```
 
 ### Create Accounts
 Now it is time to do some real stuff like making transactions. However, the node initiated above do not have any [[Ether|ethers]] for making transactions, in addition it is not possible to mine to earn ethers.
@@ -139,7 +143,7 @@ In fact, the node do not even have any accounts for holding ethers, and they sho
 
 Creating account is accomplised by using the personal.newAccount("password") command with a given password. Come back to the console of '''Node01''' and type that command with a simple passwords three times to create three accounts:
 
-<source lang="java">
+``` js
 > personal.newAccount("Node01Account01") 
 "0xf50fee0099f5776a9a13ed7e5d554ee16c36bf70"
 > personal.newAccount("Node01Account02") 
@@ -147,23 +151,23 @@ Creating account is accomplised by using the personal.newAccount("password") com
 > personal.newAccount("Node01Account03") 
 "0xa33f1327bd37793d8b5eaca4c7f8f0fc3b302b00"
 > 
-</source><br>
+```
 
 The hash codes are the addresses of the created accounts.
 
 Note that, nodes may have several accounts (at least one) and they can be listed by using the command:
 
-<source lang="java">
+``` js
 > personal.listAccounts
 ["0xf50fee0099f5776a9a13ed7e5d554ee16c36bf70", "0x195998f3491f37d9887cb93ae99c56eec8f67182", "0xa33f1327bd37793d8b5eaca4c7f8f0fc3b302b00"]
 > 
-</source>
+```
 
 ===Allocate Initial Ethers to the Accounts===
 
 To allocate initial ethers to the accounts, the genesis block (which is inside CustomGenesis.json) should be modified as below:
 
-<source lang="java">
+``` js
 {
    "nonce": "0x0000000000000042",
    "timestamp": "0x0",
@@ -185,23 +189,23 @@ To allocate initial ethers to the accounts, the genesis block (which is inside C
       }
    }
 }
-</source><br>
+``` 
 
 Now we need to reinitialize the node as shown before.
 
-<source lang="java">
+``` bash
 $ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --ipcdisable --port 30301 --rpcport 8101 --networkid="12345" init ./CustomGenesis.json 2>> ./Node01.log
-</source><br>
+``` 
 
 Then we can interact with it as before.
 
-<source lang="java">
+``` bash
 $ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --ipcdisable --port 30301 --rpcport 8101 --networkid="12345" console 2>> ./Node01.log
-</source><br>
+``` 
 
 To veirfy if the accounts are initialized with the correct balance values we specified in the Custom Genesis Block, use the '''eth.getBalance()''' command on the console of each node using their associated account numbers (which can be retrieved by the '''personal.listAccounts''' command).
 
-<source lang="java">
+``` js
 > eth.getBalance(personal.listAccounts[0])
 10000000000000000000
 > eth.getBalance(personal.listAccounts[1])
@@ -209,16 +213,16 @@ To veirfy if the accounts are initialized with the correct balance values we spe
 > eth.getBalance(personal.listAccounts[2])
 30000000000000000000
 > 
-</source><br>
+``` 
 
 Note that '''getBalance()''' returns ether in wei which is like 1 trillionth of an ether.
 To check the balance in terms of ether, type the following command:
 
-<source lang="java">
+``` js
 > web3.fromWei(eth.getBalance(personal.listAccounts[1]), "ether")
 20
 >
-</source><br>
+``` 
 
 Perfect! Now it is time to play around in our small private test network.
 
@@ -226,11 +230,11 @@ Perfect! Now it is time to play around in our small private test network.
 
 The ethereum network needs a mining node to process transactions:
 
-<source lang="java">
+``` js
 > miner.start
 function()
 >
-</source><br>
+``` 
 
 The first time you run geth on your machine, it will generate a DAG. This can take several minutes depending upon the speed of your CPU. Once it finishes generating the DAG, it will start mining and generating messages like this:
 
@@ -240,23 +244,23 @@ The mining node ('''Node01''') deposits ethereum into the first account (unless 
 
 Suppose, we want to send  1.23 ethers from the first account to the second one. To do so, we need to create a transaction object first:
 
-<source lang="java">
+``` js
 > var tx = {from:  personal.listAccounts[0], to: personal.listAccounts[1], value: web3.toWei(1.23, "ether")}
 undefined
 > 
-</source><br>
+``` 
 
 Do not take into account the message "undefined". The transaction object '''tx''' is created. Now we can execute this transaction as follows (by providing the password of the sender account):
 
-<source lang="java">
+``` js
 > personal.sendTransaction(tx, "Node01Account01")
 "0x9c1116b8718fad9e84422e51d94045265d5ef78d553ada1833d8e4964943f5d5"
 > 
-</source><br>
+``` 
 
 Voila! The transaction is on the way. It can be seen inside pending transactions:
 
-<source lang="java">
+``` js
 > eth.pendingTransactions
 [{
     blockHash: null,
@@ -275,7 +279,7 @@ Voila! The transaction is on the way. It can be seen inside pending transactions
     value: 1230000000000000000
 }]
 >
-</source><br>
+``` 
 
 Check the balances of the two accounts and verify the transaction about ether transfer.
 
