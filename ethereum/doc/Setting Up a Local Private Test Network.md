@@ -59,7 +59,7 @@ where the name of the node is `Node01`, the data directory is `./Node01`, the un
 
 ## Interact with the Node
 
-We can interact with the node through [https://github.com/ethereum/go-ethereum/wiki/JavaScript-Console the Geth JavaScript console]. 
+We can interact with the node through [the Geth JavaScript console](https://github.com/ethereum/go-ethereum/wiki/JavaScript-Console). 
 
 To do so first enter:
 
