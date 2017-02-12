@@ -52,7 +52,7 @@ Paste the following code, save and exit:
 To initialize the the first node with the custom genesis block, execute the following command:
 
 ``` bash
-$ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --ipcdisable --port 30301 --rpcport 8101 --networkid="12345" init ./CustomGenesis.json 2>> ./Node01.log
+$ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --port 30301 --rpcport 8101 --networkid="12345" init ./CustomGenesis.json 2>> ./Node01.log
 ```
 
 where the name of the node is `Node01`, the data directory is `./Node01`, the unique id of the network is `12345`.
@@ -64,7 +64,7 @@ Now we can interact with the node through [https://github.com/ethereum/go-ethere
 To do so enter:
 
 ``` bash
-$ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --ipcdisable --port 30301 --rpcport 8101 --networkid="12345" console 2>> ./Node01.log
+$ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --port 30301 --rpcport 8101 --networkid="12345" console 2>> ./Node01.log
 ```
 
 This will open a console as below:
