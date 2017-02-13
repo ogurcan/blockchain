@@ -259,9 +259,9 @@ function()
 
 The first time you run geth on your machine, it will generate a `DAG`. This can take several minutes depending upon the speed of your CPU. Once it finishes generating the DAG, it will start mining and generating messages like this:
 
-The mining node (`Node01`) deposits ethereum into its coinbase (`eth.coinbase`). By default, the coinbase of a node is its first account (`personal.listAccounts[0]`).
+The mining node (`Node01`) deposits ethereum into its `coinbase` (queried by `eth.coinbase`). By default, the coinbase of a node is its `Account 0` (queried by `personal.listAccounts[0]`).
 
-To see if the node is mining, you can time to time check the balance of the coinbase or the first account.
+To see if the node is mining, you can time to time check the balance of the `coinbase` or `Account 0`.
 
 ``` js
 > eth.getBalance(eth.coinbase)
