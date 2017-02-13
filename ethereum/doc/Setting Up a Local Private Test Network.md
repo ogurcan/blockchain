@@ -196,7 +196,7 @@ Note that, nodes may have several accounts (at least one) and they can be listed
 
 ## Allocate Initial Ethers to the Accounts
 
-To allocate initial ethers to the accounts, the genesis block (which is inside `CustomGenesis.json`) should be modified as below:
+To allocate initial ethers to the accounts, the genesis block (which is inside `CustomGenesis.json`) should be modified as below. However, to be able to make such a modification, you should first exit from the console by using the `exit` command and then stop the execution of `geth` by pressing `Ctrl+C`. 
 
 ``` js
 {
