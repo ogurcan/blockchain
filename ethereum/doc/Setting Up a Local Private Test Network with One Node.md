@@ -2,7 +2,7 @@
 
 ## Before you begin
 
-This example is prepared by using the geth version `1.5.7-stable` which is using Go version `go1.7.4` and tested on `macOS Sierra`. 
+This example is prepared by using the geth version `1.5.7-stable` which is using Go version `go1.7.4` and tested on `macOS Sierra` and `Ubuntu 16.04`. 
 
 ``` bash
 Geth
