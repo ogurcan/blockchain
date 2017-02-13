@@ -261,7 +261,23 @@ The first time you run geth on your machine, it will generate a `DAG`. This can 
 
 The mining node (`Node01`) deposits ethereum into its `coinbase` (queried by `eth.coinbase`). By default, the coinbase of a node is its `Account 0` (queried by `personal.listAccounts[0]`).
 
-To see if the node is mining, you can time to time check the balance of the `coinbase` or `Account 0`.
+You will see the messages like below on the first terminal.
+
+``` bash
+...
+I0213 13:43:52.469242 eth/downloader/downloader.go:1474] Quality of service: rtt 20s, conf 1.000, ttl 1m0s
+I0213 13:44:12.469520 eth/downloader/downloader.go:1474] Quality of service: rtt 20s, conf 1.000, ttl 1m0s
+I0213 13:44:32.469788 eth/downloader/downloader.go:1474] Quality of service: rtt 20s, conf 1.000, ttl 1m0s
+...
+```
+
+When start seeing messages like below, you will know that the mining has started. Depending on your cpu and ram, it can take from a few minutes to an hour. For this example with the configuration given in the beginning, it took around 7 minutes to start mining.
+
+``` bash
+
+```
+
+To check if the node is mining, you can time to time check the balance of the `coinbase` or `Account 0`.
 
 ``` js
 > eth.getBalance(eth.coinbase)
