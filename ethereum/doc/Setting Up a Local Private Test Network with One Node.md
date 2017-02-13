@@ -175,11 +175,11 @@ In fact, the node do not even have any accounts for holding ethers, and they sho
 Creating account is accomplised by using the `personal.newAccount("password")` command with a given password. Come back to the console of `Node01` and type that command with a simple passwords three times to create three accounts:
 
 ``` js
-> personal.newAccount("Node01Account01") 
+> personal.newAccount("Node01Account0") 
 "0xf50fee0099f5776a9a13ed7e5d554ee16c36bf70"
-> personal.newAccount("Node01Account02") 
+> personal.newAccount("Node01Account1") 
 "0x195998f3491f37d9887cb93ae99c56eec8f67182"
-> personal.newAccount("Node01Account03") 
+> personal.newAccount("Node01Account2") 
 "0xa33f1327bd37793d8b5eaca4c7f8f0fc3b302b00"
 > 
 ```
@@ -302,7 +302,7 @@ undefined
 Do not take into account the message "undefined". The transaction object `tx` is created. Now we can execute this transaction as follows (by providing the password of the sender account):
 
 ``` js
-> personal.sendTransaction(tx, "Node01Account01")
+> personal.sendTransaction(tx, "Node01Account1")
 "0x9c1116b8718fad9e84422e51d94045265d5ef78d553ada1833d8e4964943f5d5"
 > 
 ``` 
