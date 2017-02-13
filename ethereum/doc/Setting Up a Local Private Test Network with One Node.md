@@ -252,7 +252,7 @@ Perfect! Now it is time to play around in our small private test network.
 The ethereum network needs a mining node to process transactions:
 
 ``` js
-> miner.start
+> miner.start(8)
 function()
 >
 ``` 
@@ -265,13 +265,15 @@ You will see the messages like below on the first terminal.
 
 ``` bash
 ...
-I0213 13:43:52.469242 eth/downloader/downloader.go:1474] Quality of service: rtt 20s, conf 1.000, ttl 1m0s
-I0213 13:44:12.469520 eth/downloader/downloader.go:1474] Quality of service: rtt 20s, conf 1.000, ttl 1m0s
-I0213 13:44:32.469788 eth/downloader/downloader.go:1474] Quality of service: rtt 20s, conf 1.000, ttl 1m0s
+I0213 16:28:01.652643 vendor/github.com/ethereum/ethash/ethash.go:291] Generating DAG: 22%
+I0213 16:28:04.881279 vendor/github.com/ethereum/ethash/ethash.go:291] Generating DAG: 23%
+I0213 16:28:07.210075 eth/downloader/downloader.go:1474] Quality of service: rtt 20s, conf 1.000, ttl 1m0s
+I0213 16:28:08.136458 vendor/github.com/ethereum/ethash/ethash.go:291] Generating DAG: 24%
+I0213 16:28:11.633341 vendor/github.com/ethereum/ethash/ethash.go:291] Generating DAG: 25%
 ...
 ```
 
-When start seeing messages like below, you will know that the mining has started. Depending on your cpu and ram, it can take from a few minutes to an hour. For this example with the configuration given in the beginning, it took around 7 minutes to start mining.
+When start `Generating DAG` reaches `100%`, you will know that the mining has started. Depending on your cpu and ram, it can take from a few minutes to an hour. For this example with the configuration given in the beginning, it took around 7 minutes to start mining.
 
 ``` bash
 
