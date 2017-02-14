@@ -102,10 +102,11 @@ Offline compiling will be explained after.
 
 ### Deploying the Contract
 
-To deploy the HelloWorld contract, we need to go back to the geth JavaScript console execute. Here, first we need to unlock `coinbase` account (recall that `coinbase` is `Account 0`).
+To deploy the HelloWorld contract, we need to go back to the geth JavaScript console execute. If you check again the compiled code above, you will see that by default the compiler is adding `from: web3.eth.accounts[0]` because this is the address from which we are deploying
+i.e. the account that pays for the deploy costs. In this sense, if this account is locked, first we need to unlock it. 
 
 ``` js
-> personal.unlockAccount(eth.coinbase,"Node01Account01")
+> personal.unlockAccount(eth.accounts[0],"Node01Account01")
 true
 > 
 ``` 
