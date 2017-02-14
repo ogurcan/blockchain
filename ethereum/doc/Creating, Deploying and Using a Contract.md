@@ -28,10 +28,9 @@ GOROOT=/usr/local/Cellar/go/1.7.4_2/libexec
 
 ## Introduction
 
-In this example, we will create, deploy and use contracts. Ethereum contracts are account holding objects on the ethereum blockchain. They contain code functions and can interact with other contracts, make decisions, store data, and send ether to others.
-Contracts are defined by their creators, but their execution, and by extension the services they offer, is provided by the ethereum network itself. They will exist and be executable as long as the whole network exists, and will only disappear if they were programmed to self destruct.
+In this example, we will create, deploy and use a simple `HelloWorld` contract. 
 
-## Contract 1: Hello World!
+## Contract: Hello World!
 
 In this section, we will build a `Hello World!` contract on the ethereum command line.
 
@@ -99,7 +98,7 @@ var helloworld_sol_helloworld = helloworld_sol_helloworldContract.new(
 
 #### Offline Compiling
 
-
+Offline compiling will be explained after.
 
 ### Deploying the Contract
 
@@ -126,10 +125,15 @@ You should wait until you see the `Contract mined` message.
 
 ### Using the Contract
 
-## Contract 2: Sending Ether to Others
+Now we can use the deployed contract by calling the `sayHello()` method.
 
-## Contract 3: Storing Data
+``` js
+> helloworld_sol_helloworld.sayHello()
+"HelloWorld"
+>
+```
 
-## Contract 4: Making Decisions
+## What is next?
 
-## Contract 5: Interacting with Other Contracts
+Ethereum contracts are account holding objects on the ethereum blockchain. They contain code functions and can interact with other contracts, make decisions, store data, and send ether to others.
+Contracts are defined by their creators, but their execution, and by extension the services they offer, is provided by the ethereum network itself. They will exist and be executable as long as the whole network exists, and will only disappear if they were programmed to self destruct.
