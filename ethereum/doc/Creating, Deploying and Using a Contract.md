@@ -114,7 +114,7 @@ true
 After unlocking the account, we can deploy the contract by using the `loadScript()` command. However, to see how much we pay for the deployment, check the balance of this account first. Note that, if this is the mining account, you will not be able to easily see that the balance goes down since it will increase again in a few seconds.
 
 ``` js
-> web3.fromWei(eth.getBalance(personal.listAccounts[0]), "ether")
+> web3.fromWei(eth.getBalance(eth.accounts[0]), "ether")
 15.55916000
 > 
 ``` 
@@ -133,7 +133,7 @@ Contract mined! address: 0xdaa915dc454a3dea4e0030c7ec47bf3195591a97 transactionH
 You should wait until you see the `Contract mined` message and then check the balance again.
 
 ``` js
-> web3.fromWei(eth.getBalance(personal.listAccounts[0]), "ether")
+> web3.fromWei(eth.getBalance(eth.accounts[0]), "ether")
 15.55568538
 >  
 ``` 
