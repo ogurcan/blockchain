@@ -37,7 +37,7 @@ In this section, we will build a `Hello World!` contract on the ethereum command
 
 ### Creating the Contract
 
-For creating contracts, you need an editor. For instance, we will `nano` but then we will switch to a more sophisticated editor that has highlighting capability for Solidy, like [Emacs](https://github.com/ethereum/emacs-solidity#emacs-solidity-mode).
+For creating contracts, you need an editor. For instance, we will `nano` but then we will switch to a more sophisticated editor that has highlighting capability for Solidy, like using [Emacs](https://github.com/ethereum/emacs-solidity#emacs-solidity-mode) with Solidity mode or using [Vim](http://www.vim.org/) with a [Solidity syntax file](https://github.com/tomlion/vim-solidity/).
 
 Let's create our first contract as:
 
@@ -66,7 +66,58 @@ contract HelloWorld {
 
 ### Compiling the Contract
 
+#### Online Compiling
+
+If you do not have the Solidity compiler `solc` installed, you can simply use the [online Solidity compiler](https://ethereum.github.io/browser-solidity/). On the online compiler, create a new file `HelloWorld.sol` and then copy the source code above into this file. After a second the compiled code should appear on the left pane. 
+
+Now go back to the terminal window and create a `HelloWorld.js` file.
+
+``` bash
+$ nano HelloWorld.js
+``` 
+
+And then go back to the online compiler and copy the code in the box labeled `Web3 deploy` into `HelloWorld.js`.
+
+``` bash
+var helloworld_sol_helloworldContract = web3.eth.contract([{"constant":true,"inputs":[],"name":"sayHello","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"inputs":[],"payable":false,"type":"constructor"}]);
+var helloworld_sol_helloworld = helloworld_sol_helloworldContract.new(
+   {
+     from: web3.eth.accounts[0], 
+     data: '0x6060604052341561000c57fe5b5b604060405190810160405280600a81526020017f48656c6c6f576f726c640000000000000000000000000000000000000000000081525060009080519060200190610059929190610060565b505b610105565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f106100a157805160ff19168380011785556100cf565b828001600101855582156100cf579182015b828111156100ce5782518255916020019190600101906100b3565b5b5090506100dc91906100e0565b5090565b61010291905b808211156100fe5760008160009055506001016100e6565b5090565b90565b6101bd806101146000396000f30060606040526000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063ef5fb05b1461003b575bfe5b341561004357fe5b61004b6100d4565b604051808060200182810382528381815181526020019150805190602001908083836000831461009a575b80518252602083111561009a57602082019150602081019050602083039250610076565b505050905090810190601f1680156100c65780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b6100dc61017d565b60008054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156101725780601f1061014757610100808354040283529160200191610172565b820191906000526020600020905b81548152906001019060200180831161015557829003601f168201915b505050505090505b90565b6020604051908101604052806000815250905600a165627a7a7230582023b050a96f227cd2bd0e7d6c7632d1d03a73e4496e7612fed3af091c3859d5320029', 
+     gas: '4700000'
+   }, function (e, contract){
+    console.log(e, contract);
+    if (typeof contract.address !== 'undefined') {
+         console.log('Contract mined! address: ' + contract.address + ' transactionHash: ' + contract.transactionHash);
+    }
+ })
+``` 
+
+
+#### Offline Compiling
+
 ### Deploying the Contract
+
+To deploy the HelloWorld contract, we need to go back to the geth JavaScript console execute. Here, first we need to unlock `coinbase` account (recall that `coinbase` is `Account 0`).
+
+``` js
+> personal.unlockAccount(eth.coinbase,"Node01Account01")
+true
+> 
+``` 
+
+After unlocking the account, we can deploy the contract by using the `loadScript()` command.
+
+``` js
+> loadScript("HelloWorld.js")
+null [object Object]
+true
+> null [object Object]
+Contract mined! address: 0xdaa915dc454a3dea4e0030c7ec47bf3195591a97 transactionHash: 0x6ffb8e69dd7ec29cbcc575fdfd578dc067b1c5ae592c32574125359024c7baca
+>
+``` 
+
+You should wait until you see the `Contract mined` message. 
 
 ### Using the Contract
 
