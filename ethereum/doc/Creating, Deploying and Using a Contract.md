@@ -70,7 +70,7 @@ Contracts can be compiled either using an online compiler or an offline compiler
 
 #### Online Compiling
 
-If you do not have the Solidity compiler `solc` installed, you can simply use the [online Solidity compiler](https://ethereum.github.io/browser-solidity/). On the online compiler, create a new file `HelloWorld.sol` and then copy the source code above into this file. After a second the compiled code should appear on the left pane. 
+If you do not have the Solidity compiler `solc` installed, you can simply use the [online Solidity compiler](https://ethereum.github.io/browser-solidity/). On the online compiler, create a new file `HelloWorld.sol` and then copy the source code above into this file. After a second, the compiled code should appear on the right pane. 
 
 Now go back to the terminal window and create a `HelloWorld.js` file.
 
