@@ -28,11 +28,11 @@ GOROOT=/usr/local/Cellar/go/1.7.4_2/libexec
 
 ## Introduction
 
-In this example, we will create, deploy and use a simple `HelloWorld` contract. 
+In this example, we will create, deploy and use a simple `HelloWorld` contract. Even though it looks very simple, you will learn several important details by this example.
 
 ## Contract: Hello World!
 
-In this section, we will build a `Hello World!` contract on the ethereum command line.
+We will build a `Hello World!` contract on the ethereum command line. When executed, this contract is going to print out `HelloWorld` to the console.
 
 ### Creating the Contract
 
