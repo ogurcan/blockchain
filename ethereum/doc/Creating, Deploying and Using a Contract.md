@@ -150,6 +150,8 @@ Now we can use the deployed contract by calling the `sayHello()` method. However
 >
 ```
 
+As you can verify also, no cost is paid for the usage of the contract.
+
 ## What is next?
 
 You learned about the very basics of the contracts. Now it is time to into a bit more details. You can continue to the Sending Ethers using Contracts example.
