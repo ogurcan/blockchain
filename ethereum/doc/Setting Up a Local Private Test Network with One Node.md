@@ -348,3 +348,7 @@ These values are a bit hard to read. So we check the balances as ethers.
 
 The balanca of `Account 1` is reduced by `1.23042` and the balance of `Account 2` is increase by `1.23`. The reason more than `1.23` is gone from the ether balance of `Account 1` is because it costs ether to execute the send ether transaction.  This transaction fee is given to the miner, i.e. `Account 0`.
 
+## What is next?
+
+You are ready to learn about contracts now. You can continue to the [Creating, Deploying and Using Contracts](./Creating,%20Deploying%20and%20Using%20Contracts.md) example.
+
