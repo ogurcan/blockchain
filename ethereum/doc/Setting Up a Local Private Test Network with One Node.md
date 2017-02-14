@@ -2,6 +2,8 @@
 
 ## Before you begin
 
+Before you begin, make sure that the Go implementation `geth` is installed as described [here](https://github.com/ethereum/go-ethereum/wiki/Building-Ethereum here).
+
 This example is prepared by using the geth version `1.5.7-stable` which is using Go version `go1.7.4` and tested on `macOS Sierra` and `Ubuntu 14.04.5`. 
 
 ``` bash
@@ -18,7 +20,7 @@ GOROOT=/usr/local/Cellar/go/1.7.4_2/libexec
 
 ## Introduction
 
-In this example, we will create a local private test network with a single node which has several accounts. The objective is to show you how to initialize a node, how to interact with that node, how to create accounts, how to set initial ethers for the accounts, how to make transactions (e.g., to send ethers) and how to create, deploy and execute contracts.
+In this example, we will create a local private test network with a single node which has several accounts. The objective is to show you how to initialize a node, how to interact with that node, how to create accounts, how to set initial ethers for the accounts and how to make transactions (e.g., to send ethers).
 
 The things that are required to specify in a private chain are:
 
