@@ -1,8 +1,8 @@
 # Creating, Deploying and Using a Contract
 
-## Before you begin
-
 > This example is based on the [Setting Up a Local Private Test Network with One Node](./Setting%20Up%20a%20Local%20Private%20Test%20Network%20with%20One%20Node.md) example.
+
+## Before you begin
 
 Before you begin, make sure that the [Solidity](http://solidity.readthedocs.io/en/develop/index.html) compiler is installed as described [here](https://github.com/ethereum/go-ethereum/wiki/Contract-Tutorial#install-solc-on-ubuntu). To verify if Solidy is installed correctly, go to the geth console and type the `eth.getCompilers()` command. 
 
