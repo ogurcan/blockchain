@@ -261,11 +261,7 @@ function()
 
 > The `(1)` signifies the number of threads you want to use during mining. That number depends on the prowess of your system, and how much total percent of cpu on your system you want to use. You can generally run it at `miner.start(1)` or `miner.start(2)`. To mine with your gpu, which is better at mining ether, use the following command `miner.startAutoDAG()`.
 
-> The first time you run geth on your machine, it will generate a `DAG`. This can take several minutes depending upon the speed of your CPU. Once it finishes generating the DAG, it will start mining and generating messages like this:
-
-The mining node (`Node01`) deposits ethereum into its `coinbase` (queried by `eth.coinbase`). By default, the coinbase of a node is its `Account 0` (queried by `personal.listAccounts[0]`).
-
-You will see the messages like below on the first terminal.
+The first time you run geth on your machine, it will generate a `DAG`. This can take several minutes depending upon the speed of your CPU. Once it finishes generating the DAG.
 
 ``` bash
 ...
@@ -279,10 +275,7 @@ I0213 16:28:11.633341 vendor/github.com/ethereum/ethash/ethash.go:291] Generatin
 
 When start `Generating DAG` reaches `100%`, you will know that the mining has started. Depending on your cpu and ram, it can take from a few minutes to an hour. For this example with the configuration given in the beginning, it took around 7 minutes to start mining.
 
-``` bash
-
-```
-
+The mining node (`Node01`) deposits ethereum into its `coinbase` (queried by `eth.coinbase`). By default, the coinbase of a node is its `Account 0` (queried by `personal.listAccounts[0]`).
 To check if the node is mining, you can time to time check the balance of the `coinbase` or `Account 0`.
 
 ``` js
