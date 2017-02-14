@@ -37,6 +37,35 @@ In this section, we will build a `Hello World!` contract on the ethereum command
 
 ### Creating the Contract
 
+For creating contracts, you need an editor. For instance, we will `nano` but then we will switch to a more sophisticated editor that has highlighting capability for Solidy, like [Emacs](https://github.com/ethereum/emacs-solidity#emacs-solidity-mode).
+
+Let's create our first contract as:
+
+``` bash
+$ nano HelloWorld.sol
+``` 
+
+Paste the Solidity code below inside `HelloWorld.sol`, save and exit.
+
+``` js
+contract HelloWorld {
+    /* define variable of the type string */
+    string message;
+
+    /* this runs when the contract is executed */
+    function HelloWorld() public {
+        message = "HelloWorld";
+    }
+
+    /* main function */
+    function sayHello() constant returns (string) {
+        return message;
+    }
+}
+``` 
+
+### Compiling the Contract
+
 ### Deploying the Contract
 
 ### Using the Contract
