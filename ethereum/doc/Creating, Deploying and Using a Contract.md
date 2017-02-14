@@ -138,7 +138,7 @@ You should wait until you see the `Contract mined` message and then check the ba
 >  
 ``` 
 
-As you can easily see, `15.55916000` - `15.55568538` =  `0.00347462` is paid by `Account 0` as a deployment cost.
+As you can easily see, `15.55916000` - `15.55568538` =  `0.00347462` ethers is paid by `Account 0` as a deployment cost.
 
 ### Using the Contract
 
