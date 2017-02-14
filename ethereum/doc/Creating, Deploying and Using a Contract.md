@@ -1,6 +1,6 @@
 # Creating, Deploying and Using a Contract
 
-> This example is based on the [Setting Up a Local Private Test Network with One Node](./Setting%20Up%20a%20Local%20Private%20Test%20Network%20with%20One%20Node.md) example.
+> This example is a continuation of the [Setting Up a Local Private Test Network with One Node](./Setting%20Up%20a%20Local%20Private%20Test%20Network%20with%20One%20Node.md) example.
 
 ## Before you begin
 
