@@ -152,5 +152,6 @@ Now we can use the deployed contract by calling the `sayHello()` method. However
 
 ## What is next?
 
-Ethereum contracts are account holding objects on the ethereum blockchain. They contain code functions and can interact with other contracts, make decisions, store data, and send ether to others.
-Contracts are defined by their creators, but their execution, and by extension the services they offer, is provided by the ethereum network itself. They will exist and be executable as long as the whole network exists, and will only disappear if they were programmed to self destruct.
+You learned about the very basics of the contracts. Now it is time to into a bit more details. You can continue to the Sending Ethers using Contracts example.
+
+> Ethereum contracts are account holding objects on the ethereum blockchain. They contain code functions and can interact with other contracts, make decisions, store data, and send ether to others. Contracts are defined by their creators, but their execution, and by extension the services they offer, is provided by the ethereum network itself. They will exist and be executable as long as the whole network exists, and will only disappear if they were programmed to self destruct.
