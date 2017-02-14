@@ -255,7 +255,7 @@ The ethereum network needs a mining node to process transactions:
 
 ``` js
 > miner.start(1)
-function()
+true
 >
 ``` 
 
