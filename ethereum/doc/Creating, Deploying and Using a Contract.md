@@ -1,4 +1,4 @@
-# Creating, Deploying and Using Contracts
+# Creating, Deploying and Using a Contract
 
 ## Before you begin
 
