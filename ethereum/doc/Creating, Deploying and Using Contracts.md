@@ -2,6 +2,8 @@
 
 ## Before you begin
 
+This example is based on [Setting Up a Local Private Test Network](./Setting%20Up%20a%20Local%20Private%20Test%20Network%20with%20One%20Node.md) example.
+
 Before you begin, make sure that the [Solidity](http://solidity.readthedocs.io/en/develop/index.html) compiler is installed as described [here](https://github.com/ethereum/go-ethereum/wiki/Contract-Tutorial#install-solc-on-ubuntu). To verify if Solidy is installed correctly, go to the geth console and type the `eth.getCompilers()` command. 
 
 ``` js
@@ -9,8 +11,6 @@ Before you begin, make sure that the [Solidity](http://solidity.readthedocs.io/e
 ["Solidity"]
 > 
 ```
-
-This example is based on [Setting Up a Local Private Test Network](./Setting%20Up%20a%20Local%20Private%20Test%20Network%20with%20One%20Node.md) example.
 
 It is prepared by using the geth version `1.5.7-stable` which is using Go version `go1.7.4` and tested on `macOS Sierra` and `Ubuntu 14.04.5`. 
 
