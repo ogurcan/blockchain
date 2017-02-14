@@ -254,12 +254,14 @@ Perfect! Now it is time to play around in our small private test network.
 The ethereum network needs a mining node to process transactions:
 
 ``` js
-> miner.start(8)
+> miner.start(1)
 function()
 >
 ``` 
 
-The first time you run geth on your machine, it will generate a `DAG`. This can take several minutes depending upon the speed of your CPU. Once it finishes generating the DAG, it will start mining and generating messages like this:
+> The `(1)` signifies the number of threads you want to use during mining. That number depends on the prowess of your system, and how much total percent of cpu on your system you want to use. You can generally run it at `miner.start(1)` or `miner.start(2)`. To mine with your gpu, which is better at mining ether, use the following command `miner.startAutoDAG()`.
+
+> The first time you run geth on your machine, it will generate a `DAG`. This can take several minutes depending upon the speed of your CPU. Once it finishes generating the DAG, it will start mining and generating messages like this:
 
 The mining node (`Node01`) deposits ethereum into its `coinbase` (queried by `eth.coinbase`). By default, the coinbase of a node is its `Account 0` (queried by `personal.listAccounts[0]`).
 
