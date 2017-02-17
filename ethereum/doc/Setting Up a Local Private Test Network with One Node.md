@@ -82,25 +82,10 @@ We can interact with the node through [the Geth JavaScript console](https://gith
 To do so first enter:
 
 ``` bash
-$ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --port 30301 --rpcport 8101 --networkid="12345" --nodiscover
+$ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --port 30301 --rpcport 8101 --networkid="12345" --nodiscover console 2>> ./Node01.log
 ```
 
-This will start a geth instance with a node named `Node01` whose `--datadir` is `./Node01`. The `--nodiscover` flag turns off peer discovery and prevents geth from trying to find peers for your network id on the internet. Upon the execution of this geth instance, a `geth.ipc` file is created under the data directory (ipc stands for inter-process communication) and its absolute path is verbosed on the terminal as something like this:
-
-``` bash
-...
-I0213 00:37:21.613819 node/node.go:341] IPC endpoint opened: /Users/ogurcan/ethereum_test_networks/deneme/Node01/geth.ipc
-...
-```
-
-
-Open another terminal window and attach to the running geth instance using this `ipc` file:
-
-``` bash
-$ geth attach ipc:///Users/ogurcan/ethereum_test_networks/local_private_network/Node01/geth.ipc
-```
-
-This will open a console as below:
+This will open a geth console (as below) for a node named `Node01` whose `--datadir` is `./Node01`. The `--nodiscover` flag turns off peer discovery and prevents geth from trying to find peers for your network id on the internet. The `2>> ./Node01.log` flag redirects thegeth output to the `Node01.log` log file.
 
 ``` bash
 Welcome to the Geth JavaScript console!
@@ -111,7 +96,13 @@ instance: Geth/node01/v1.5.7-stable-da2a22c3/linux/go1.7.3
 > 
 ```
 
-To be able to interact, you can use the commands listed in the “Management API Reference” section in [2]. For example, to get the info about the node, type the following command:
+For seeing the logs at realtime, open another terminal window and execute the `tail` command.
+
+``` bash
+$ tail -f Node01.log
+```
+
+Now let's start interacting. For example, to get the info about the node, type the following command:
 
 ``` js
 > admin.nodeInfo
