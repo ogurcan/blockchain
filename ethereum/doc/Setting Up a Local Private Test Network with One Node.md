@@ -85,7 +85,7 @@ To do so first enter:
 $ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --port 30301 --rpcport 8101 --networkid="12345" --nodiscover console 2>> ./Node01.log
 ```
 
-This will open a geth console (as below) for a node named `Node01` whose `--datadir` is `./Node01`. The `--nodiscover` flag turns off peer discovery and prevents geth from trying to find peers for your network id on the internet. The `2>> ./Node01.log` flag redirects thegeth output to the `Node01.log` log file.
+This will open a geth console (as below) for a node named `Node01` whose `--datadir` is `./Node01`. The `--nodiscover` flag turns off peer discovery and prevents geth from trying to find peers for your network id on the internet. The `2>> ./Node01.log` flag redirects the geth output to the `Node01.log` log file.
 
 ``` bash
 Welcome to the Geth JavaScript console!
@@ -96,13 +96,13 @@ instance: Geth/node01/v1.5.7-stable-da2a22c3/linux/go1.7.3
 > 
 ```
 
-For seeing the logs at realtime, open another terminal window and execute the `tail` command.
+For seeing the logs at real-time, open another terminal window and execute the `tail` command.
 
 ``` bash
 $ tail -f Node01.log
 ```
 
-Now let's start interacting. For example, to get the info about the node, type the following command:
+Now go back to the first terminal and start interacting. For example, to get the info about the node, type the following command:
 
 ``` js
 > admin.nodeInfo
