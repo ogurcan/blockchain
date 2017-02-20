@@ -36,7 +36,7 @@ We will build a `Hello World!` contract on the ethereum command line. When execu
 
 ### Creating the Contract
 
-For creating contracts, you need an editor. For instance, we will `nano` but then we will switch to a more sophisticated editor that has highlighting capability for Solidy, like using [Emacs](https://github.com/ethereum/emacs-solidity#emacs-solidity-mode) with Solidity mode or using [Vim](http://www.vim.org/) with a [Solidity syntax file](https://github.com/tomlion/vim-solidity/) or using [Visual Studio Code](https://code.visualstudio.com/Download)  with the Solidity plugin.
+For creating contracts, you need an editor. For instance, we will use `nano` but then we will switch to a more sophisticated editor that has highlighting capability for Solidy, like using [Emacs](https://github.com/ethereum/emacs-solidity#emacs-solidity-mode) with Solidity mode or using [Vim](http://www.vim.org/) with a [Solidity syntax file](https://github.com/tomlion/vim-solidity/) or using [Visual Studio Code](https://code.visualstudio.com/Download)  with the Solidity plugin.
 
 Let's create our first contract as:
 
