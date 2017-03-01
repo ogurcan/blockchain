@@ -28,6 +28,8 @@ GOROOT=/usr/local/Cellar/go/1.7.4_2/libexec
 
 ## Introduction
 
+Ethereum contracts are account holding objects on the ethereum blockchain. They contain code functions and can interact with other contracts, make decisions, store data, and send ether to others. Contracts are defined by their creators, but their execution, and by extension the services they offer, is provided by the ethereum network itself. They will exist and be executable as long as the whole network exists, and will only disappear if they were programmed to self destruct.
+
 In this example, we will create, deploy and use a simple `HelloWorld` contract. Even though it looks very simple, you will learn several important details by this example.
 
 ## Contract: Hello World!
@@ -155,5 +157,3 @@ As you can verify also, no cost is paid for the usage of the contract.
 ## What is next?
 
 You learned about the very basics of the contracts. Now it is time to into a bit more details. You can continue to the Sending Ethers using Contracts example.
-
-> Ethereum contracts are account holding objects on the ethereum blockchain. They contain code functions and can interact with other contracts, make decisions, store data, and send ether to others. Contracts are defined by their creators, but their execution, and by extension the services they offer, is provided by the ethereum network itself. They will exist and be executable as long as the whole network exists, and will only disappear if they were programmed to self destruct.
