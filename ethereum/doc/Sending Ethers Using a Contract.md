@@ -1,6 +1,6 @@
 # Sending Ethers Using a Contract
 
-> This example is a continuation of the [[Creating, Deploying and Using Contracts](./Creating, Deploying and Using a Contract.md) example.
+> This example is a continuation of the [Creating, Deploying and Using Contracts](./Creating, Deploying and Using a Contract.md) example.
 
 ## Before you begin
 
