@@ -168,16 +168,18 @@ In fact, the node do not even have any accounts for holding ethers, and they sho
 Creating account is accomplised by using the `personal.newAccount("password")` command with a given password. Come back to the console of `Node01` and type that command with a simple passwords three times to create three accounts:
 
 ``` js
-> personal.newAccount("Node01Account0") 
+> personal.newAccount("Node01Account00") 
 "0xf50fee0099f5776a9a13ed7e5d554ee16c36bf70"
-> personal.newAccount("Node01Account1") 
+> personal.newAccount("Node01Account01") 
 "0x195998f3491f37d9887cb93ae99c56eec8f67182"
-> personal.newAccount("Node01Account2") 
+> personal.newAccount("Node01Account02") 
 "0xa33f1327bd37793d8b5eaca4c7f8f0fc3b302b00"
 > 
 ```
 
 The hash codes are the addresses of the created accounts.
+
+> Note that, in your computer the addresses of the accounts will be different.
 
 Note that, nodes may have several accounts (at least one) and they can be listed by using the command:
 
