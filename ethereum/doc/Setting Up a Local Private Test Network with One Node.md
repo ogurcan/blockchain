@@ -31,13 +31,13 @@ The things that are required to specify in a private chain are:
 We also need to create a directory for the test network. 
 
 ``` bash
-$ mkdir local_private_network
+$ mkdir local-private-network
 ```
 
 Then enter to this directory. 
 
 ``` bash
-$ cd local_private_network
+$ cd local-private-network
 ```
 
 ## Create the Genesis File
