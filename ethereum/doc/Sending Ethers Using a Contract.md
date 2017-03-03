@@ -23,7 +23,8 @@ contract ReceiveEther {
         deadline = now + 10 * 1 minutes;
     }   
 
-    /* The function without name is the default function that is called whenever anyone sends funds to a contract */
+    /* The function without name is the default function that is called whenever 
+       anyone sends funds to a contract */
     function () public payable {
         uint amount = msg.value;
         receivingAccount.send(amount);
