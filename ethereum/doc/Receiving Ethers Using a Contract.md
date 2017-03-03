@@ -19,7 +19,8 @@ contract ReceiveEther {
     address public receivingAccount;
     uint public deadline;
 
-    /*  at initialization, setup the owner */
+    /* at initialization, setup the owner account 
+       and the deadline of the contract */
     function ReceiveEther(address _account) {
         receivingAccount = _account;
         deadline = now + 10 * 1 minutes;
