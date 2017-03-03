@@ -44,4 +44,4 @@ contract ReceiveEther {
 }
 ```
 
-The `suicide(address)` method uses negative gas because the operation frees up space on the blockchain by clearing all of the contract's data from the Ethereum Virtual Machine (EVM). As a result, when you check the balance of `Account1`, you should see that the balance is increased.
+The `suicide(address)` method uses negative gas because the operation frees up space on the blockchain by clearing all of the contract's data from the Ethereum Virtual Machine (EVM). As a result, when you check the balance of `Account 1`, you should see that the balance is increased.
