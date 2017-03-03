@@ -108,7 +108,7 @@ To deploy the HelloWorld contract, we need to go back to the geth JavaScript con
 i.e. the account that pays for the deploy costs. In this sense, if this account is locked, first we need to unlock it. 
 
 ``` js
-> personal.unlockAccount(eth.accounts[0],"Node01Account01")
+> personal.unlockAccount(eth.accounts[0],"Node01Account00")
 true
 > 
 ``` 
