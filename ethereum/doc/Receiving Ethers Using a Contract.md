@@ -4,7 +4,31 @@
 
 ## Before you begin
 
+Before you begin, make sure that the [Solidity](http://solidity.readthedocs.io/en/develop/index.html) compiler is installed as described [here](https://github.com/ethereum/go-ethereum/wiki/Contract-Tutorial#install-solc-on-ubuntu). To verify if Solidy is installed correctly, go to the geth console and type the `eth.getCompilers()` command. 
+
+``` js
+> eth.getCompilers()
+["Solidity"]
+> 
+```
+
+This example is prepared by using the geth version `1.5.9-stable` which is using Go version `go1.7.3` and tested on `Ubuntu 14.04.5`. 
+
+``` bash
+Geth
+Version: 1.5.9-stable
+Git Commit: a07539fb88db7231d18db918ed7a6a4e32f97450
+Protocol Versions: [63 62]
+Network Id: 1
+Go Version: go1.7.3
+OS: linux
+GOPATH=
+GOROOT=/usr/lib/go-1.7
+```
+
 ## Introduction
+
+In this example, we will create, deploy and use a simple contract to show how contracts process transaction. 
 
 ## Contract: ReceiveEther
 
@@ -138,6 +162,10 @@ undefined
 "0xbaa63adb5c669fde8867a13efa321f9f23ea84d0f7cf54563940093047708b1a"
 >
 ```
+
+Verify the transaction by checking the balances of both accounts using `web3.fromWei(eth.getBalance(eth.accounts[1]), "ether")` and `web3.fromWei(eth.getBalance(eth.accounts[2]), "ether")`. 
+
+Also verify, after the deadline, the refund to `Account 2`.
 
 ## What is next?
 
