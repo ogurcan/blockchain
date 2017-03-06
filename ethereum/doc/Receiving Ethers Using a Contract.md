@@ -134,6 +134,9 @@ After the contract is mined successfully, a transaction can be performed from an
 ```
 > var tx = {from:  personal.listAccounts[2], to: "0x32da52e91e55334e36bc9eab5023698bcd475490", value: web3.toWei(1.0, "ether")}
 undefined
+> personal.sendTransaction(tx, "Node01Account02")
+"0xbaa63adb5c669fde8867a13efa321f9f23ea84d0f7cf54563940093047708b1a"
+>
 ```
 
 ## What is next?
