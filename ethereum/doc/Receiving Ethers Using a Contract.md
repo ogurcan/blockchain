@@ -114,7 +114,7 @@ var untitled_receiveether = untitled_receiveetherContract.new(
  })
  ```
  
- ### Deploying the Contract
+### Deploying the Contract
 
 Now save the above code as `ReceiveEther.js` and deploy it using `loadScript("ReceiveEther.js")`.
 
