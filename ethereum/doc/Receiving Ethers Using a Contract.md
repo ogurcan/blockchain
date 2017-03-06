@@ -10,6 +10,8 @@
 
 We will build a `ReceiveEther` contract on the ethereum command line that accepts ethers during 10 minutes. When a transaction send ether to this contract, it is going to transfer the `amount` received to a predefined `receivingAccount`.
 
+### Creating the Contract
+
 ``` js
 pragma solidity ^0.4.9;
 
@@ -47,6 +49,8 @@ contract ReceiveEther {
 The constructor `ReceiveEther(address _account)` sets the `receivingAccount` using the parameter provided and the deadline as 10 minutes. The nameless function `()` is invoked each time a transaction towards the address of this contract is executed. When `afterDeadline()` is reached, the contract `dispose()` itself.
 
 The `suicide(address)` method uses negative gas because the operation frees up space on the blockchain by clearing all of the contract's data from the Ethereum Virtual Machine (EVM). As a result, when you check the balance of `Account 1`, you should see that the balance is increased.
+
+### Compiling the Contract
 
 Upon compiling the above solidty code using the [online Solidity compiler](https://ethereum.github.io/browser-solidity/), we will have a JavaScript code as below.
 
@@ -109,6 +113,8 @@ var untitled_receiveether = untitled_receiveetherContract.new(
     }
  })
  ```
+ 
+ ### Deploying the Contract
 
 Now save the above code as `ReceiveEther.js` and deploy it using `loadScript("ReceiveEther.js")`.
 
@@ -121,6 +127,8 @@ Contract mined! address: 0x32da52e91e55334e36bc9eab5023698bcd475490 transactionH
 >  
 ```
 
+### Using the Contract
+
 After the contract is mined successfully, a transaction can be performed from another address towards this contract using its address (`0x32da52e91e55334e36bc9eab5023698bcd475490`). For example, suppose we want to send `1.0` ethers to the contract from `Account 2`.
 
 ```
@@ -128,5 +136,6 @@ After the contract is mined successfully, a transaction can be performed from an
 undefined
 ```
 
+## What is next?
 
 
