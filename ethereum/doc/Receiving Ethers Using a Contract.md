@@ -28,7 +28,7 @@ GOROOT=/usr/lib/go-1.7
 
 ## Introduction
 
-In this example, we will create, deploy and use a simple contract to show how contracts process transaction. 
+In this example, we will create, deploy and use a simple contract to show how contracts process transactions. 
 
 ## Contract: ReceiveEther
 
