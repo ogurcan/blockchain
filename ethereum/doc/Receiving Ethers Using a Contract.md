@@ -111,3 +111,22 @@ var untitled_receiveether = untitled_receiveetherContract.new(
  ```
 
 Now save the above code as `ReceiveEther.js` and deploy it using `loadScript("ReceiveEther.js")`.
+
+```
+> loadScript("ReceiveEther.js")
+null [object Object]
+true
+> null [object Object]
+Contract mined! address: 0x32da52e91e55334e36bc9eab5023698bcd475490 transactionHash: 0x61a24948b2586adc3e5a690c9b197fa14b39507b1aa1f105dbb58493699f330f
+>  
+```
+
+After the contract is mined successfully, a transaction can be performed from another address towards this contract using its address (`0x32da52e91e55334e36bc9eab5023698bcd475490`). For example, suppose we want to send `1.0` ethers to the contract from `Account 2`.
+
+```
+> var tx = {from:  personal.listAccounts[2], to: "0x32da52e91e55334e36bc9eab5023698bcd475490", value: web3.toWei(1.0, "ether")}
+undefined
+```
+
+
+
