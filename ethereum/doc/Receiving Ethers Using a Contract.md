@@ -72,7 +72,7 @@ contract ReceiveEther {
 
 The constructor `ReceiveEther(address _account)` sets the `receivingAccount` using the parameter provided and the deadline as 10 minutes. The nameless function `()` is invoked each time a transaction towards the address of this contract is executed. When `afterDeadline()` is reached, the contract `dispose()` itself.
 
-The `suicide(address)` method uses negative gas because the operation frees up space on the blockchain by clearing all of the contract's data from the Ethereum Virtual Machine (EVM). As a result, when you check the balance of `Account 1`, you should see that the balance is increased.
+The `suicide(address)` method uses negative gas because the operation frees up space on the blockchain by clearing all of the contract's data from the Ethereum Virtual Machine (EVM). As a result, when you check the balance of `receivingAccount`, you should see that the balance is increased.
 
 ### Compiling the Contract
 
