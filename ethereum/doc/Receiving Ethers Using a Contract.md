@@ -78,7 +78,7 @@ The `suicide(address)` method uses negative gas because the operation frees up s
 
 Upon compiling the above solidty code using the [online Solidity compiler](https://ethereum.github.io/browser-solidity/), we will have a JavaScript code as below.
 
-```
+``` js
 var _account = /* var of type address here */ ;
 var untitled_receiveetherContract = web3.eth.contract([{"constant":true,"inputs":[],"name":"deadline","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"deadlineReached","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"receivingAccount","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"inputs":[{"name":"_account","type":"address"}],"payable":false,"type":"constructor"},{"payable":true,"type":"fallback"}]);
 var untitled_receiveether = untitled_receiveetherContract.new(
@@ -98,7 +98,7 @@ var untitled_receiveether = untitled_receiveetherContract.new(
  However, before deploying it, we need to configure the account we want to use, say `Account 1`. In this sense, first we set the `_account` parameter (i.e. receiving account) as `eth.accounts[1]`. Then we modify `from: web3.eth.accounts[0]` to `from: web3.eth.accounts[1]` (the account used during deployment). 
  
  
-```
+``` js
 // must set the _account parameter
 var _account = eth.accounts[1] ;
 var untitled_receiveetherContract = web3.eth.contract([{"constant":true,"inputs":[],"name":"deadline","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"deadlineReached","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"receivingAccount","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"inputs":[{"name":"_account","type":"address"}],"payable":false,"type":"constructor"},{"payable":true,"type":"fallback"}]);
@@ -118,7 +118,7 @@ var untitled_receiveether = untitled_receiveetherContract.new(
 
 One thing here we are missing is that, in geth, accounts are locked by default. Thus, if the contract is deployed as above, `Account 1` should also be manually unlocked, otherwise the contract will not be able transfer ethers. One way to tackle this is to embed the unlock command inside the JavaSacript code.
 
-```
+``` js
 // must unlock the account we are creating the contract from so we can use it
 personal.unlockAccount(eth.accounts[1],"Node01Account01")
 // must set the _account parameter
@@ -142,7 +142,7 @@ var untitled_receiveether = untitled_receiveetherContract.new(
 
 Now save the above code as `ReceiveEther.js` and deploy it using `loadScript("ReceiveEther.js")`.
 
-```
+``` bash
 > loadScript("ReceiveEther.js")
 null [object Object]
 true
@@ -155,7 +155,7 @@ Contract mined! address: 0x32da52e91e55334e36bc9eab5023698bcd475490 transactionH
 
 After the contract is mined successfully, a transaction can be performed from another address towards this contract using its address (`0x32da52e91e55334e36bc9eab5023698bcd475490`). For example, suppose we want to send `1.0` ethers to the contract from `Account 2`.
 
-```
+``` bash
 > var tx = {from:  personal.listAccounts[2], to: "0x32da52e91e55334e36bc9eab5023698bcd475490", value: web3.toWei(1.0, "ether")}
 undefined
 > personal.sendTransaction(tx, "Node01Account02")
@@ -171,7 +171,7 @@ Also verify, after the deadline, the refund to `Account 2`.
 
 Let's make the contract a bit more realistic and create a contract event for logging ether receivals. Solidity is able to emit events for the external (outside of EVM) listeners to listen to them. Suppose we want to keep track of receival of ethers. We can define an event `event EtherReceival(address sender, uint amount);` for this.
 
-```
+``` js
 pragma solidity ^0.4.9;
 
 /* Contract accepting ethers during 10 minutes */
@@ -208,7 +208,7 @@ contract ReceiveEther {
 
 The compiled code is very similar to the previous one.
 
-```
+``` js
 var _account = /* var of type address here */ ;
 var untitled_receiveetherContract = web3.eth.contract([{"constant":true,"inputs":[],"name":"deadline","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"dispose","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"receivingAccount","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"inputs":[{"name":"_account","type":"address"}],"payable":false,"type":"constructor"},{"payable":true,"type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"sender","type":"address"},{"indexed":false,"name":"amount","type":"uint256"}],"name":"EtherReceival","type":"event"}]);
 var untitled_receiveether = untitled_receiveetherContract.new(
@@ -227,7 +227,7 @@ var untitled_receiveether = untitled_receiveetherContract.new(
 
 We need to configure it like before and add the statements for processing the event.
 
-```
+``` js
 // must unlock the account we are creating the contract from so we can use it
 personal.unlockAccount(eth.accounts[1],"Node01Account01")
 // must set the _account parameter
@@ -255,7 +255,7 @@ var untitled_receiveether = untitled_receiveetherContract.new(
 
 Now save the above code as `ReceiveEtherWithLog.js` and use it like before.
 
-```
+``` bash
 > loadScript("ReceiveEtherWithLog.js")
 
 null [object Object]
