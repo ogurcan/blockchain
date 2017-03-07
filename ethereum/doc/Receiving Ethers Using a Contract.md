@@ -167,6 +167,115 @@ Verify the transaction by checking the balances of both accounts using `web3.fro
 
 Also verify, after the deadline, the refund to `Account 2`.
 
+### Adding an Event
+
+Let's make the contract a bit more realistic and create a contract event for logging ether receivals. Solidity is able to emit events for the external (outside of EVM) listeners to listen to them. Suppose we want to keep track of receival of ethers. We can define an event `event EtherReceival(address sender, uint amount);` for this.
+
+```
+pragma solidity ^0.4.9;
+
+/* Contract accepting ethers during 10 minutes */
+contract ReceiveEther {
+
+    address public receivingAccount;
+    uint public deadline;
+    event EtherReceival(address sender, uint amount);
+
+    /*  at initialization, setup the owner */
+    function ReceiveEther(address _account) {
+        // set the receiving account
+        receivingAccount = _account;
+        // set the deadline as 10 minutes
+        deadline = now + 10 * 1 minutes;
+    }   
+
+    /* The function without name is the default function that is called whenever 
+       anyone sends funds to a contract */
+    function () public payable {
+        uint amount = msg.value;
+        receivingAccount.send(amount);
+        EtherReceival(msg.sender, amount);
+    }
+
+    modifier afterDeadline() { if (now >= deadline) _; }
+
+    /* checks if the time limit has been reached and ends the contract */
+    function dispose() afterDeadline {
+        suicide(receivingAccount);
+    }
+}
+```
+
+The compiled code is very similar to the previous one.
+
+```
+var _account = /* var of type address here */ ;
+var untitled_receiveetherContract = web3.eth.contract([{"constant":true,"inputs":[],"name":"deadline","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"dispose","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"receivingAccount","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"inputs":[{"name":"_account","type":"address"}],"payable":false,"type":"constructor"},{"payable":true,"type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"sender","type":"address"},{"indexed":false,"name":"amount","type":"uint256"}],"name":"EtherReceival","type":"event"}]);
+var untitled_receiveether = untitled_receiveetherContract.new(
+   _account,
+   {
+     from: web3.eth.accounts[0], 
+     data: '0x6060604052341561000c57fe5b6040516020806101c383398101604052515b60008054600160a060020a031916600160a060020a03831617905542610258016001555b505b610170806100536000396000f3006060604052361561003b5763ffffffff60e060020a60003504166329dcb0cf81146100b45780634c86659e146100d6578063e0486c39146100e8575b6100b25b600080546040513492600160a060020a039092169183156108fc02918491818181858888f1505060408051600160a060020a03331681526020810186905281517f75f33ed68675112c77094e7c5b073890598be1d23e27cd7f6907b4a7d98ac61995509081900390910192509050a15b50565b005b34156100bc57fe5b6100c4610114565b60408051918252519081900360200190f35b34156100de57fe5b6100b261011a565b005b34156100f057fe5b6100f8610135565b60408051600160a060020a039092168252519081900360200190f35b60015481565b600154421061013157600054600160a060020a0316ff5b5b5b565b600054600160a060020a0316815600a165627a7a72305820d2129f605fb897fe6d124911dc1638d20b53e5ab620b8e3638a1400ef15e4eef0029', 
+     gas: '4700000'
+   }, function (e, contract){
+    console.log(e, contract);
+    if (typeof contract.address !== 'undefined') {
+         console.log('Contract mined! address: ' + contract.address + ' transactionHash: ' + contract.transactionHash);
+    }
+ })
+```
+
+We need to configure it like before and add the statements for processing the event.
+
+```
+// must unlock the account we are creating the contract from so we can use it
+personal.unlockAccount(eth.accounts[1],"Node01Account01")
+// must set the _account parameter
+var _account = eth.accounts[1] ;
+var untitled_receiveetherContract = web3.eth.contract([{"constant":true,"inputs":[],"name":"deadline","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"dispose","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"receivingAccount","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"inputs":[{"name":"_account","type":"address"}],"payable":false,"type":"constructor"},{"payable":true,"type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"sender","type":"address"},{"indexed":false,"name":"amount","type":"uint256"}],"name":"EtherReceival","type":"event"}]);
+var untitled_receiveether = untitled_receiveetherContract.new(
+   _account,
+   {
+     from: web3.eth.accounts[1], 
+     data: '0x6060604052341561000c57fe5b6040516020806101c383398101604052515b60008054600160a060020a031916600160a060020a03831617905542610258016001555b505b610170806100536000396000f3006060604052361561003b5763ffffffff60e060020a60003504166329dcb0cf81146100b45780634c86659e146100d6578063e0486c39146100e8575b6100b25b600080546040513492600160a060020a039092169183156108fc02918491818181858888f1505060408051600160a060020a03331681526020810186905281517f75f33ed68675112c77094e7c5b073890598be1d23e27cd7f6907b4a7d98ac61995509081900390910192509050a15b50565b005b34156100bc57fe5b6100c4610114565b60408051918252519081900360200190f35b34156100de57fe5b6100b261011a565b005b34156100f057fe5b6100f8610135565b60408051600160a060020a039092168252519081900360200190f35b60015481565b600154421061013157600054600160a060020a0316ff5b5b5b565b600054600160a060020a0316815600a165627a7a72305820d2129f605fb897fe6d124911dc1638d20b53e5ab620b8e3638a1400ef15e4eef0029', 
+     gas: '4700000'
+   }, function (e, contract){
+    console.log(e, contract);
+    if (typeof contract.address !== 'undefined') {
+     console.log('Contract mined! address: ' + contract.address + ' transactionHash: ' + contract.transactionHash);
+	 // configure the event to watch for changes
+	 var event = untitled_receiveether.EtherReceival();
+	 event.watch(function(error, result){
+	   if (!error)
+	     console.log("[Ether received: Sender: " + result.args.sender + ", Amount: " + web3.fromWei(result.args.amount, "ether")+" ether(s)]");
+	 });
+    }
+ })
+```
+
+Now save the above code as `ReceiveEtherWithLog.js` and use it like before.
+
+```
+> loadScript("ReceiveEtherWithLog.js")
+
+null [object Object]
+true
+> null [object Object]
+Contract mined! address: 0xcc2bad220fa388be781b37e3ab125c2ecfccb915 transactionHash: 0xda50d82226337fc3a14446fc61c991f15fc5e10bb9760fa7d0b75d270bdd16ed
+> var tx = {from:  personal.listAccounts[2], to: "0xcc2bad220fa388be781b37e3ab125c2ecfccb915", value: web3.toWei(1.0, "ether")}
+undefined
+> personal.sendTransaction(tx, "Node01Account02")
+"0xac13170644ad844b03d76c28b12eda1924abfc99f30a8a4400a6991aa78f3fcc"
+> [Ether received: Sender: 0xc306c64d00f58e58526d4ac820d13d6d61747f7b, Amount: 1 ether(s)]
+> var tx = {from:  personal.listAccounts[2], to: "0xcc2bad220fa388be781b37e3ab125c2ecfccb915", value: web3.toWei(2.1,undefined}
+> personal.sendTransaction(tx, "Node01Account02")
+
+"0x3edd4f46667510dde371d23756e8cef1ea59965105d4e7e885d772f07de855c6"
+> [Ether received: Sender: 0xc306c64d00f58e58526d4ac820d13d6d61747f7b, Amount: 2.1 ether(s)]
+```
+
+As you can see, each time a transaction is processed by the contract the `[Ether received: Sender: 0x???, Amount: ?.??? ether(s)]` log entry is created.
+
 ## What is next?
 
 
