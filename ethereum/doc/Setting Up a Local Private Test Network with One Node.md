@@ -320,6 +320,33 @@ Voila! The transaction is on the way. It can be seen inside pending transactions
 >
 ``` 
 
+After the transaction is mined and put inside a block, the pending transactions will be empty and the transaction will have a `blockHash`, a `blockNumber` and a `nonce`.
+
+``` js
+> eth.pendingTransactions
+[]
+> eth.getTransaction("0xbfdfbb1658f8eba1b769a809ab2be6deb4645533e558489e9acfc8f81adcdc5d")
+{
+  blockHash: "0x2be3249c2c44b4dd5f4de0c8321f18a97bf4a38e88e0e5fd438a9cada8a11128",
+  blockNumber: 6448,
+    from: "0xf50fee0099f5776a9a13ed7e5d554ee16c36bf70",
+    gas: 90000,
+    gasPrice: 21771860000,
+    hash: "0x9c1116b8718fad9e84422e51d94045265d5ef78d553ada1833d8e4964943f5d5",
+    input: "0x",
+    nonce: 11,
+    r: "0x60229effbf98b4e664a5aac86ef8cbe209860be78f9c2f08d67bf753a61feaf3",
+    s: "0x37cab764d8b865303aa2a7cf992f7daefbfe4deb3df43d090f4840fdb2bca46b",
+    to: "0x195998f3491f37d9887cb93ae99c56eec8f67182",
+    transactionIndex: 0,
+    v: "0x1b",
+    value: 1230000000000000000
+}
+>
+```
+
+
+
 Check the balances of the two accounts and verify the transaction about ether transfer.
 
 ``` js
