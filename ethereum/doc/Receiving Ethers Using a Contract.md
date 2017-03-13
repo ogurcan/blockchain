@@ -278,4 +278,4 @@ As you can see, each time a transaction is processed by the contract the `[Ether
 
 ## What is next?
 
-
+You have learned how to get payments using contracts. Now it is time to design a simple trading contract. You can continue to the Simple Trader Contract example.
