@@ -1,6 +1,6 @@
 # Receiving Ethers Using a Contract
 
-> This example is a continuation of the [Creating, Deploying and Using Contracts](./Creating, Deploying and Using a Contract.md) example.
+> This example is a continuation of the [Creating, Deploying and Using Contracts](./Creating,%20Deploying%20and%20Using%20a%20Contract.md) example.
 
 ## Before you begin
 
@@ -278,4 +278,4 @@ As you can see, each time a transaction is processed by the contract the `[Ether
 
 ## What is next?
 
-You have learned how to get payments using contracts. Now it is time to design a simple trading contract. You can continue to the Simple Trader Contract example.
+You have learned how to get payments using contracts. Now it is time to design a simple trading contract. You can continue to the [Simple Bidding Contract](./Simple%20Bidding%20Contract.md) example.
