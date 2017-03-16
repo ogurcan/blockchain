@@ -1,6 +1,6 @@
-# Simple Trader Contract
+# Simple Bidding Contract
 
-> This example is a continuation of the [Receiving Ethers Using a Contract](./Receiving Ethers Using a Contract.md) example.
+> This example is a continuation of the [Receiving Ethers Using a Contract](./Receiving%20Ethers%20Using%20a%20Contract.md) example.
 
 
 ## Before you begin
@@ -33,3 +33,7 @@ In this example, we will develop a simple trading contract to how to define and 
 
 
 You can only directly call the functions that do not modify the state of the contract, i.e. `constant functions`. Functions modifying the state of a contract (i.e. `non-constant function`) can only be called via transactions.
+
+## What's next?
+
+
