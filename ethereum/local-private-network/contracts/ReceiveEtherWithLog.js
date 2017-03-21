@@ -1,5 +1,5 @@
 // must unlock the account we are creating the contract from so we can use it
-personal.unlockAccount(eth.accounts[1],"Node01Account01")
+loadScript("UnlockAccounts.js")
 // must set the _account parameter
 _account = eth.accounts[1]
 // contract code
