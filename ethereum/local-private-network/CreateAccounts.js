@@ -1,9 +1,9 @@
-var account0 = personal.newAccount("Node01Account00")
-var account1 = personal.newAccount("Node01Account01")
-var account2 = personal.newAccount("Node01Account02")
-var account3 = personal.newAccount("Node01Account03")
-var account4 = personal.newAccount("Node01Account04")
-var account5 = personal.newAccount("Node01Account05")
+var account00 = personal.newAccount("Node01Account00")
+var account01 = personal.newAccount("Node01Account01")
+var account02 = personal.newAccount("Node01Account02")
+var account03 = personal.newAccount("Node01Account03")
+var account04 = personal.newAccount("Node01Account04")
+var account05 = personal.newAccount("Node01Account05")
 
 console.log('{');
 console.log('   "nonce": "0x0000000000000042",');
@@ -15,22 +15,22 @@ console.log('   "difficulty": "0x400",');
 console.log('   "mixhash": "0x0000000000000000000000000000000000000000000000000000000000000000",');
 console.log('   "coinbase": "0x3333333333333333333333333333333333333333",');
 console.log('   "alloc": {');
-console.log('      "' + account0 +'" : {');
+console.log('      "' + account00 +'" : {');
 console.log('       "balance" : "100000000000000000000"');
 console.log('      },');
-console.log('      "' + account1 +'" : {');
+console.log('      "' + account01 +'" : {');
 console.log('       "balance" : "200000000000000000000"');
 console.log('      },');
-console.log('      "' + account2 +'" : {');
+console.log('      "' + account02 +'" : {');
 console.log('       "balance" : "300000000000000000000"');
 console.log('      },');
-console.log('      "' + account3 +'" : {');
+console.log('      "' + account03 +'" : {');
 console.log('       "balance" : "100000000000000000000"');
 console.log('      },');
-console.log('      "' + account4 +'" : {');
+console.log('      "' + account04 +'" : {');
 console.log('       "balance" : "100000000000000000000"');
 console.log('      },');
-console.log('      "' + account5 +'" : {');
+console.log('      "' + account05 +'" : {');
 console.log('       "balance" : "100000000000000000000"');
 console.log('      }');
 console.log('   }');
