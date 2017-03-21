@@ -1,0 +1,6 @@
+personal.unlockAccount(eth.accounts[0],"Node01Account00")
+personal.unlockAccount(eth.accounts[1],"Node01Account01")
+personal.unlockAccount(eth.accounts[2],"Node01Account02")
+personal.unlockAccount(eth.accounts[3],"Node01Account03")
+personal.unlockAccount(eth.accounts[4],"Node01Account04")
+personal.unlockAccount(eth.accounts[5],"Node01Account05")
