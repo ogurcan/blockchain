@@ -59,20 +59,21 @@ contract ReceiveEther {
         receivingAccount.send(amount);
     }
 
+    /* a modifier works as a guard for its dedicated function */
     modifier afterDeadline() { if (now >= deadline) _; }
 
-    /* checks if the time limit has been reached and ends the contract */
+    /* if invoked after the deadline, it ends the contract and makes a refund. */
     function dispose() afterDeadline {
         // mark this contract as deleted, remove it from the Ethereum Virtual Machine (EVM)'s state
         // and transfer the refund to the account.
-        suicide(receivingAccount);
+        selfdestruct(receivingAccount);
     }
 }
 ```
 
-The constructor `ReceiveEther(address _account)` sets the `receivingAccount` using the parameter provided and the deadline as 10 minutes. The nameless function `()` is invoked each time a transaction towards the address of this contract is executed. When `afterDeadline()` is reached, the contract `dispose()` itself.
+The constructor `ReceiveEther(address _account)` sets the `receivingAccount` using the parameter provided and the deadline as 10 minutes. The nameless function `()` is invoked each time a transaction towards the address of this contract is executed. After the  `afterDeadline()` is reached, the contract can be disposed by using the `dispose()` function.
 
-The `suicide(address)` method uses negative gas because the operation frees up space on the blockchain by clearing all of the contract's data from the Ethereum Virtual Machine (EVM). As a result, when you check the balance of `receivingAccount`, you should see that the balance is increased.
+The `selfdestruct(address)` function (it was called `suicide(address)` previously) uses negative gas because the operation frees up space on the blockchain by clearing all of the contract's data from the Ethereum Virtual Machine (EVM). As a result, when you check the balance of `receivingAccount`, you should see that the balance is increased.
 
 ### Compiling the Contract
 
