@@ -37,7 +37,7 @@ The simplified bidding process is as follows. First, vendors register to the con
 
 The sequence diagram of this scenario could be as below.
 
-
+![Example Simple Bidding Scenario](../local-private-network/contracts/SimpleBiddingInteraction.png)
 
 Now let's proceed to the development of this system in Solidity.
 
