@@ -276,6 +276,7 @@ After the contract is mined successfully, clients and vendors can use it. It is 
 > simplebidding_sol_simplebidding.proposePrice(1234, 10, {from: eth.accounts[2], gas: 1000000})
 "0x7e2f2a58091c4ae7e7e4010f63f55430f077d02099808507499d137955d9016f"
 > [A price 10 is proposed for the asset 1234 by 0xab584e30cb1efadacb004500c17b853394bf3660]
+[Bidding finished for the asset 1234 with the price 10. Make the payment if you want to buy the asset.]
 > var tx = {from:  eth.accounts[0], to: "0x94582a40fc86bca924b521c898d6705dbb7daf8c", value: 10}
 undefined
 > personal.sendTransaction(tx, "Node01Account00")
