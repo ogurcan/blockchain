@@ -39,7 +39,7 @@ The sequence diagram of this scenario could be as below.
 
 ![Example Simple Bidding Scenario](Simple%20Bidding%20Interaction.png)
 
-Now let's proceed to the development of this system in Solidity.
+Now let's proceed to the development of this system using Solidity in Ethereum.
 
 ## Contract: SimpleBidding
 
