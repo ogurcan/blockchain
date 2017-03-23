@@ -213,7 +213,7 @@ var simplebidding_sol_simplebidding = simplebidding_sol_simplebiddingContract.ne
     	// Event AssetRequested
     	contract.AssetRequested().watch(function(error, result){
 			if (!error)
-				console.log("[Asset " + result.args.barcode + " requested by " + result.args.requester + "]");
+				console.log("[Asset " + result.args.barcode + " requested by " + result.args.client + "]");
 		});   
 		// Event PriceProposed      
 	 	contract.PriceProposed().watch(function(error, result){
@@ -242,6 +242,48 @@ var simplebidding_sol_simplebidding = simplebidding_sol_simplebiddingContract.ne
 ### Deploying the Contract
 
 Now save the above code as `SimpleBidding.js` and deploy it using `loadScript("SimpleBidding.js")`.
+
+``` bash
+> loadScript("contracts/SimpleBidding.js")
+null [object Object]
+true
+> null [object Object]
+Contract mined! address: 0x94582a40fc86bca924b521c898d6705dbb7daf8c transactionHash: 0xe1e7130efee77e7a3b7c49dca0bd93a845a3bf72bcdf25a6d21650214d46f27d
+>  
+```
+
+### Using the Contract
+
+After the contract is mined successfully, clients and vendors can use it. It is assumed that there is one client and two vendors and they use `Account 0`, `Account 1` and `Account 2` respectively.
+
+``` bash
+> simplebidding_sol_simplebidding.registerVendor("Vendor1", 1234, 2, {from: eth.accounts[1], gas: 1000000})
+"0x59215c1feccf5c9bbb3469e3e5375050cfc66ad9a8aa920c21252f0656c86ff3"
+> simplebidding_sol_simplebidding.getVendor(0)
+["Vendor1", "0x4649d327b5c7f439edf49b6be367ccad6ab1ea40", 1234, 2]
+> simplebidding_sol_simplebidding.registerVendor("Vendor2", 1234, 1, {from: eth.accounts[2], gas: 1000000})
+"0x72cb284ec07ce4fef9deda8b8f54c5848dbd1c9b8e0d366d48dd5f1170562c49"
+> simplebidding_sol_simplebidding.getVendor(1)
+["Vendor2", "0xab584e30cb1efadacb004500c17b853394bf3660", 1234, 1]
+> simplebidding_sol_simplebidding.requestAsset(1234, {from: eth.accounts[0], gas: 1000000})
+"0xdf64c476d2be81799b90b69713d695f76e69a66ae9cdbec2af92141078d4fb09"
+> [Asset 1234 requested by 0x10fe5331e13fc79d7772fa5e4191baeb391e7970]
+> eth.accounts[0]
+"0x10fe5331e13fc79d7772fa5e4191baeb391e7970"
+> simplebidding_sol_simplebidding.proposePrice(1234, 11, {from: eth.accounts[1], gas: 1000000})
+"0x19f100d03721ec4861a29f310875df67c5efee80436c42ec8f07fc340a5ae274"
+> [A price 11 is proposed for the asset 1234 by 0x4649d327b5c7f439edf49b6be367ccad6ab1ea40]
+> simplebidding_sol_simplebidding.proposePrice(1234, 10, {from: eth.accounts[2], gas: 1000000})
+"0x7e2f2a58091c4ae7e7e4010f63f55430f077d02099808507499d137955d9016f"
+> [A price 10 is proposed for the asset 1234 by 0xab584e30cb1efadacb004500c17b853394bf3660]
+> var tx = {from:  eth.accounts[0], to: "0x94582a40fc86bca924b521c898d6705dbb7daf8c", value: 10}
+undefined
+> personal.sendTransaction(tx, "Node01Account00")
+"0x38dca51edf2dc76643c6653d47905ad41f9acaf2243d5f988b4195c153da0d95"
+> [A payment of 10 is received from 0x10fe5331e13fc79d7772fa5e4191baeb391e7970 for the asset 1234.]
+[The asset 1234 has been shipped with the tracking number 78623235235.]
+> 
+```
 
 ## What's next?
 
