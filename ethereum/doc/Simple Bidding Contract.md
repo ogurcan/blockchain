@@ -285,6 +285,12 @@ undefined
 > 
 ```
 
+### Separating the Geth Clients
+
+It is hard to follow which stakeholder doing what when we show them from one single Geth client. A better practice would be opening a geth client for each stakeholder.
+
+> Note that, we are running our examples in a private network where there is one single node which has several accounts.
+
 ## What's next?
 
 
