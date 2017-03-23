@@ -35,15 +35,17 @@ The simplified bidding process is as follows. First, vendors register to the con
 
 > Note that in this simple example several assumptions and simplification are made. It is assumed that there will be one single asset and one single client. Stock management and transportation is made by the bidding contract. A more realistic scenario will be given in the next example.
 
-The sequence diagram of this scenario could be as below.
-
-![Example Simple Bidding Scenario](Simple%20Bidding%20Interaction.png)
-
 Now let's proceed to the development of this system using Solidity in Ethereum.
 
 ## Contract: SimpleBidding
 
 In this section, we will develop step by step the `SimpleBidding` contract. 
+
+### Designing the Contract
+
+To reveal the functions of the contract, we designed a sequence diagram of the aforementioned scenario.
+
+![Example Simple Bidding Scenario](Simple%20Bidding%20Interaction.png)
 
 ### Creating the Contract
 
