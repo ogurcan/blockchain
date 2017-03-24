@@ -49,6 +49,36 @@ To reveal the functions of the contract, we designed a sequence diagram of the a
 
 ### Creating the Contract
 
+First, we create the contract body. In the constructor, we save the account address of `contractOwner` using `msg.sender`, and set the deadline in which we can `dispose()` the contract and transfer the funds back.
+
+``` js
+pragma solidity ^0.4.10;
+
+/* Contract accepting bids during 30 minutes */
+contract SimpleBidding {
+
+    address contractOwner;
+    uint deadline;
+    
+    /* Constructor */
+    function SimpleBidding() {
+        // set the owner of this contract
+        contractOwner = msg.sender;
+        // set the deadline of the contract as 10 minutes
+        deadline = now + 30 * 1 minutes;
+    }         
+
+    modifier afterDeadline() { if (now >= deadline) _; }
+
+    /* when the time limit has been reached and the contract can be ended. */
+    function dispose() afterDeadline {
+        selfdestruct(contractOwner);
+    }
+}
+```
+
+
+
 Finally, the full contract code will be as below.
 
 ``` js
