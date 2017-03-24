@@ -79,7 +79,71 @@ contract SimpleBidding {
 }
 ```
 
+Now, for each function, we will elaborate the contract code. For the `registerVendor` functionality, we add the following: a struct `Vendor` for keeping vendor information, an array of `vendors`, an event which is fired when `VendorRegistered` and the function to `registerVendor()`.
 
+``` js
+    ...
+    
+    struct Vendor {
+        string name;
+        address account;
+        uint assetBarcode;
+        uint stockCount;
+    }
+    
+    Vendor[] vendors;
+    
+    event VendorRegistered(string name, address account, uint assetBarcode, uint stockCount);
+    
+    ...
+    
+    /* Used by vendors to register themselves. */
+    function registerVendor(string name, uint assetBarcode, uint stockCount) {
+        vendors[vendors.length++] = Vendor(name, msg.sender, assetBarcode, stockCount);
+        VendorRegistered(name, msg.sender, assetBarcode, stockCount);
+    }
+    
+    ...
+    
+```
+
+After the vendors are registered, the client can `requestAsset`. A client requests an asset with its `barcode`. Upon receival of this request, an `AssetRequested` event is fired. And then, a bidding process which is expecting `2` proposals for finding the cheapest price is started.
+
+``` js
+    ...
+    
+    // request information
+    address client;
+    uint requestedAssetBarcode;
+    
+    // bidding information
+    uint expectedProposals;
+    address bestVendor;
+    uint bestPrice;
+
+    ...
+
+    event AssetRequested(address client, uint barcode);
+
+    /* Used by clients to request assets and start bidding.     */ 
+    function requestAsset(uint barcode) {
+        // save the requester
+        client = msg.sender;
+        
+        // save the asset barcode
+        requestedAssetBarcode = barcode;
+        
+        // create the event
+        AssetRequested(client, requestedAssetBarcode);
+        
+        // initialize the bidding process
+        expectedProposals = 2;
+        bestPrice = 999999;
+    }
+    
+    ...
+    
+```
 
 Finally, the full contract code will be as below.
 
