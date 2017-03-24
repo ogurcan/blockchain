@@ -1,9 +1,9 @@
-pragma solidity ^0.4.9;
+pragma solidity ^0.4.10;
 
-/* Contract accepting biddings during 30 minutes */
+/* Contract accepting bids during 30 minutes */
 contract SimpleBidding {
 
-    address contractOwnersAccount;
+    address contractOwner;
     uint deadline;
     
     struct Vendor {
@@ -16,7 +16,7 @@ contract SimpleBidding {
     Vendor[] vendors;
 
     // request information
-    address requester;
+    address client;
     uint requestedAssetBarcode;
     
     // bidding information
@@ -24,8 +24,8 @@ contract SimpleBidding {
     address bestVendor;
     uint bestPrice;
     
-    //event VendorRegistered(string name, address account, uint assetBarcode, uint stockCount);
-    event AssetRequested(address requester, uint barcode);
+    event VendorRegistered(string name, address account, uint assetBarcode, uint stockCount);
+    event AssetRequested(address client, uint barcode);
     event VendorValidated(address vendor);
     event VendorNotValidated(address vendor);
     event PriceProposed(address vendor, uint barcode, uint price);
@@ -35,26 +35,28 @@ contract SimpleBidding {
 
     /* Constructor */
     function SimpleBidding() {
+        // set the owner of this contract
+        contractOwner = msg.sender;
         // set the deadline of the contract as 10 minutes
         deadline = now + 30 * 1 minutes;
     }  
     
-    /*
+    /* Used by vendors to register themselves. */
     function registerVendor(string name, uint assetBarcode, uint stockCount) {
-        vendors[vendorsCount++] = Vendor(name, msg.sender, assetBarcode, stockCount);
+        vendors[vendors.length++] = Vendor(name, msg.sender, assetBarcode, stockCount);
         VendorRegistered(name, msg.sender, assetBarcode, stockCount);
-    }*/
+    }
     
     /* Used by clients to request assets and start bidding.     */ 
     function requestAsset(uint barcode) {
         // save the requester
-        requester = msg.sender;
+        client = msg.sender;
         
         // save the asset barcode
         requestedAssetBarcode = barcode;
         
         // create the event
-        AssetRequested(requester, requestedAssetBarcode);
+        AssetRequested(client, requestedAssetBarcode);
         
         // initialize the bidding process
         expectedProposals = 2;
@@ -63,21 +65,6 @@ contract SimpleBidding {
     
     /* Used by vendors to propose a price for an asset. */
     function proposePrice(uint barcode, uint price) {
-        // check if this is a valid vendor
-    /*    bool isValid = false;
-        for (uint i=0; i < vendors.length; i++) {
-            if ((isValid == false)&&(vendors[i].account == msg.sender)) {
-                isValid = true;
-            }
-        }
-        if (isValid == false) {
-            VendorNotValidated(msg.sender);
-            throw;
-        } else {
-            VendorValidated(msg.sender);
-        }
-    */
-        
         // process the proposal
         PriceProposed(msg.sender, barcode, price);
         if (price < bestPrice) {
@@ -96,7 +83,7 @@ contract SimpleBidding {
      /* The function without name is the default function that is called whenever 
        anyone sends funds to a contract */
     function () public payable {
-        if (msg.sender == requester) {
+        if (msg.sender == client) {
             uint amount = msg.value;
             if (amount == bestPrice) {
                 // transfer the payment to the vendor
@@ -108,7 +95,7 @@ contract SimpleBidding {
                 PaymentReceived(msg.sender, msg.value, requestedAssetBarcode);
                 
                 // ship the asset
-                uint trackingNumber = 23235235;
+                uint trackingNumber = 78623235235;
                 AssetShipped(requestedAssetBarcode, trackingNumber);
             }
             
@@ -125,8 +112,8 @@ contract SimpleBidding {
 
     modifier afterDeadline() { if (now >= deadline) _; }
 
-    /* checks if the time limit has been reached and ends the contract */
+    /* when the time limit has been reached and the contract can be ended. */
     function dispose() afterDeadline {
-        suicide(contractOwnersAccount);
+        selfdestruct(contractOwner);
     }
 }
