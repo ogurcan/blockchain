@@ -145,6 +145,39 @@ After the vendors are registered, the client can `requestAsset`. A client reques
     
 ```
 
+Vendors propose prises by using the `proposePrice()` function. When no proposal are expected anymore, the bidding is finished by the contract, and a `BiddingFinished` event is fired with the bidding result.
+
+``` js
+    ...
+    
+    event PriceProposed(address vendor, uint barcode, uint price);
+    event BiddingFinished(uint barcode, uint price);
+    
+    ...
+   
+    /* Used by vendors to propose a price for an asset. */
+    function proposePrice(uint barcode, uint price) {
+        // process the proposal
+        PriceProposed(msg.sender, barcode, price);
+        if (price < bestPrice) {
+            bestPrice = price;
+            bestVendor = msg.sender;
+        }
+        
+        // update bidding condition
+        expectedProposals--;
+        
+        if (expectedProposals == 0) {
+            BiddingFinished(requestedAssetBarcode, bestPrice);
+        }
+    }
+   
+    ...
+
+```
+
+
+
 Finally, the full contract code will be as below.
 
 ``` js
