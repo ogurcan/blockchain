@@ -51,6 +51,10 @@ The next subsection will show how to implement this scenario as a contract.
 
 ### Creating the Contract
 
+Step by step creation of the contract is as follows.
+
+#### Contract body
+
 First, we create the contract body. In the constructor, we save the account address of `contractOwner` using `msg.sender`, and set the deadline in which we can `dispose()` the contract and transfer the funds back.
 
 ``` js
@@ -79,6 +83,8 @@ contract SimpleBidding {
 }
 ```
 
+#### Vendors register themselves
+
 Now, for each function, we will elaborate the contract code. For the `registerVendor` functionality, we add the following: a struct `Vendor` for keeping vendor information, an array of `vendors`, an event which is fired when `VendorRegistered` and the function to `registerVendor()`.
 
 ``` js
@@ -106,6 +112,8 @@ Now, for each function, we will elaborate the contract code. For the `registerVe
     ...
     
 ```
+
+#### Client requests an asset
 
 After the vendors are registered, the client can `requestAsset`. A client requests an asset with its `barcode`. Upon receival of this request, an `AssetRequested` event is fired. And then, a bidding process which is expecting `2` proposals for finding the cheapest price is started.
 
@@ -145,7 +153,9 @@ After the vendors are registered, the client can `requestAsset`. A client reques
     
 ```
 
-Vendors propose prises by using the `proposePrice()` function. When no proposal are expected anymore, the bidding is finished by the contract, and a `BiddingFinished` event is fired with the bidding result.
+#### Vendors propose prices
+
+Vendors propose prices by using the `proposePrice()` function. When no proposal are expected anymore, the bidding is finished by the contract, and a `BiddingFinished` event is fired with the bidding result.
 
 ``` js
     ...
@@ -176,7 +186,43 @@ Vendors propose prises by using the `proposePrice()` function. When no proposal 
 
 ```
 
+#### Client makes the payment
 
+If the client accepts the price, it make a plain ether transaction which, in response, invokes the nameless `()` function. This function checks the sender and the `amount`, transfers the `amount` to the winning vendor and then fires a `PaymentReceived` event. Lastly, it fires an `AssetShipped` event to complete the scenario.
+
+``` js
+    ...
+    
+    event PaymentReceived(address sender, uint amount, uint barcode);
+  
+    ...
+    
+     /* The function without name is the default function that is called whenever 
+       anyone sends funds to a contract */
+    function () public payable {
+        if (msg.sender == client) {
+            uint amount = msg.value;
+            if (amount == bestPrice) {
+                // transfer the payment to the vendor
+                bestVendor.send(amount);
+                // reduce the asset from the vendor's stock
+                // ...to be implemented...
+                
+                // create the event
+                PaymentReceived(msg.sender, msg.value, requestedAssetBarcode);
+                
+                // ship the asset
+                uint trackingNumber = 78623235235;
+                AssetShipped(requestedAssetBarcode, trackingNumber);
+            }
+            
+        }
+    }
+    
+    ...
+```
+
+#### Final Contract Code
 
 Finally, the full contract code will be as below.
 
