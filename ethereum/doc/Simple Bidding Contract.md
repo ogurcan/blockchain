@@ -47,6 +47,8 @@ To reveal the functions of the contract, we designed a sequence diagram of the a
 
 ![Example Simple Bidding Scenario](Simple%20Bidding%20Interaction.png)
 
+The next subsection will show how to implement this scenario as a contract.
+
 ### Creating the Contract
 
 First, we create the contract body. In the constructor, we save the account address of `contractOwner` using `msg.sender`, and set the deadline in which we can `dispose()` the contract and transfer the funds back.
