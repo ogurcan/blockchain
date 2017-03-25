@@ -485,7 +485,7 @@ Having two proposal finishes the bidding process and the contract announces the 
 undefined
 > personal.sendTransaction(tx, "Node01Account00")
 "0x38dca51edf2dc76643c6653d47905ad41f9acaf2243d5f988b4195c153da0d95"
-``` bash
+``` 
 
 The contract receives the amount, announces that and ships the asset to `Client`.
 
