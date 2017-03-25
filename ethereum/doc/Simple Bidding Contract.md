@@ -431,17 +431,29 @@ Contract mined! address: 0x94582a40fc86bca924b521c898d6705dbb7daf8c transactionH
 
 ### Using the Contract
 
-After the contract is mined successfully, clients and vendors can use it. It is assumed that there is one client and two vendors and they use `Account 0`, `Account 1` and `Account 2` respectively.
+After the contract is mined successfully, clients and vendors can use it. It is assumed that there is one client and two vendors and they use `Account 0`, `Account 1` and `Account 2` respectively. Suppose the two vendors, `Vendor1` and `Vendor2`, have an asset with the barcode number `1234` in their stock. `Vendor1` has `2` assets.
+
+First, `Vendor1` sends a registration request to the contract.
 
 ``` bash
 > simplebidding_sol_simplebidding.registerVendor("Vendor1", 1234, 2, {from: eth.accounts[1], gas: 1000000})
 "0x59215c1feccf5c9bbb3469e3e5375050cfc66ad9a8aa920c21252f0656c86ff3"
 > simplebidding_sol_simplebidding.getVendor(0)
 ["Vendor1", "0x4649d327b5c7f439edf49b6be367ccad6ab1ea40", 1234, 2]
+```
+
+Then, `Vendor2` sends a registration request to the contract. 
+
+``` bash
 > simplebidding_sol_simplebidding.registerVendor("Vendor2", 1234, 1, {from: eth.accounts[2], gas: 1000000})
 "0x72cb284ec07ce4fef9deda8b8f54c5848dbd1c9b8e0d366d48dd5f1170562c49"
 > simplebidding_sol_simplebidding.getVendor(1)
 ["Vendor2", "0xab584e30cb1efadacb004500c17b853394bf3660", 1234, 1]
+```
+
+Anytime after, `Client` makes a request for the asset `1234`.
+
+``` bash
 > simplebidding_sol_simplebidding.requestAsset(1234, {from: eth.accounts[0], gas: 1000000})
 "0xdf64c476d2be81799b90b69713d695f76e69a66ae9cdbec2af92141078d4fb09"
 > [Asset 1234 requested by 0x10fe5331e13fc79d7772fa5e4191baeb391e7970]
