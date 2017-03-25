@@ -459,6 +459,11 @@ Anytime after, `Client` makes a request for the asset `1234`.
 > [Asset 1234 requested by 0x10fe5331e13fc79d7772fa5e4191baeb391e7970]
 > eth.accounts[0]
 "0x10fe5331e13fc79d7772fa5e4191baeb391e7970"
+```
+
+Upon the start of the bidding, `Vendor1` and `Vendor2` propose the prices `11` and `10` respectively.
+
+``` bash
 > simplebidding_sol_simplebidding.proposePrice(1234, 11, {from: eth.accounts[1], gas: 1000000})
 "0x19f100d03721ec4861a29f310875df67c5efee80436c42ec8f07fc340a5ae274"
 > [A price 11 is proposed for the asset 1234 by 0x4649d327b5c7f439edf49b6be367ccad6ab1ea40]
