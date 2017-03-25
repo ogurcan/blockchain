@@ -470,11 +470,26 @@ Upon the start of the bidding, `Vendor1` and `Vendor2` propose the prices `11` a
 > simplebidding_sol_simplebidding.proposePrice(1234, 10, {from: eth.accounts[2], gas: 1000000})
 "0x7e2f2a58091c4ae7e7e4010f63f55430f077d02099808507499d137955d9016f"
 > [A price 10 is proposed for the asset 1234 by 0xab584e30cb1efadacb004500c17b853394bf3660]
+```
+
+Having two proposal finishes the bidding process and the contract announces the best price.
+
+``` bash
 [Bidding finished for the asset 1234 with the price 10. Make the payment if you want to buy the asset.]
+``` 
+
+`Client` sends the requested amount `10` to the contract. 
+
+``` bash
 > var tx = {from:  eth.accounts[0], to: "0x94582a40fc86bca924b521c898d6705dbb7daf8c", value: 10}
 undefined
 > personal.sendTransaction(tx, "Node01Account00")
 "0x38dca51edf2dc76643c6653d47905ad41f9acaf2243d5f988b4195c153da0d95"
+``` bash
+
+The contract receives the amount, announces that and ships the asset to `Client`.
+
+``` bash
 > [A payment of 10 is received from 0x10fe5331e13fc79d7772fa5e4191baeb391e7970 for the asset 1234.]
 [The asset 1234 has been shipped with the tracking number 78623235235.]
 > 
