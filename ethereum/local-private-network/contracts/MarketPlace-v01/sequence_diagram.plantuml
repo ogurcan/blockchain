@@ -1,29 +1,31 @@
 @startuml
+hide footbox
+title The MarketPlace contract (v1)
+
 actor Vendor1
 actor Vendor2
-participant MarketPlace
+participant MarketPlace <<Contract>>
 actor Client
 
-Vendor1->MarketPlace : registerVendor(name1, A, stockCount1)
-Vendor2->MarketPlace : registerVendor(name2, A, stockCount2)
-Client->MarketPlace : requestAsset(barcoe, quantity, max_date)
+Vendor1->MarketPlace : registerVendor(name1, barcode, stockCount1)
+Vendor2->MarketPlace : registerVendor(name2, barcode, stockCount2)
+Client->MarketPlace : requestAsset(barcode, quantity, max_date)
 
 alt successful case
-   MarketPlace-->Vendor1 : The asset 'barcode' is requested for a quantity 'quantity' until the date 'max_date'.
-   MarketPlace-->Vendor2 : Asset 'barcode' is requested.
-   Vendor1->MarketPlace : sendOffer(barcode, price1)
-   Client->MarketPlace : requestAsset(barcode, requested_quantity, max_date)
-   MarketPlace-->Vendor1 : The asset 'barcode' is requested for a quantity 'another_quantity' until 'max_date'.
-   MarketPlace-->Vendor2 : Asset 'barcode' is requested.
-   Vendor1->MarketPlace : sendOffer(barcode, price1)
-   Vendor2->MarketPlace : sendOffer(barcode, price2)
-   MarketPlace-->Client : Bidding finished for the asset 'barcode' with price 'price2'.
-   alt the offer is accepted
+   MarketPlace-->Vendor1 : 'barcode' is requested for a quantity 'quantity' until 'max_date'.
+   Vendor1->Vendor1 : checkStock(barcode, quantity)
+   MarketPlace-->Vendor2 : 'barcode' is requested for a quantity 'quantity' until 'max_date'.
+   Vendor2->Vendor2 : checkStock(barcode, quantity)
+   Vendor1->MarketPlace : makeOffer(barcode, price1)
+   Vendor2->MarketPlace : makeOffer(barcode, price2)
+   MarketPlace->MarketPlace : selectAnOffer(selection_criteria) 
+   MarketPlace-->Client : The asset 'barcode' is available with price 'price2'. 
+   alt acceptance of the offer
       Client->MarketPlace : acceptOffer(amount)
       MarketPlace-->Client : Payment received for the asset 'barcode'.
       MarketPlace-> Vendor2: transfer(amount)
       MarketPlace-->Client : The asset 'barcode' has been shipped with the tracking number 'trackingNo'.
-   else the offer is refused
+   else refusal of the offer
       Client->MarketPlace : refuseOffer()
    end
 else at any time
