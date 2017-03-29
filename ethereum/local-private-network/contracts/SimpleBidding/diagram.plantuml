@@ -1,7 +1,18 @@
+@startuml
+actor Vendor1
+actor Vendor2
+participant SimpleBidding
+actor Client
 Vendor1->SimpleBidding : registerVendor(name1, barcode, stockCount1)
 Vendor2->SimpleBidding : registerVendor(name2, barcode, stockCount2)
 Client->SimpleBidding : requestAsset(barcode)
+SimpleBidding-->Vendor1 : Asset 'barcode' is requested.
+SimpleBidding-->Vendor2 : Asset 'barcode' is requested.
 Vendor1->SimpleBidding : proposePrice(barcode, price1)
 Vendor2->SimpleBidding : proposePrice(barcode, price2)
+SimpleBidding-->Client : Bidding finished for the asset 'barcode' with price 'price2'.
 Client->SimpleBidding : makePayment(amount)
+SimpleBidding-->Client : Payment received for the asset 'barcode'.
 SimpleBidding-> Vendor2: transfer(amount)
+SimpleBidding-->Client : The asset 'barcode' has been shipped with the tracking number 'trackingNo'.
+@enduml
