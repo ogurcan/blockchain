@@ -1,0 +1,28 @@
+@startuml
+actor Vendor1
+actor Vendor2
+participant MarketPlace
+actor Client
+
+Vendor1->MarketPlace : registerVendor(name1, barcode, stockCount1)
+Vendor2->MarketPlace : registerVendor(name2, barcode, stockCount2)
+Client->MarketPlace : requestAsset(barcode, a_quantity, max_date)
+
+alt successful case
+   MarketPlace-->Vendor1 : The asset 'barcode' is requested for a quantity 'a_quantity' until 'max_date'.
+   MarketPlace-->Vendor2 : Asset 'barcode' is requested.
+   Vendor1->MarketPlace : sendOffer(barcode, price1)
+   Client->MarketPlace : requestAsset(barcode, requested_quantity, max_date)
+   MarketPlace-->Vendor1 : The asset 'barcode' is requested for a quantity 'another_quantity' until 'max_date'.
+   MarketPlace-->Vendor2 : Asset 'barcode' is requested.
+   Vendor1->MarketPlace : sendOffer(barcode, price1)
+   Vendor2->MarketPlace : sendOffer(barcode, price2)
+   MarketPlace-->Client : Bidding finished for the asset 'barcode' with price 'price2'.
+   Client->MarketPlace : makePayment(amount)
+   MarketPlace-->Client : Payment received for the asset 'barcode'.
+   MarketPlace-> Vendor2: transfer(amount)
+   MarketPlace-->Client : The asset 'barcode' has been shipped with the tracking number 'trackingNo'.
+else at any time
+   Client->MarketPlace : cancelRequest(barcode)
+end
+@enduml
