@@ -1,0 +1,7 @@
+Vendor1->SimpleBidding : registerVendor(name1, barcode, stockCount1)
+Vendor2->SimpleBidding : registerVendor(name2, barcode, stockCount2)
+Client->SimpleBidding : requestAsset(barcode)
+Vendor1->SimpleBidding : proposePrice(barcode, price1)
+Vendor2->SimpleBidding : proposePrice(barcode, price2)
+Client->SimpleBidding : makePayment(amount)
+SimpleBidding-> Vendor2: transfer(amount)
