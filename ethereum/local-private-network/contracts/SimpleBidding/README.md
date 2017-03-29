@@ -45,7 +45,7 @@ In this section, we will develop step by step the `SimpleBidding` contract.
 
 To reveal the functions of the contract, we designed a sequence diagram of the aforementioned scenario.
 
-![Example Simple Bidding Scenario](Simple%20Bidding%20Interaction.png)
+![Example Simple Bidding Scenario](Simple_Bidding_Interaction.png)
 
 The next subsection will show how to implement this scenario as a contract.
 
