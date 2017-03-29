@@ -10,6 +10,6 @@
 
 To reveal the functions of the contract, we designed a sequence diagram of the aforementioned scenario.
 
-![Market Place Scenario](sequence_diagram.png)
+![Market Place Scenario](sequence_diagram2.png)
 
 The next subsection will show how to implement this scenario as a contract.
