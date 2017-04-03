@@ -63,6 +63,7 @@ pragma solidity ^0.4.10;
 /* Contract accepting bids during 30 minutes */
 contract SimpleBidding {
 
+    // contract information
     address contractOwner;
     uint deadline;
     
@@ -90,22 +91,25 @@ Now, for each function, we will elaborate the contract code. For the `registerVe
 ``` js
     ...
     
+    // vendor information
     struct Vendor {
+        bool isRegistered;
         string name;
         address account;
         uint assetBarcode;
         uint stockCount;
     }
-    
-    Vendor[] vendors;
-    
+    mapping (address => Vendor) vendors;
     event VendorRegistered(string name, address account, uint assetBarcode, uint stockCount);
     
     ...
     
     /* Used by vendors to register themselves. */
     function registerVendor(string name, uint assetBarcode, uint stockCount) {
-        vendors[vendors.length++] = Vendor(name, msg.sender, assetBarcode, stockCount);
+        // if the vendor is already registered, exit the function.
+        if (vendors[msg.sender].isRegistered) throw;
+        // else register the vendor.
+        vendors[msg.sender] = Vendor(true, name, msg.sender, assetBarcode, stockCount);
         VendorRegistered(name, msg.sender, assetBarcode, stockCount);
     }
     
@@ -113,13 +117,14 @@ Now, for each function, we will elaborate the contract code. For the `registerVe
     
 ```
 
-To see if a vendor is registered properly, and to show how to write a method that returns several values, a `constant` function `getVendor` is implemented.
+To see if a vendor is registered properly, and to show how to write a method that returns several values, a `constant` function `getVendor()` is implemented.
 
 ``` js
    ...
    
-    function getVendor(uint id) constant returns (string name, address acc, uint barcode, uint numAssets) {
-        var vendor = vendors[id];
+    /* returns the vendor information of the caller */
+    function getMyVendorInfo() constant returns (string name, address acc, uint barcode, uint numAssets) {
+        var vendor = vendors[msg.sender];
         name = vendor.name;
         acc = vendor.account;
         barcode = vendor.assetBarcode;
@@ -136,9 +141,10 @@ After the vendors are registered, the client can `requestAsset`. A client reques
 ``` js
     ...
     
-    // request information
+     // request information
     address client;
     uint requestedAssetBarcode;
+    event AssetRequested(address client, uint barcode);
     
     // bidding information
     uint expectedProposals;
@@ -146,8 +152,6 @@ After the vendors are registered, the client can `requestAsset`. A client reques
     uint bestPrice;
 
     ...
-
-    event AssetRequested(address client, uint barcode);
 
     /* Used by clients to request assets and start bidding.     */ 
     function requestAsset(uint barcode) {
@@ -165,8 +169,7 @@ After the vendors are registered, the client can `requestAsset`. A client reques
         bestPrice = 999999;
     }
     
-    ...
-    
+    ...   
 ```
 
 #### Vendors propose prices
@@ -176,15 +179,18 @@ Vendors propose prices by using the `proposePrice()` function. When no proposal 
 ``` js
     ...
     
-    event PriceProposed(address vendor, uint barcode, uint price);
+    event PriceProposed(string vendorName, uint barcode, uint price);
     event BiddingFinished(uint barcode, uint price);
     
     ...
-   
+    
+     /* used for checking if a function is called by a registered vendor */
+    modifier onlyVendor() { if (vendors[msg.sender].isRegistered) _; }
+    
     /* Used by vendors to propose a price for an asset. */
-    function proposePrice(uint barcode, uint price) {
+    function proposePrice(uint barcode, uint price) onlyVendor {
         // process the proposal
-        PriceProposed(msg.sender, barcode, price);
+        PriceProposed(vendors[msg.sender].name, barcode, price);
         if (price < bestPrice) {
             bestPrice = price;
             bestVendor = msg.sender;
@@ -199,7 +205,6 @@ Vendors propose prices by using the `proposePrice()` function. When no proposal 
     }
    
     ...
-
 ```
 
 #### Client makes the payment
@@ -209,11 +214,13 @@ If the client accepts the price, it make a plain ether transaction which, in res
 ``` js
     ...
     
+    // payment information
     event PaymentReceived(address sender, uint amount, uint barcode);
+    event AssetShipped(uint barcode, uint trackingNumber);
   
     ...
     
-     /* The function without name is the default function that is called whenever 
+    /* The function without name is the default function that is called whenever 
        anyone sends funds to a contract */
     function () public payable {
         if (msg.sender == client) {
