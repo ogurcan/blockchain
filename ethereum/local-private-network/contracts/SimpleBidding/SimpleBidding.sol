@@ -87,25 +87,25 @@ contract SimpleBidding {
         }
     }
     
-     /* The function without name is the default function that is called whenever 
+    /* used for checking if a function is called by a registered vendor */
+    modifier onlyClient() { if (msg.sender == client) _; }
+    
+    /* The function without name is the default function that is called whenever 
        anyone sends funds to a contract */
-    function () public payable {
-        if (msg.sender == client) {
-            uint amount = msg.value;
-            if (amount == bestPrice) {
-                // transfer the payment to the vendor
-                bestVendor.send(amount);
-                // reduce the asset from the vendor's stock
-                // ...to be implemented...
-                
-                // create the event
-                PaymentReceived(msg.sender, msg.value, requestedAssetBarcode);
-                
-                // ship the asset
-                uint trackingNumber = 78623235235;
-                AssetShipped(requestedAssetBarcode, trackingNumber);
-            }
+    function () public payable onlyClient {
+        uint amount = msg.value;
+        if (amount == bestPrice) {
+            // transfer the payment to the vendor
+            bestVendor.send(amount);
+            // reduce the asset from the vendor's stock
+            // ...to be implemented...
             
+            // create the event
+            PaymentReceived(msg.sender, msg.value, requestedAssetBarcode);
+                
+            // ship the asset
+            uint trackingNumber = 78623235235;
+            AssetShipped(requestedAssetBarcode, trackingNumber);
         }
     }
     
