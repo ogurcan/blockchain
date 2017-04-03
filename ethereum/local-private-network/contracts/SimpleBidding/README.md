@@ -248,33 +248,34 @@ pragma solidity ^0.4.10;
 /* Contract accepting bids during 30 minutes */
 contract SimpleBidding {
 
+    // contract information
     address contractOwner;
     uint deadline;
     
+    // vendor information
     struct Vendor {
+        bool isRegistered;
         string name;
         address account;
         uint assetBarcode;
         uint stockCount;
     }
-    
-    Vendor[] vendors;
+    mapping (address => Vendor) vendors;
+    event VendorRegistered(string name, address account, uint assetBarcode, uint stockCount);
 
     // request information
     address client;
     uint requestedAssetBarcode;
+    event AssetRequested(address client, uint barcode);
     
     // bidding information
     uint expectedProposals;
     address bestVendor;
     uint bestPrice;
-    
-    event VendorRegistered(string name, address account, uint assetBarcode, uint stockCount);
-    event AssetRequested(address client, uint barcode);
-    event VendorValidated(address vendor);
-    event VendorNotValidated(address vendor);
-    event PriceProposed(address vendor, uint barcode, uint price);
+    event PriceProposed(string vendorName, uint barcode, uint price);
     event BiddingFinished(uint barcode, uint price);
+
+    // payment information
     event PaymentReceived(address sender, uint amount, uint barcode);
     event AssetShipped(uint barcode, uint trackingNumber);
 
@@ -288,7 +289,10 @@ contract SimpleBidding {
     
     /* Used by vendors to register themselves. */
     function registerVendor(string name, uint assetBarcode, uint stockCount) {
-        vendors[vendors.length++] = Vendor(name, msg.sender, assetBarcode, stockCount);
+        // if the vendor is already registered, exit the function.
+        if (vendors[msg.sender].isRegistered) throw;
+        // else register the vendor.
+        vendors[msg.sender] = Vendor(true, name, msg.sender, assetBarcode, stockCount);
         VendorRegistered(name, msg.sender, assetBarcode, stockCount);
     }
     
@@ -308,10 +312,13 @@ contract SimpleBidding {
         bestPrice = 999999;
     }
     
+    /* used for checking if a function is called by a registered vendor */
+    modifier onlyVendor() { if (vendors[msg.sender].isRegistered) _; }
+    
     /* Used by vendors to propose a price for an asset. */
-    function proposePrice(uint barcode, uint price) {
+    function proposePrice(uint barcode, uint price) onlyVendor {
         // process the proposal
-        PriceProposed(msg.sender, barcode, price);
+        PriceProposed(vendors[msg.sender].name, barcode, price);
         if (price < bestPrice) {
             bestPrice = price;
             bestVendor = msg.sender;
@@ -347,8 +354,9 @@ contract SimpleBidding {
         }
     }
     
-    function getVendor(uint id) constant returns (string name, address acc, uint barcode, uint numAssets) {
-        var vendor = vendors[id];
+    /* returns the vendor information of the caller */
+    function getMyVendorInfo() constant returns (string name, address acc, uint barcode, uint numAssets) {
+        var vendor = vendors[msg.sender];
         name = vendor.name;
         acc = vendor.account;
         barcode = vendor.assetBarcode;
