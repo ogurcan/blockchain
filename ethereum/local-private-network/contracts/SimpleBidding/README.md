@@ -445,9 +445,28 @@ var simplebidding_sol_simplebidding = simplebidding_sol_simplebiddingContract.ne
  })
 ```
 
+Save the above code as `SimpleBidding.js` under `contracts/SimpleBidding/`.
+
 ### Deploying the Contract
 
-Now save the above code as `SimpleBidding.js` under `contracts/SimpleBidding/` and deploy it using `loadScript()`.
+Now open the geth console and start the mining process.
+
+``` bash
+$ sh ./bin/console.sh 
+Welcome to the Geth JavaScript console!
+
+instance: Geth/Node01/v1.5.9-stable-a07539fb/linux/go1.7.3
+coinbase: 0x6c1eddcce57c4d7b2231515fe3586ebaac20c661
+at block: 439 (Mon, 03 Apr 2017 11:33:07 CEST)
+ datadir: /export/home/og240447/blockchain/ethereum/local-private-network/Node01
+ modules: admin:1.0 debug:1.0 eth:1.0 miner:1.0 net:1.0 personal:1.0 rpc:1.0 txpool:1.0 web3:1.0
+
+> miner.start(2)
+true
+>
+```
+
+Then deploy `SimpleBidding.js` using `loadScript()`.
 
 ``` bash
 > loadScript("contracts/SimpleBidding/SimpleBidding.js")
