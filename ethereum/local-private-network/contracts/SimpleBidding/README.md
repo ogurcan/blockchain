@@ -113,6 +113,22 @@ Now, for each function, we will elaborate the contract code. For the `registerVe
     
 ```
 
+To see if a vendor is registered properly, and to show how to write a method that returns several values, a `constant` function `getVendor` is implemented.
+
+``` js
+   ...
+   
+    function getVendor(uint id) constant returns (string name, address acc, uint barcode, uint numAssets) {
+        var vendor = vendors[id];
+        name = vendor.name;
+        acc = vendor.account;
+        barcode = vendor.assetBarcode;
+        numAssets = vendor.stockCount;
+    }
+   
+   ...
+```
+
 #### Client requests an asset
 
 After the vendors are registered, the client can `requestAsset`. A client requests an asset with its `barcode`. Upon receival of this request, an `AssetRequested` event is fired. And then, a bidding process which is expecting `2` proposals for finding the cheapest price is started.
