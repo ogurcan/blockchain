@@ -86,7 +86,7 @@ contract SimpleBidding {
 
 #### Vendors register themselves
 
-Now, for each function, we will elaborate the contract code. For the `registerVendor` functionality, we add the following: a struct `Vendor` for keeping vendor information, an array of `vendors`, an event which is fired when `VendorRegistered` and the function to `registerVendor()`.
+Now, for each function, we will elaborate the contract code. For the `registerVendor` functionality, we add the following: a struct `Vendor` for keeping vendor information, a mapping from `address` to `Vendor` named `vendors` (it is like a hashtable), an event which is fired when `VendorRegistered` and the function to `registerVendor()`.
 
 ``` js
     ...
