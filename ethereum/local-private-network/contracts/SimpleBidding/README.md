@@ -525,7 +525,7 @@ Having two proposal finishes the bidding process and the contract announces the 
 [Bidding finished for the asset 1234 with the price 10. Make the payment if you want to buy the asset.]
 ``` 
 
-`Client` sends the requested amount `10` to the contract. 
+`Client` sends the requested amount `10` to the contract using the address that was verbosed when the contract was mined (`0x56a4e1d0e5ee212e18bf5cd70c3a5f417990b54b`). 
 
 ``` bash
 > var tx = {from:  eth.accounts[0], to: "0x56a4e1d0e5ee212e18bf5cd70c3a5f417990b54b", value: 10}
