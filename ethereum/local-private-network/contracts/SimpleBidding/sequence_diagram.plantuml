@@ -15,7 +15,11 @@ Client->SimpleBidding : requestAsset(barcode)
 SimpleBidding-->Vendor1 : The asset 'barcode' is requested.
 SimpleBidding-->Vendor2 : The asset 'barcode' is requested.
 Vendor1->SimpleBidding : proposePrice(barcode, price1)
+SimpleBidding-->Vendor1 : Proposal received
 Vendor2->SimpleBidding : proposePrice(barcode, price2)
+SimpleBidding-->Vendor2 : Proposal received
+SimpleBidding-->Vendor1 : Bidding finished with `bestprice`.
+SimpleBidding-->Vendor2 : Bidding finished with `bestprice`.
 SimpleBidding-->Client : Bidding finished with `bestprice`.
 Client->SimpleBidding : makePayment(amount)
 SimpleBidding-->Client : Payment received for the asset 'barcode'.
