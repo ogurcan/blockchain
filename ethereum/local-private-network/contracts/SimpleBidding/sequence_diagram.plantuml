@@ -1,18 +1,24 @@
 @startuml
+hide footbox
+title The SimpleBidding contract
+
 actor Vendor1
 actor Vendor2
-participant SimpleBidding
+participant SimpleBidding <<Contract>>
 actor Client
+
 Vendor1->SimpleBidding : registerVendor(name1, barcode, stockCount1)
+SimpleBidding-->Vendor1 : Registeration successful
 Vendor2->SimpleBidding : registerVendor(name2, barcode, stockCount2)
+SimpleBidding-->Vendor2 : Registeration successful
 Client->SimpleBidding : requestAsset(barcode)
-SimpleBidding-->Vendor1 : Asset 'barcode' is requested.
-SimpleBidding-->Vendor2 : Asset 'barcode' is requested.
+SimpleBidding-->Vendor1 : The asset 'barcode' is requested.
+SimpleBidding-->Vendor2 : The asset 'barcode' is requested.
 Vendor1->SimpleBidding : proposePrice(barcode, price1)
 Vendor2->SimpleBidding : proposePrice(barcode, price2)
-SimpleBidding-->Client : Bidding finished for the asset 'barcode' with price 'price2'.
+SimpleBidding-->Client : Bidding finished with `bestprice`.
 Client->SimpleBidding : makePayment(amount)
 SimpleBidding-->Client : Payment received for the asset 'barcode'.
 SimpleBidding-> Vendor2: transfer(amount)
-SimpleBidding-->Client : The asset 'barcode' has been shipped with the tracking number 'trackingNo'.
+SimpleBidding-->Client : The asset has been shipped: 'trackingNo'.
 @enduml
