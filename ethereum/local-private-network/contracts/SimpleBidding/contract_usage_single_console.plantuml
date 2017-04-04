@@ -1,0 +1,10 @@
+@startuml
+hide footbox
+
+box "the Geth JavaScript console" #LightBlue
+actor Vendor1
+actor Vendor2
+participant SimpleBidding <<Contract>>
+actor Client
+end box
+@enduml
