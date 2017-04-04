@@ -553,13 +553,15 @@ The contract receives the amount, announces that and ships the asset to `Client`
 > 
 ```
 
-### Separating the Geth Clients
+## Separating the Geth Clients
 
-It is hard to follow which stakeholder doing what when we show them inside one single `geth` client. A better practice would be opening a `geth` client for each stakeholder.
+It is hard to follow which stakeholder doing what when we show them inside one single `geth` client. A better (and more realistic) practice would be opening a `geth` client for each stakeholder.
 
-> Note that, we are running our examples in a local private network where there is one single node (for instance) which has several accounts.
+> Remeber that, we are running our examples in a local private network where there is one single node (for instance) which has several accounts.
 
 ![Separated Console Usage](contract_usage_several_consoles.png)
+
+
 
 ## What's next?
 
