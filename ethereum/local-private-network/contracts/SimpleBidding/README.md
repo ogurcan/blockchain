@@ -488,6 +488,10 @@ Contract mined! address: 0x56a4e1d0e5ee212e18bf5cd70c3a5f417990b54b transactionH
 
 After the contract is mined successfully, clients and vendors can use it. It is assumed that there is one client and two vendors and they use `Account 0`, `Account 1` and `Account 2` respectively. Suppose the two vendors, `Vendor1` and `Vendor2`, have an asset with the barcode number `1234` in their stock. `Vendor1` has `2` assets.
 
+It is assumed that the contract is deployed and used by all actors from the same Geth JavaScript console.
+
+![Single Console Usage](contract_usage_single_console.png)
+
 First, `Vendor1` sends a registration request to the contract by using the `registerVendor()` function. Note that, this is a `non-constant` function (i.e. a function that change the state of the contract) and such functions can only be called via a transaction (i.e. you need to pay for it). That's why, apart from the function parameters, an `address` in which the fees will be taken and a quantity of `gas` that this function call (i.e. transaction) suppose to consume at maximum should be provided using `{from: address, gas: uint}`.
 
 ``` bash
@@ -554,6 +558,8 @@ The contract receives the amount, announces that and ships the asset to `Client`
 It is hard to follow which stakeholder doing what when we show them inside one single `geth` client. A better practice would be opening a `geth` client for each stakeholder.
 
 > Note that, we are running our examples in a local private network where there is one single node (for instance) which has several accounts.
+
+![Separated Console Usage](contract_usage_several_consoles.png)
 
 ## What's next?
 
