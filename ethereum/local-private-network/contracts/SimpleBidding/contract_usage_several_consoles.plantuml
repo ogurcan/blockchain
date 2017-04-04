@@ -1,0 +1,19 @@
+@startuml
+hide footbox
+
+box "Attached console" #LightBlue
+actor Vendor1
+end box
+
+box "Attached console" #LightBlue
+actor Vendor2
+end box
+
+box "the Geth JavaScript console" #LightBlue
+participant SimpleBidding <<Contract>>
+end box
+
+box "Attached console" #LightBlue
+actor Client
+end box
+@enduml
