@@ -452,7 +452,7 @@ var simplebidding_sol_simplebidding = simplebidding_sol_simplebiddingContract.ne
  })
 ```
 
-Save the above code as `SimpleBidding.js` under `contracts/SimpleBidding/`.
+Save the above code as `deploy.js` under `contracts/SimpleBidding/`.
 
 ### Deploying the Contract
 
@@ -473,10 +473,10 @@ true
 >
 ```
 
-Then deploy `SimpleBidding.js` using `loadScript()`.
+Then deploy `deploy.js` using `loadScript()`.
 
 ``` bash
-> loadScript("contracts/SimpleBidding/SimpleBidding.js")
+> loadScript("contracts/SimpleBidding/deploy.js")
 null [object Object]
 true
 > null [object Object]
