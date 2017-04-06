@@ -372,5 +372,5 @@ The balance of `Account 1` is reduced by `1.23042` and the balance of `Account 2
 
 ## What is next?
 
-You are ready to learn about contracts now. You can continue to the [Creating, Deploying and Using Contracts](./contracts/HelloWorld/README.md) example.
+You are ready to learn about contracts now. You can continue to the [Creating, Deploying and Using Contracts](./contracts/01-HelloWorld/README.md) example.
 
