@@ -181,10 +181,12 @@ The hash codes are the addresses of the created accounts.
 
 > Note that, in your computer the addresses of the accounts will be different.
 
-Note that, nodes may have several accounts (at least one) and they can be listed by using the command:
+Note that, nodes may have several accounts (at least one) and they can be listed by using either `personal.listAccounts` or `eth.accounts` command:
 
 ``` js
 > personal.listAccounts
+["0xf50fee0099f5776a9a13ed7e5d554ee16c36bf70", "0x195998f3491f37d9887cb93ae99c56eec8f67182", "0xa33f1327bd37793d8b5eaca4c7f8f0fc3b302b00"]
+> eth.accounts
 ["0xf50fee0099f5776a9a13ed7e5d554ee16c36bf70", "0x195998f3491f37d9887cb93ae99c56eec8f67182", "0xa33f1327bd37793d8b5eaca4c7f8f0fc3b302b00"]
 > 
 ```
@@ -219,14 +221,14 @@ To allocate initial ethers to the accounts, the genesis block (which is inside `
 
 Now we need to reinitialize the node and attach to it as shown above before.
 
-To veirfy if the accounts are initialized with the correct balance values we specified in the Custom Genesis Block, use the `eth.getBalance()` command on the console of each node using their associated account numbers (which can be retrieved by the `personal.listAccounts` command).
+To veirfy if the accounts are initialized with the correct balance values we specified in the Custom Genesis Block, use the `eth.getBalance()` command on the console of each node using their associated account numbers (which can be retrieved by the `eth.accounts` command).
 
 ``` js
-> eth.getBalance(personal.listAccounts[0])
+> eth.getBalance(eth.accounts[0])
 10000000000000000000
-> eth.getBalance(personal.listAccounts[1])
+> eth.getBalance(eth.accounts[1])
 20000000000000000000
-> eth.getBalance(personal.listAccounts[2])
+> eth.getBalance(eth.accounts[2])
 30000000000000000000
 > 
 ``` 
@@ -235,7 +237,7 @@ Note that `getBalance()` returns ether in wei which is like 1 trillionth of an e
 To check the balance in terms of ether, type the following command:
 
 ``` js
-> web3.fromWei(eth.getBalance(personal.listAccounts[1]), "ether")
+> web3.fromWei(eth.getBalance(eth.accounts[1]), "ether")
 20
 >
 ``` 
@@ -268,13 +270,13 @@ I0213 16:28:11.633341 vendor/github.com/ethereum/ethash/ethash.go:291] Generatin
 
 When start `Generating DAG` reaches `100%`, you will know that the mining has started. Depending on your cpu and ram, it can take from a few minutes to an hour. For this example with the configuration given in the beginning, it took around 7 minutes to start mining.
 
-The mining node (`Node01`) deposits ethereum into its `coinbase` (queried by `eth.coinbase`). By default, the coinbase of a node is its `Account 0` (queried by `personal.listAccounts[0]`).
+The mining node (`Node01`) deposits ethereum into its `coinbase` (queried by `eth.coinbase`). By default, the coinbase of a node is its `Account 0` (queried by `eth.accounts[0]`).
 To check if the node is mining, you can time to time check the balance of the `coinbase` or `Account 0`.
 
 ``` js
 > eth.getBalance(eth.coinbase)
 220781250000000000000
-> eth.getBalance(personal.listAccounts[0])
+> eth.getBalance(eth.accounts[0])
 220781250000000000000
 >
 ``` 
@@ -284,7 +286,7 @@ To check if the node is mining, you can time to time check the balance of the `c
 Suppose, we want to send  `1.23` ethers from `Account 1` to `Account 2`. To do so, we need to create a transaction object `tx` first:
 
 ``` js
-> var tx = {from:  personal.listAccounts[1], to: personal.listAccounts[2], value: web3.toWei(1.23, "ether")}
+> var tx = {from:  eth.accounts[1], to: eth.accounts[2], value: web3.toWei(1.23, "ether")}
 undefined
 > 
 ``` 
@@ -350,18 +352,18 @@ After the transaction is mined and put inside a block, the pending transactions 
 Check the balances of the two accounts and verify the transaction about ether transfer.
 
 ``` js
-> eth.getBalance(personal.listAccounts[1])
+> eth.getBalance(eth.accounts[1])
 18769580000000000000
-> eth.getBalance(personal.listAccounts[2])
+> eth.getBalance(eth.accounts[2])
 31230000000000000000
 ```
 
 These values are a bit hard to read. So we check the balances as ethers.
 
 ``` js
-> web3.fromWei(eth.getBalance(personal.listAccounts[1]), "ether")
+> web3.fromWei(eth.getBalance(eth.accounts[1]), "ether")
 18.76958
-> web3.fromWei(eth.getBalance(personal.listAccounts[2]), "ether")
+> web3.fromWei(eth.getBalance(eth.accounts[2]), "ether")
 31.23000
 >
 ``` 
