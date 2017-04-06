@@ -557,9 +557,96 @@ The contract receives the amount, announces that and ships the asset to `Client`
 
 It is hard to follow which stakeholder doing what when we show them inside one single `geth` client. A better (and more realistic) practice would be opening a `geth` client for each stakeholder.
 
-> Remeber that, we are running our examples in a local private network where there is one single node (for instance) which has several accounts.
+> Remember that, we are running our examples in a local private network where there is one single node (for instance) which has several accounts.
 
 ![Separated Console Usage](contract_usage_several_consoles.png)
+
+In order realize this scenario, first we need to open the geth console like before, start the mining process and deploy the contract. Then, we need to open the other terminal windows (2 for the vendors, 1 for the client), attach to the already running geth console, load the deployed contract using its `abi` and `address`. 
+
+### Loading a Deployed Contract
+
+To facilitate the processes of vendors and clients, we can prepare script files and then load them at their dedicated consoles. 
+
+The script for the vendors is as follows.
+
+``` js
+// unlock all accounts
+loadScript("config/UnlockAccounts.js");
+
+// creation of contract object
+var simplebidding_sol_simplebiddingContract = web3.eth.contract([{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"assetBarcode","type":"uint256"},{"name":"stockCount","type":"uint256"}],"name":"registerVendor","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"barcode","type":"uint256"}],"name":"requestAsset","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"dispose","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"getMyVendorInfo","outputs":[{"name":"name","type":"string"},{"name":"acc","type":"address"},{"name":"barcode","type":"uint256"},{"name":"numAssets","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"barcode","type":"uint256"},{"name":"price","type":"uint256"}],"name":"proposePrice","outputs":[],"payable":false,"type":"function"},{"inputs":[],"payable":false,"type":"constructor"},{"payable":true,"type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"name","type":"string"},{"indexed":false,"name":"account","type":"address"},{"indexed":false,"name":"assetBarcode","type":"uint256"},{"indexed":false,"name":"stockCount","type":"uint256"}],"name":"VendorRegistered","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"client","type":"address"},{"indexed":false,"name":"barcode","type":"uint256"}],"name":"AssetRequested","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"vendorName","type":"string"},{"indexed":false,"name":"barcode","type":"uint256"},{"indexed":false,"name":"price","type":"uint256"}],"name":"PriceProposed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"barcode","type":"uint256"},{"indexed":false,"name":"price","type":"uint256"}],"name":"BiddingFinished","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"sender","type":"address"},{"indexed":false,"name":"amount","type":"uint256"},{"indexed":false,"name":"barcode","type":"uint256"}],"name":"PaymentReceived","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"barcode","type":"uint256"},{"indexed":false,"name":"trackingNumber","type":"uint256"}],"name":"AssetShipped","type":"event"}]);
+
+// initiate contract for an address
+var simplebidding_sol_simplebidding = simplebidding_sol_simplebiddingContract.at(contractAddress);
+
+// add a watch for the event VendorRegistered
+simplebidding_sol_simplebidding.VendorRegistered().watch(function(error, result){
+   if (!error)
+      console.log("[" + result.args.name + " has been registered as a vendor with the account number " + result.args.account + ". It has " + result.args.stockCount + " number of the asset " + result.args.barcode + " in its stock.]");
+});
+
+// add a watch for the event VendorRegistered
+simplebidding_sol_simplebidding.AssetRequested().watch(function(error, result){
+   if (!error)
+      console.log("[Asset " + result.args.barcode + " requested by " + result.args.client + "]");
+});
+
+// add a watch for the event PriceProposed
+simplebidding_sol_simplebidding.PriceProposed().watch(function(error, result){
+   if (!error)
+      console.log("[A price " + result.args.price + " is proposed for the asset " + result.args.barcode + " by " + result.args.vendorName + "]");
+});
+
+// add a watch for the event BiddingFinished
+simplebidding_sol_simplebidding.BiddingFinished().watch(function(error, result){
+   if (!error)
+      console.log("[Bidding finished for the asset " + result.args.barcode + " with the price " + result.args.price + ". Make the payment if you want to buy the asset.]");
+});
+```
+
+Save this file as `load4Vendor.js`. 
+
+> Note that, only the events related to vendors are considered for watching. However, there is no restriction for watching other events also, it is transparent.
+
+The script for the clients, on the other hand, is as follows.
+
+``` js
+
+```
+
+Save this file as `load4Client.js`. 
+
+> Note that, only the events related to clients are considered for watching.
+
+### Using the Contract via Separate Consoles
+
+First open the geth console like before and start the mining process.
+
+``` bash
+$ sh ./bin/console.sh 
+Welcome to the Geth JavaScript console!
+
+instance: Geth/Node01/v1.5.9-stable-a07539fb/linux/go1.7.3
+coinbase: 0x6c1eddcce57c4d7b2231515fe3586ebaac20c661
+at block: 439 (Mon, 03 Apr 2017 11:33:07 CEST)
+ datadir: /export/home/og240447/blockchain/ethereum/local-private-network/Node01
+ modules: admin:1.0 debug:1.0 eth:1.0 miner:1.0 net:1.0 personal:1.0 rpc:1.0 txpool:1.0 web3:1.0
+
+> miner.start(2)
+true
+>
+```
+
+Then deploy `deploy.js` using `loadScript()`.
+
+``` bash
+> loadScript("contracts/SimpleBidding/deploy.js")
+null [object Object]
+true
+> null [object Object]
+Contract mined! address: 0x56a4e1d0e5ee212e18bf5cd70c3a5f417990b54b transactionHash: 0xb6fb60c6a0f05e69bda76e2a8ac005df0cc430d4a5487c7bc39c9be69d0b4c0e
+>   
+```
 
 
 
