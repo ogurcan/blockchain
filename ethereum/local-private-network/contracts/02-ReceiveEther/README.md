@@ -141,10 +141,10 @@ var untitled_receiveether = untitled_receiveetherContract.new(
  
 ### Deploying the Contract
 
-Now save the above code as `ReceiveEther.js` and deploy it using `loadScript("ReceiveEther.js")`.
+Now save the above code as `deploy.js` and deploy it using `loadScript("deploy.js")`.
 
 ``` bash
-> loadScript("ReceiveEther.js")
+> loadScript("deploy.js")
 null [object Object]
 true
 > null [object Object]
@@ -254,10 +254,10 @@ var untitled_receiveether = untitled_receiveetherContract.new(
  })
 ```
 
-Now save the above code as `ReceiveEtherWithLog.js` and use it like before.
+Now save the above code as `deployWithLog.js` and use it like before.
 
 ``` bash
-> loadScript("ReceiveEtherWithLog.js")
+> loadScript("deployWithLog.js")
 
 null [object Object]
 true
@@ -279,4 +279,4 @@ As you can see, each time a transaction is processed by the contract the `[Ether
 
 ## What is next?
 
-You have learned how to get payments using contracts. Now it is time to design a simple trading contract. You can continue to the [Simple Bidding Contract](../SimpleBidding/README.md) example.
+You have learned how to get payments using contracts. Now it is time to design a simple trading contract. You can continue to the [Simple Bidding Contract](../03-SimpleBidding/README.md) example.
