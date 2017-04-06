@@ -1,6 +1,6 @@
 # Receiving Ethers Using a Contract
 
-> This example is a continuation of the [Creating, Deploying and Using Contracts](../HelloWorld/README.md) example.
+> This example is a continuation of the [Creating, Deploying and Using Contracts](../01-HelloWorld/README.md) example.
 
 ## Before you begin
 
