@@ -567,6 +567,8 @@ In order realize this scenario, first we need to open the geth console like befo
 
 To facilitate the processes of vendors and clients, we can prepare script files and then load them at their dedicated consoles. 
 
+#### Loading the Contract for Vendors
+
 The script for the vendors is as follows.
 
 ``` js
@@ -607,6 +609,8 @@ simplebidding_sol_simplebidding.BiddingFinished().watch(function(error, result){
 Save this file as `load4Vendor.js`. 
 
 > Note that, only the events related to vendors are considered for watching. However, there is no restriction for watching other events also, it is transparent.
+
+#### Loading the Contract for Clients
 
 The script for the clients, on the other hand, is as follows.
 
