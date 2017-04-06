@@ -611,7 +611,32 @@ Save this file as `load4Vendor.js`.
 The script for the clients, on the other hand, is as follows.
 
 ``` js
+// unlock all accounts
+loadScript("config/UnlockAccounts.js");
 
+// creation of contract object
+var simplebidding_sol_simplebiddingContract = web3.eth.contract([{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"assetBarcode","type":"uint256"},{"name":"stockCount","type":"uint256"}],"name":"registerVendor","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"barcode","type":"uint256"}],"name":"requestAsset","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"dispose","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"getMyVendorInfo","outputs":[{"name":"name","type":"string"},{"name":"acc","type":"address"},{"name":"barcode","type":"uint256"},{"name":"numAssets","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"barcode","type":"uint256"},{"name":"price","type":"uint256"}],"name":"proposePrice","outputs":[],"payable":false,"type":"function"},{"inputs":[],"payable":false,"type":"constructor"},{"payable":true,"type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"name","type":"string"},{"indexed":false,"name":"account","type":"address"},{"indexed":false,"name":"assetBarcode","type":"uint256"},{"indexed":false,"name":"stockCount","type":"uint256"}],"name":"VendorRegistered","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"client","type":"address"},{"indexed":false,"name":"barcode","type":"uint256"}],"name":"AssetRequested","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"vendorName","type":"string"},{"indexed":false,"name":"barcode","type":"uint256"},{"indexed":false,"name":"price","type":"uint256"}],"name":"PriceProposed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"barcode","type":"uint256"},{"indexed":false,"name":"price","type":"uint256"}],"name":"BiddingFinished","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"sender","type":"address"},{"indexed":false,"name":"amount","type":"uint256"},{"indexed":false,"name":"barcode","type":"uint256"}],"name":"PaymentReceived","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"barcode","type":"uint256"},{"indexed":false,"name":"trackingNumber","type":"uint256"}],"name":"AssetShipped","type":"event"}]);
+
+// initiate contract for an address
+var simplebidding_sol_simplebidding = simplebidding_sol_simplebiddingContract.at(contractAddress);
+
+// add a watch for the event BiddingFinished
+simplebidding_sol_simplebidding.BiddingFinished().watch(function(error, result){
+   if (!error)
+      console.log("[Bidding finished for the asset " + result.args.barcode + " with the price " + result.args.price + ". Make the payment if you want to buy the asset.]");
+});
+
+// add a watch for the event PaymentReceived
+simplebidding_sol_simplebidding.PaymentReceived().watch(function(error, result){
+   if (!error)
+      console.log("[A payment of "+ result.args.amount + " is received from " + result.args.sender + " for the asset " + result.args.barcode + ".]");
+});
+
+// add a watch for the event AssetShipped
+simplebidding_sol_simplebidding.AssetShipped().watch(function(error, result){
+   if (!error)
+      console.log("[The asset " + result.args.barcode + " has been shipped with the tracking number " + result.args.trackingNumber + ".]");
+});
 ```
 
 Save this file as `load4Client.js`. 
@@ -619,6 +644,9 @@ Save this file as `load4Client.js`.
 > Note that, only the events related to clients are considered for watching.
 
 ### Using the Contract via Separate Consoles
+
+
+#### Main Console (Contract Owner)
 
 First open the geth console like before and start the mining process.
 
@@ -647,6 +675,74 @@ true
 Contract mined! address: 0x56a4e1d0e5ee212e18bf5cd70c3a5f417990b54b transactionHash: 0xb6fb60c6a0f05e69bda76e2a8ac005df0cc430d4a5487c7bc39c9be69d0b4c0e
 >   
 ```
+
+#### Vendor Console
+
+Then open another terminal window for `Vendor1` and type the following to attach to the geth client.
+
+``` bash
+$ geth attach ipc://export/home/og240447/blockchain/ethereum/local-private-network/Node01/geth.ipc
+```
+
+You will see the same messages and then a geth javascript console will open.
+
+``` js
+Welcome to the Geth JavaScript console!
+
+instance: Geth/Node01/v1.5.9-stable-a07539fb/linux/go1.7.3
+coinbase: 0x6c1eddcce57c4d7b2231515fe3586ebaac20c661
+at block: 20107 (Thu, 06 Apr 2017 15:14:57 CEST)
+ datadir: /export/home/og240447/blockchain/ethereum/local-private-network/Node01
+ modules: admin:1.0 debug:1.0 eth:1.0 miner:1.0 net:1.0 personal:1.0 rpc:1.0 txpool:1.0 web3:1.0
+
+>
+```
+
+To load the deployed contract, first put the contract address in a variable `contractAddress` and then load the `load4Vendor.js` script.
+
+``` js
+> var contractAddress = "0x56a4e1d0e5ee212e18bf5cd70c3a5f417990b54b"
+undefined
+> loadScript("contracts/SimpleBidding/load4Vendor.js")
+true
+> 
+```
+
+That's it. Now you can use the contract as a vendor. Repeat the same steps for the second vendor.
+
+#### Client Console
+
+Then open another terminal window for `Client` and type the following to attach to the geth client.
+
+``` bash
+$ geth attach ipc://export/home/og240447/blockchain/ethereum/local-private-network/Node01/geth.ipc
+```
+
+You will see the same messages and then a geth javascript console will open.
+
+``` js
+Welcome to the Geth JavaScript console!
+
+instance: Geth/Node01/v1.5.9-stable-a07539fb/linux/go1.7.3
+coinbase: 0x6c1eddcce57c4d7b2231515fe3586ebaac20c661
+at block: 20107 (Thu, 06 Apr 2017 15:14:57 CEST)
+ datadir: /export/home/og240447/blockchain/ethereum/local-private-network/Node01
+ modules: admin:1.0 debug:1.0 eth:1.0 miner:1.0 net:1.0 personal:1.0 rpc:1.0 txpool:1.0 web3:1.0
+
+>
+```
+
+To load the deployed contract, first put the contract address in a variable `contractAddress` and then load the `load4Client.js` script.
+
+``` js
+> var contractAddress = "0x56a4e1d0e5ee212e18bf5cd70c3a5f417990b54b"
+undefined
+> loadScript("contracts/SimpleBidding/load4Client.js")
+true
+> 
+```
+
+That's it. Now you can use the contract as a client.
 
 
 
