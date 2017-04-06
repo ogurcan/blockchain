@@ -74,10 +74,10 @@ Contracts can be compiled either using an online compiler or an offline compiler
 
 If you do not have the Solidity compiler `solc` installed, you can simply use the [online Solidity compiler](https://ethereum.github.io/browser-solidity/). On the online compiler, create a new file `HelloWorld.sol` and then copy the source code above into this file. After a second, the compiled code should appear on the right pane. 
 
-Now go back to the terminal window and create a `HelloWorld.js` file.
+Now go back to the terminal window and create a `deploy.js` file.
 
 ``` bash
-$ nano HelloWorld.js
+$ nano deploy.js
 ``` 
 
 And then go back to the online compiler and copy the code in the box labeled `Web3 deploy` into `HelloWorld.js`.
@@ -124,7 +124,7 @@ After unlocking the account, we can deploy the contract by using the `loadScript
 Then deploy the contract.
 
 ``` js
-> loadScript("HelloWorld.js")
+> loadScript("deploy.js")
 null [object Object]
 true
 > null [object Object]
