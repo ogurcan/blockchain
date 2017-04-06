@@ -1,6 +1,6 @@
 # Simple Bidding Contract
 
-> This example is a continuation of the [Receiving Ethers Using a Contract](../ReceiveEther/README.md) example.
+> This example is a continuation of the [Receiving Ethers Using a Contract](../02-ReceiveEther/README.md) example.
 
 
 ## Before you begin
@@ -754,4 +754,4 @@ That's it. Now you can use the contract as a client.
 
 You have learned how to develop a relatively simple contract that makes bidding between several vendors for an asset requtested by a client. You have learned how to use and implement modifiers, events, constant function with several return values and non-constant functions. 
 
-You can continue to the [MarketPlace (v01)](../MarketPlace-v01/README.md) contract  example.
+You can continue to the [MarketPlace (v01)](../04-MarketPlace-v01/README.md) contract  example.
