@@ -80,7 +80,7 @@ Now go back to the terminal window and create a `deploy.js` file.
 $ nano deploy.js
 ``` 
 
-And then go back to the online compiler and copy the code in the box labeled `Web3 deploy` into `HelloWorld.js`.
+And then go back to the online compiler and copy the code in the box labeled `Web3 deploy` into `deploy.js`.
 
 ``` bash
 var helloworld_sol_helloworldContract = web3.eth.contract([{"constant":true,"inputs":[],"name":"sayHello","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"inputs":[],"payable":false,"type":"constructor"}]);
