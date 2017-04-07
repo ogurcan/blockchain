@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://localhost:6419/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <title>README.md - Grip</title>
+  <link rel="icon" href="http://localhost:6419/__/grip/static/favicon.ico">
+  <link rel="stylesheet" href="./index_files/frameworks-5b61aadc846f0818981ceec31b49c475fb084c163fdec5efbc2c21ef539092a9.css">
+  <link rel="stylesheet" href="./index_files/github-9e591dcc1f30d2a6ac3773da2f8c05987a4a148bae15713c4be9bb62b6e92b26.css">
+  <link rel="stylesheet" href="./index_files/site-f4fa6ace91e5f0fabb47e8405e5ecf6a9815949cd3958338f6578e626cd443d7.css">
+  <link rel="stylesheet" href="./index_files/octicons.css">
+  <style>
+    /* Page tweaks */
+    .preview-page {
+      margin-top: 64px;
+    }
+    /* User-content tweaks */
+    .timeline-comment-wrapper > .timeline-comment:after,
+    .timeline-comment-wrapper > .timeline-comment:before {
+      content: none;
+    }
+    /* User-content overrides */
+    .discussion-timeline.wide {
+      width: 920px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div id="preview-page" class="preview-page" data-autorefresh-url="/__/grip/refresh/">
+
+    
+
+      <div role="main" class="main-content">
+        <div class="container new-discussion-timeline experiment-repo-nav">
+          <div class="repository-content">
+            <div id="readme" class="readme boxed-group clearfix announce instapaper_body md">
+              
+                <h3>
+                  <span class="octicon octicon-book"></span>
+                  README.md
+                </h3>
+              
+              <article class="markdown-body entry-content" itemprop="text" id="grip-content">
+                <h1>
+<a id="user-content-receiving-ethers-using-a-contract" class="anchor" href="http://localhost:6419/#receiving-ethers-using-a-contract" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Receiving Ethers Using a Contract</h1>
+
+<blockquote>
+<p>This example is a continuation of the <a href="http://localhost:6419/01-HelloWorld/README.md">Creating, Deploying and Using Contracts</a> example.</p>
+</blockquote>
+
+<h2>
+<a id="user-content-before-you-begin" class="anchor" href="http://localhost:6419/#before-you-begin" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Before you begin</h2>
+
+<p>Before you begin, make sure that the <a href="http://solidity.readthedocs.io/en/develop/index.html">Solidity</a> compiler is installed as described <a href="https://github.com/ethereum/go-ethereum/wiki/Contract-Tutorial#install-solc-on-ubuntu">here</a>. To verify if Solidy is installed correctly, go to the geth console and type the <code>eth.getCompilers()</code> command. </p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">&gt;</span> <span class="pl-smi">eth</span>.<span class="pl-en">getCompilers</span>()
+[<span class="pl-s"><span class="pl-pds">"</span>Solidity<span class="pl-pds">"</span></span>]
+<span class="pl-k">&gt;</span> </pre></div>
+
+<p>This example is prepared by using the geth version <code>1.5.9-stable</code> which is using Go version <code>go1.7.3</code> and tested on <code>Ubuntu 14.04.5</code>. </p>
+
+<div class="highlight highlight-source-shell"><pre>Geth
+Version: 1.5.9-stable
+Git Commit: a07539fb88db7231d18db918ed7a6a4e32f97450
+Protocol Versions: [63 62]
+Network Id: 1
+Go Version: go1.7.3
+OS: linux
+GOPATH=
+GOROOT=/usr/lib/go-1.7</pre></div>
+
+<h2>
+<a id="user-content-introduction" class="anchor" href="http://localhost:6419/#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h2>
+
+<p>In this example, we will create, deploy and use a simple contract to show how contracts process transactions. </p>
+
+<h2>
+<a id="user-content-contract-receiveether" class="anchor" href="http://localhost:6419/#contract-receiveether" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contract: ReceiveEther</h2>
+
+<p>We will build a <code>ReceiveEther</code> contract on the ethereum command line that accepts ethers during 10 minutes. When a transaction send ether to this contract, it is going to transfer the <code>amount</code> received to a predefined <code>receivingAccount</code>.</p>
+
+<h3>
+<a id="user-content-creating-the-contract" class="anchor" href="http://localhost:6419/#creating-the-contract" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Creating the Contract</h3>
+
+<div class="highlight highlight-source-js"><pre>pragma solidity <span class="pl-k">^</span><span class="pl-c1">0.4</span>.<span class="pl-ii">9</span>;
+
+<span class="pl-c">/* Contract accepting ethers during 10 minutes */</span>
+contract ReceiveEther {
+
+    address <span class="pl-k">public</span> receivingAccount;
+    uint <span class="pl-k">public</span> deadline;
+
+    <span class="pl-c">/* at initialization, setup the owner account </span>
+<span class="pl-c">       and the deadline of the contract */</span>
+    <span class="pl-k">function</span> <span class="pl-en">ReceiveEther</span>(<span class="pl-smi">address</span> <span class="pl-smi">_account</span>) {
+        receivingAccount <span class="pl-k">=</span> _account;
+        deadline <span class="pl-k">=</span> now <span class="pl-k">+</span> <span class="pl-c1">10</span> <span class="pl-k">*</span> <span class="pl-c1">1</span> minutes;
+    }   
+
+    <span class="pl-c">/* The function without name is the default function that is called whenever </span>
+<span class="pl-c">       anyone sends funds to a contract */</span>
+    <span class="pl-k">function</span> () public payable {
+        uint amount <span class="pl-k">=</span> <span class="pl-smi">msg</span>.<span class="pl-c1">value</span>;
+        <span class="pl-smi">receivingAccount</span>.<span class="pl-c1">send</span>(amount);
+    }
+
+    <span class="pl-c">/* a modifier works as a guard for its dedicated function */</span>
+    modifier <span class="pl-en">afterDeadline</span>() { <span class="pl-k">if</span> (now <span class="pl-k">&gt;=</span> deadline) _; }
+
+    <span class="pl-c">/* if invoked after the deadline, it ends the contract and makes a refund. */</span>
+    <span class="pl-k">function</span> <span class="pl-en">dispose</span>() afterDeadline {
+        <span class="pl-c"><span class="pl-c">//</span> mark this contract as deleted, remove it from the Ethereum Virtual Machine (EVM)'s state</span>
+        <span class="pl-c"><span class="pl-c">//</span> and transfer the refund to the account.</span>
+        <span class="pl-en">selfdestruct</span>(receivingAccount);
+    }
+}</pre></div>
+
+<p>The constructor <code>ReceiveEther(address _account)</code> sets the <code>receivingAccount</code> using the parameter provided and the deadline as 10 minutes. The nameless function <code>()</code> is invoked each time a transaction towards the address of this contract is executed. After the  <code>afterDeadline()</code> is reached, the contract can be disposed by using the <code>dispose()</code> function.</p>
+
+<p>The <code>selfdestruct(address)</code> function (it was called <code>suicide(address)</code> previously) uses negative gas because the operation frees up space on the blockchain by clearing all of the contract's data from the Ethereum Virtual Machine (EVM). As a result, when you check the balance of <code>receivingAccount</code>, you should see that the balance is increased.</p>
+
+<h3>
+<a id="user-content-compiling-the-contract" class="anchor" href="http://localhost:6419/#compiling-the-contract" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Compiling the Contract</h3>
+
+<p>Upon compiling the above solidty code using the <a href="https://ethereum.github.io/browser-solidity/">online Solidity compiler</a>, we will have a JavaScript code as below.</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> _account <span class="pl-k">=</span> <span class="pl-c">/* var of type address here */</span> ;
+<span class="pl-k">var</span> untitled_receiveetherContract <span class="pl-k">=</span> <span class="pl-smi">web3</span>.<span class="pl-smi">eth</span>.<span class="pl-en">contract</span>([{<span class="pl-s"><span class="pl-pds">"</span>constant<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">true</span>,<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[],<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>deadline<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>outputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[{<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>uint256<span class="pl-pds">"</span></span>}],<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>function<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>constant<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[],<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>deadlineReached<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>outputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[],<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>function<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>constant<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">true</span>,<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[],<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>receivingAccount<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>outputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[{<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>address<span class="pl-pds">"</span></span>}],<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>function<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[{<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>_account<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>address<span class="pl-pds">"</span></span>}],<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>constructor<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">true</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>fallback<span class="pl-pds">"</span></span>}]);
+<span class="pl-k">var</span> untitled_receiveether <span class="pl-k">=</span> <span class="pl-smi">untitled_receiveetherContract</span>.<span class="pl-en">new</span>(
+   _account,
+   {
+     from<span class="pl-k">:</span> <span class="pl-smi">web3</span>.<span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">0</span>], 
+     data<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>0x6060604052341561000c57fe5b60405160208061016f83398101604052515b60008054600160a060020a031916600160a060020a03831617905542610258016001555b505b61011c806100536000396000f3006060604052361560375763ffffffff60e060020a60003504166329dcb0cf8114606a578063a29b8b91146089578063e0486c39146098575b60685b600080546040513492600160a060020a039092169183156108fc02918491818181858888f150505050505b50565b005b3415607157fe5b607760c1565b60408051918252519081900360200190f35b3415609057fe5b606860c7565b005b3415609f57fe5b60a560e1565b60408051600160a060020a039092168252519081900360200190f35b60015481565b600154421060dd57600054600160a060020a0316ff5b5b5b565b600054600160a060020a0316815600a165627a7a723058200744edd8d6041bd63b49e11716bbf334b2baa91462aae800218eecbded25494f0029<span class="pl-pds">'</span></span>, 
+     gas<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>4700000<span class="pl-pds">'</span></span>
+   }, <span class="pl-k">function</span> (<span class="pl-smi">e</span>, <span class="pl-smi">contract</span>){
+    <span class="pl-en">console</span>.<span class="pl-c1">log</span>(e, contract);
+    <span class="pl-k">if</span> (<span class="pl-k">typeof</span> <span class="pl-smi">contract</span>.<span class="pl-smi">address</span> <span class="pl-k">!==</span> <span class="pl-s"><span class="pl-pds">'</span>undefined<span class="pl-pds">'</span></span>) {
+         <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">'</span>Contract mined! address: <span class="pl-pds">'</span></span> <span class="pl-k">+</span> <span class="pl-smi">contract</span>.<span class="pl-smi">address</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">'</span> transactionHash: <span class="pl-pds">'</span></span> <span class="pl-k">+</span> <span class="pl-smi">contract</span>.<span class="pl-smi">transactionHash</span>);
+    }
+ })</pre></div>
+
+<p>However, before deploying it, we need to configure the account we want to use, say <code>Account 1</code>. In this sense, first we set the <code>_account</code> parameter (i.e. receiving account) as <code>eth.accounts[1]</code>. Then we modify <code>from: web3.eth.accounts[0]</code> to <code>from: web3.eth.accounts[1]</code> (the account used during deployment). </p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-c"><span class="pl-c">//</span> must set the _account parameter</span>
+<span class="pl-k">var</span> _account <span class="pl-k">=</span> <span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">1</span>] ;
+<span class="pl-k">var</span> untitled_receiveetherContract <span class="pl-k">=</span> <span class="pl-smi">web3</span>.<span class="pl-smi">eth</span>.<span class="pl-en">contract</span>([{<span class="pl-s"><span class="pl-pds">"</span>constant<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">true</span>,<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[],<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>deadline<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>outputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[{<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>uint256<span class="pl-pds">"</span></span>}],<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>function<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>constant<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[],<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>deadlineReached<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>outputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[],<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>function<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>constant<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">true</span>,<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[],<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>receivingAccount<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>outputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[{<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>address<span class="pl-pds">"</span></span>}],<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>function<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[{<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>_account<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>address<span class="pl-pds">"</span></span>}],<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>constructor<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">true</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>fallback<span class="pl-pds">"</span></span>}]);
+<span class="pl-k">var</span> untitled_receiveether <span class="pl-k">=</span> <span class="pl-smi">untitled_receiveetherContract</span>.<span class="pl-en">new</span>(
+   _account,
+   {
+     from<span class="pl-k">:</span> <span class="pl-smi">web3</span>.<span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">1</span>], 
+     data<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>0x6060604052341561000c57fe5b60405160208061016f83398101604052515b60008054600160a060020a031916600160a060020a03831617905542610258016001555b505b61011c806100536000396000f3006060604052361560375763ffffffff60e060020a60003504166329dcb0cf8114606a578063a29b8b91146089578063e0486c39146098575b60685b600080546040513492600160a060020a039092169183156108fc02918491818181858888f150505050505b50565b005b3415607157fe5b607760c1565b60408051918252519081900360200190f35b3415609057fe5b606860c7565b005b3415609f57fe5b60a560e1565b60408051600160a060020a039092168252519081900360200190f35b60015481565b600154421060dd57600054600160a060020a0316ff5b5b5b565b600054600160a060020a0316815600a165627a7a723058200744edd8d6041bd63b49e11716bbf334b2baa91462aae800218eecbded25494f0029<span class="pl-pds">'</span></span>, 
+     gas<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>4700000<span class="pl-pds">'</span></span>
+   }, <span class="pl-k">function</span> (<span class="pl-smi">e</span>, <span class="pl-smi">contract</span>){
+    <span class="pl-en">console</span>.<span class="pl-c1">log</span>(e, contract);
+    <span class="pl-k">if</span> (<span class="pl-k">typeof</span> <span class="pl-smi">contract</span>.<span class="pl-smi">address</span> <span class="pl-k">!==</span> <span class="pl-s"><span class="pl-pds">'</span>undefined<span class="pl-pds">'</span></span>) {
+         <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">'</span>Contract mined! address: <span class="pl-pds">'</span></span> <span class="pl-k">+</span> <span class="pl-smi">contract</span>.<span class="pl-smi">address</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">'</span> transactionHash: <span class="pl-pds">'</span></span> <span class="pl-k">+</span> <span class="pl-smi">contract</span>.<span class="pl-smi">transactionHash</span>);
+    }
+ })</pre></div>
+
+<p>One thing here we are missing is that, in geth, accounts are locked by default. Thus, if the contract is deployed as above, <code>Account 1</code> should also be manually unlocked, otherwise the contract will not be able transfer ethers. One way to tackle this is to embed the unlock command inside the JavaSacript code.</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-c"><span class="pl-c">//</span> must unlock the account we are creating the contract from so we can use it</span>
+<span class="pl-smi">personal</span>.<span class="pl-en">unlockAccount</span>(<span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">1</span>],<span class="pl-s"><span class="pl-pds">"</span>Node01Account01<span class="pl-pds">"</span></span>)
+<span class="pl-c"><span class="pl-c">//</span> must set the _account parameter</span>
+<span class="pl-k">var</span> _account <span class="pl-k">=</span> <span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">1</span>] ;
+<span class="pl-k">var</span> untitled_receiveetherContract <span class="pl-k">=</span> <span class="pl-smi">web3</span>.<span class="pl-smi">eth</span>.<span class="pl-en">contract</span>([{<span class="pl-s"><span class="pl-pds">"</span>constant<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">true</span>,<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[],<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>deadline<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>outputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[{<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>uint256<span class="pl-pds">"</span></span>}],<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>function<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>constant<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[],<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>deadlineReached<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>outputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[],<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>function<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>constant<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">true</span>,<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[],<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>receivingAccount<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>outputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[{<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>address<span class="pl-pds">"</span></span>}],<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>function<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[{<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>_account<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>address<span class="pl-pds">"</span></span>}],<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>constructor<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">true</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>fallback<span class="pl-pds">"</span></span>}]);
+<span class="pl-k">var</span> untitled_receiveether <span class="pl-k">=</span> <span class="pl-smi">untitled_receiveetherContract</span>.<span class="pl-en">new</span>(
+   _account,
+   {
+     from<span class="pl-k">:</span> <span class="pl-smi">web3</span>.<span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">1</span>], 
+     data<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>0x6060604052341561000c57fe5b60405160208061016f83398101604052515b60008054600160a060020a031916600160a060020a03831617905542610258016001555b505b61011c806100536000396000f3006060604052361560375763ffffffff60e060020a60003504166329dcb0cf8114606a578063a29b8b91146089578063e0486c39146098575b60685b600080546040513492600160a060020a039092169183156108fc02918491818181858888f150505050505b50565b005b3415607157fe5b607760c1565b60408051918252519081900360200190f35b3415609057fe5b606860c7565b005b3415609f57fe5b60a560e1565b60408051600160a060020a039092168252519081900360200190f35b60015481565b600154421060dd57600054600160a060020a0316ff5b5b5b565b600054600160a060020a0316815600a165627a7a723058200744edd8d6041bd63b49e11716bbf334b2baa91462aae800218eecbded25494f0029<span class="pl-pds">'</span></span>, 
+     gas<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>4700000<span class="pl-pds">'</span></span>
+   }, <span class="pl-k">function</span> (<span class="pl-smi">e</span>, <span class="pl-smi">contract</span>){
+    <span class="pl-en">console</span>.<span class="pl-c1">log</span>(e, contract);
+    <span class="pl-k">if</span> (<span class="pl-k">typeof</span> <span class="pl-smi">contract</span>.<span class="pl-smi">address</span> <span class="pl-k">!==</span> <span class="pl-s"><span class="pl-pds">'</span>undefined<span class="pl-pds">'</span></span>) {
+         <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">'</span>Contract mined! address: <span class="pl-pds">'</span></span> <span class="pl-k">+</span> <span class="pl-smi">contract</span>.<span class="pl-smi">address</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">'</span> transactionHash: <span class="pl-pds">'</span></span> <span class="pl-k">+</span> <span class="pl-smi">contract</span>.<span class="pl-smi">transactionHash</span>);
+    }
+ })</pre></div>
+
+<h3>
+<a id="user-content-deploying-the-contract" class="anchor" href="http://localhost:6419/#deploying-the-contract" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Deploying the Contract</h3>
+
+<p>Now save the above code as <code>deploy.js</code> and deploy it using <code>loadScript("deploy.js")</code>.</p>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-k">&gt;</span> loadScript(<span class="pl-s"><span class="pl-pds">"</span>deploy.js<span class="pl-pds">"</span></span>)
+null [object Object]
+<span class="pl-c1">true</span>
+<span class="pl-k">&gt;</span> null [object Object]
+Contract mined<span class="pl-k">!</span> address: 0x32da52e91e55334e36bc9eab5023698bcd475490 transactionHash: 0x61a24948b2586adc3e5a690c9b197fa14b39507b1aa1f105dbb58493699f330f
+<span class="pl-k">&gt;</span>  </pre></div>
+
+<h3>
+<a id="user-content-using-the-contract" class="anchor" href="http://localhost:6419/#using-the-contract" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Using the Contract</h3>
+
+<p>After the contract is mined successfully, a transaction can be performed from another address towards this contract using its address (<code>0x32da52e91e55334e36bc9eab5023698bcd475490</code>). For example, suppose we want to send <code>1.0</code> ethers to the contract from <code>Account 2</code>.</p>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-k">&gt;</span> var tx = {from:  personal.listAccounts[2], to: <span class="pl-s"><span class="pl-pds">"</span>0x32da52e91e55334e36bc9eab5023698bcd475490<span class="pl-pds">"</span></span>, value: web3.toWei(1.0, <span class="pl-s"><span class="pl-pds">"</span>ether<span class="pl-pds">"</span></span>)}
+undefined
+<span class="pl-k">&gt;</span> personal.sendTransaction(tx, <span class="pl-s"><span class="pl-pds">"</span>Node01Account02<span class="pl-pds">"</span></span>)
+<span class="pl-s"><span class="pl-pds">"</span>0xbaa63adb5c669fde8867a13efa321f9f23ea84d0f7cf54563940093047708b1a<span class="pl-pds">"</span></span>
+<span class="pl-k">&gt;</span></pre></div>
+
+<p>Verify the transaction by checking the balances of both accounts using <code>web3.fromWei(eth.getBalance(eth.accounts[1]), "ether")</code> and <code>web3.fromWei(eth.getBalance(eth.accounts[2]), "ether")</code>. </p>
+
+<p>Also verify, after the deadline, the refund to <code>Account 2</code>.</p>
+
+<h3>
+<a id="user-content-adding-an-event" class="anchor" href="http://localhost:6419/#adding-an-event" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Adding an Event</h3>
+
+<p>Let's make the contract a bit more realistic and create a contract event for logging ether receivals. Solidity is able to emit events for the external (outside of EVM) listeners to listen to them. Suppose we want to keep track of receival of ethers. We can define an event <code>event EtherReceival(address sender, uint amount);</code> for this.</p>
+
+<div class="highlight highlight-source-js"><pre>pragma solidity <span class="pl-k">^</span><span class="pl-c1">0.4</span>.<span class="pl-ii">9</span>;
+
+<span class="pl-c">/* Contract accepting ethers during 10 minutes */</span>
+contract ReceiveEther {
+
+    address <span class="pl-k">public</span> receivingAccount;
+    uint <span class="pl-k">public</span> deadline;
+    <span class="pl-c1">event</span> <span class="pl-en">EtherReceival</span>(address sender, uint amount);
+
+    <span class="pl-c">/*  at initialization, setup the owner */</span>
+    <span class="pl-k">function</span> <span class="pl-en">ReceiveEther</span>(<span class="pl-smi">address</span> <span class="pl-smi">_account</span>) {
+        <span class="pl-c"><span class="pl-c">//</span> set the receiving account</span>
+        receivingAccount <span class="pl-k">=</span> _account;
+        <span class="pl-c"><span class="pl-c">//</span> set the deadline as 10 minutes</span>
+        deadline <span class="pl-k">=</span> now <span class="pl-k">+</span> <span class="pl-c1">10</span> <span class="pl-k">*</span> <span class="pl-c1">1</span> minutes;
+    }   
+
+    <span class="pl-c">/* The function without name is the default function that is called whenever </span>
+<span class="pl-c">       anyone sends funds to a contract */</span>
+    <span class="pl-k">function</span> () public payable {
+        uint amount <span class="pl-k">=</span> <span class="pl-smi">msg</span>.<span class="pl-c1">value</span>;
+        <span class="pl-smi">receivingAccount</span>.<span class="pl-c1">send</span>(amount);
+        <span class="pl-en">EtherReceival</span>(<span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>, amount);
+    }
+
+    modifier <span class="pl-en">afterDeadline</span>() { <span class="pl-k">if</span> (now <span class="pl-k">&gt;=</span> deadline) _; }
+
+    <span class="pl-c">/* checks if the time limit has been reached and ends the contract */</span>
+    <span class="pl-k">function</span> <span class="pl-en">dispose</span>() afterDeadline {
+        <span class="pl-en">suicide</span>(receivingAccount);
+    }
+}</pre></div>
+
+<p>The compiled code is very similar to the previous one.</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> _account <span class="pl-k">=</span> <span class="pl-c">/* var of type address here */</span> ;
+<span class="pl-k">var</span> untitled_receiveetherContract <span class="pl-k">=</span> <span class="pl-smi">web3</span>.<span class="pl-smi">eth</span>.<span class="pl-en">contract</span>([{<span class="pl-s"><span class="pl-pds">"</span>constant<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">true</span>,<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[],<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>deadline<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>outputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[{<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>uint256<span class="pl-pds">"</span></span>}],<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>function<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>constant<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[],<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>dispose<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>outputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[],<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>function<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>constant<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">true</span>,<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[],<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>receivingAccount<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>outputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[{<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>address<span class="pl-pds">"</span></span>}],<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>function<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[{<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>_account<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>address<span class="pl-pds">"</span></span>}],<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>constructor<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">true</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>fallback<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>anonymous<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[{<span class="pl-s"><span class="pl-pds">"</span>indexed<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>sender<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>address<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>indexed<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>amount<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>uint256<span class="pl-pds">"</span></span>}],<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>EtherReceival<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>event<span class="pl-pds">"</span></span>}]);
+<span class="pl-k">var</span> untitled_receiveether <span class="pl-k">=</span> <span class="pl-smi">untitled_receiveetherContract</span>.<span class="pl-en">new</span>(
+   _account,
+   {
+     from<span class="pl-k">:</span> <span class="pl-smi">web3</span>.<span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">0</span>], 
+     data<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>0x6060604052341561000c57fe5b6040516020806101c383398101604052515b60008054600160a060020a031916600160a060020a03831617905542610258016001555b505b610170806100536000396000f3006060604052361561003b5763ffffffff60e060020a60003504166329dcb0cf81146100b45780634c86659e146100d6578063e0486c39146100e8575b6100b25b600080546040513492600160a060020a039092169183156108fc02918491818181858888f1505060408051600160a060020a03331681526020810186905281517f75f33ed68675112c77094e7c5b073890598be1d23e27cd7f6907b4a7d98ac61995509081900390910192509050a15b50565b005b34156100bc57fe5b6100c4610114565b60408051918252519081900360200190f35b34156100de57fe5b6100b261011a565b005b34156100f057fe5b6100f8610135565b60408051600160a060020a039092168252519081900360200190f35b60015481565b600154421061013157600054600160a060020a0316ff5b5b5b565b600054600160a060020a0316815600a165627a7a72305820d2129f605fb897fe6d124911dc1638d20b53e5ab620b8e3638a1400ef15e4eef0029<span class="pl-pds">'</span></span>, 
+     gas<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>4700000<span class="pl-pds">'</span></span>
+   }, <span class="pl-k">function</span> (<span class="pl-smi">e</span>, <span class="pl-smi">contract</span>){
+    <span class="pl-en">console</span>.<span class="pl-c1">log</span>(e, contract);
+    <span class="pl-k">if</span> (<span class="pl-k">typeof</span> <span class="pl-smi">contract</span>.<span class="pl-smi">address</span> <span class="pl-k">!==</span> <span class="pl-s"><span class="pl-pds">'</span>undefined<span class="pl-pds">'</span></span>) {
+         <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">'</span>Contract mined! address: <span class="pl-pds">'</span></span> <span class="pl-k">+</span> <span class="pl-smi">contract</span>.<span class="pl-smi">address</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">'</span> transactionHash: <span class="pl-pds">'</span></span> <span class="pl-k">+</span> <span class="pl-smi">contract</span>.<span class="pl-smi">transactionHash</span>);
+    }
+ })</pre></div>
+
+<p>We need to configure it like before and add the statements for processing the event.</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-c"><span class="pl-c">//</span> must unlock the account we are creating the contract from so we can use it</span>
+<span class="pl-smi">personal</span>.<span class="pl-en">unlockAccount</span>(<span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">1</span>],<span class="pl-s"><span class="pl-pds">"</span>Node01Account01<span class="pl-pds">"</span></span>)
+<span class="pl-c"><span class="pl-c">//</span> must set the _account parameter</span>
+<span class="pl-k">var</span> _account <span class="pl-k">=</span> <span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">1</span>] ;
+<span class="pl-k">var</span> untitled_receiveetherContract <span class="pl-k">=</span> <span class="pl-smi">web3</span>.<span class="pl-smi">eth</span>.<span class="pl-en">contract</span>([{<span class="pl-s"><span class="pl-pds">"</span>constant<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">true</span>,<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[],<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>deadline<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>outputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[{<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>uint256<span class="pl-pds">"</span></span>}],<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>function<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>constant<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[],<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>dispose<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>outputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[],<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>function<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>constant<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">true</span>,<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[],<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>receivingAccount<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>outputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[{<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>address<span class="pl-pds">"</span></span>}],<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>function<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[{<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>_account<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>address<span class="pl-pds">"</span></span>}],<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>constructor<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>payable<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">true</span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>fallback<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>anonymous<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>inputs<span class="pl-pds">"</span></span><span class="pl-k">:</span>[{<span class="pl-s"><span class="pl-pds">"</span>indexed<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>sender<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>address<span class="pl-pds">"</span></span>},{<span class="pl-s"><span class="pl-pds">"</span>indexed<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>,<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>amount<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>uint256<span class="pl-pds">"</span></span>}],<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>EtherReceival<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>event<span class="pl-pds">"</span></span>}]);
+<span class="pl-k">var</span> untitled_receiveether <span class="pl-k">=</span> <span class="pl-smi">untitled_receiveetherContract</span>.<span class="pl-en">new</span>(
+   _account,
+   {
+     from<span class="pl-k">:</span> <span class="pl-smi">web3</span>.<span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">1</span>], 
+     data<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>0x6060604052341561000c57fe5b6040516020806101c383398101604052515b60008054600160a060020a031916600160a060020a03831617905542610258016001555b505b610170806100536000396000f3006060604052361561003b5763ffffffff60e060020a60003504166329dcb0cf81146100b45780634c86659e146100d6578063e0486c39146100e8575b6100b25b600080546040513492600160a060020a039092169183156108fc02918491818181858888f1505060408051600160a060020a03331681526020810186905281517f75f33ed68675112c77094e7c5b073890598be1d23e27cd7f6907b4a7d98ac61995509081900390910192509050a15b50565b005b34156100bc57fe5b6100c4610114565b60408051918252519081900360200190f35b34156100de57fe5b6100b261011a565b005b34156100f057fe5b6100f8610135565b60408051600160a060020a039092168252519081900360200190f35b60015481565b600154421061013157600054600160a060020a0316ff5b5b5b565b600054600160a060020a0316815600a165627a7a72305820d2129f605fb897fe6d124911dc1638d20b53e5ab620b8e3638a1400ef15e4eef0029<span class="pl-pds">'</span></span>, 
+     gas<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>4700000<span class="pl-pds">'</span></span>
+   }, <span class="pl-k">function</span> (<span class="pl-smi">e</span>, <span class="pl-smi">contract</span>){
+    <span class="pl-en">console</span>.<span class="pl-c1">log</span>(e, contract);
+    <span class="pl-k">if</span> (<span class="pl-k">typeof</span> <span class="pl-smi">contract</span>.<span class="pl-smi">address</span> <span class="pl-k">!==</span> <span class="pl-s"><span class="pl-pds">'</span>undefined<span class="pl-pds">'</span></span>) {
+     <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">'</span>Contract mined! address: <span class="pl-pds">'</span></span> <span class="pl-k">+</span> <span class="pl-smi">contract</span>.<span class="pl-smi">address</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">'</span> transactionHash: <span class="pl-pds">'</span></span> <span class="pl-k">+</span> <span class="pl-smi">contract</span>.<span class="pl-smi">transactionHash</span>);
+     <span class="pl-c"><span class="pl-c">//</span> configure the event to watch for changes</span>
+     <span class="pl-k">var</span> <span class="pl-c1">event</span> <span class="pl-k">=</span> <span class="pl-smi">untitled_receiveether</span>.<span class="pl-en">EtherReceival</span>();
+     <span class="pl-c1">event</span>.<span class="pl-c1">watch</span>(<span class="pl-k">function</span>(<span class="pl-smi">error</span>, <span class="pl-smi">result</span>){
+       <span class="pl-k">if</span> (<span class="pl-k">!</span>error)
+         <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">"</span>[Ether received: Sender: <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">sender</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>, Amount: <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">web3</span>.<span class="pl-en">fromWei</span>(<span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">amount</span>, <span class="pl-s"><span class="pl-pds">"</span>ether<span class="pl-pds">"</span></span>)<span class="pl-k">+</span><span class="pl-s"><span class="pl-pds">"</span> ether(s)]<span class="pl-pds">"</span></span>);
+     });
+    }
+ })</pre></div>
+
+<p>Now save the above code as <code>deployWithLog.js</code> and use it like before.</p>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-k">&gt;</span> loadScript(<span class="pl-s"><span class="pl-pds">"</span>deployWithLog.js<span class="pl-pds">"</span></span>)
+
+null [object Object]
+<span class="pl-c1">true</span>
+<span class="pl-k">&gt;</span> null [object Object]
+Contract mined<span class="pl-k">!</span> address: 0xcc2bad220fa388be781b37e3ab125c2ecfccb915 transactionHash: 0xda50d82226337fc3a14446fc61c991f15fc5e10bb9760fa7d0b75d270bdd16ed
+<span class="pl-k">&gt;</span> var tx = {from:  personal.listAccounts[2], to: <span class="pl-s"><span class="pl-pds">"</span>0xcc2bad220fa388be781b37e3ab125c2ecfccb915<span class="pl-pds">"</span></span>, value: web3.toWei(1.0, <span class="pl-s"><span class="pl-pds">"</span>ether<span class="pl-pds">"</span></span>)}
+undefined
+<span class="pl-k">&gt;</span> personal.sendTransaction(tx, <span class="pl-s"><span class="pl-pds">"</span>Node01Account02<span class="pl-pds">"</span></span>)
+<span class="pl-s"><span class="pl-pds">"</span>0xac13170644ad844b03d76c28b12eda1924abfc99f30a8a4400a6991aa78f3fcc<span class="pl-pds">"</span></span>
+<span class="pl-k">&gt;</span> [Ether received: Sender: 0xc306c64d00f58e58526d4ac820d13d6d61747f7b, Amount: 1 ether(s)]
+<span class="pl-k">&gt;</span> var tx = {from:  personal.listAccounts[2], to: <span class="pl-s"><span class="pl-pds">"</span>0xcc2bad220fa388be781b37e3ab125c2ecfccb915<span class="pl-pds">"</span></span>, value: web3.toWei(2.1,undefined}
+<span class="pl-k">&gt;</span> personal.sendTransaction(tx, <span class="pl-s"><span class="pl-pds">"</span>Node01Account02<span class="pl-pds">"</span></span>)
+
+<span class="pl-s"><span class="pl-pds">"</span>0x3edd4f46667510dde371d23756e8cef1ea59965105d4e7e885d772f07de855c6<span class="pl-pds">"</span></span>
+<span class="pl-k">&gt;</span> [Ether received: Sender: 0xc306c64d00f58e58526d4ac820d13d6d61747f7b, Amount: 2.1 ether(s)]</pre></div>
+
+<p>As you can see, each time a transaction is processed by the contract the <code>[Ether received: Sender: 0x???, Amount: ?.??? ether(s)]</code> log entry is created.</p>
+
+<h2>
+<a id="user-content-what-is-next" class="anchor" href="http://localhost:6419/#what-is-next" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What is next?</h2>
+
+<p>You have learned how to get payments using contracts. Now it is time to design a simple trading contract. You can continue to the <a href="http://localhost:6419/03-SimpleBidding/README.md">Simple Bidding Contract</a> example.</p>
+
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    
+
+  </div>
+  <div>&nbsp;</div>
+  </div><script>
+    function showCanonicalImages() {
+      var images = document.getElementsByTagName('img');
+      if (!images) {
+        return;
+      }
+      for (var index = 0; index < images.length; index++) {
+        var image = images[index];
+        if (image.getAttribute('data-canonical-src') && image.src !== image.getAttribute('data-canonical-src')) {
+          image.src = image.getAttribute('data-canonical-src');
+        }
+      }
+    }
+
+    function scrollToHash() {
+      if (location.hash && !document.querySelector(':target')) {
+        var element = document.getElementById('user-content-' + location.hash.slice(1));
+        if (element) {
+           element.scrollIntoView();
+        }
+      }
+    }
+
+    function autorefreshContent(eventSourceUrl) {
+      var initialTitle = document.title;
+      var contentElement = document.getElementById('grip-content');
+      var source = new EventSource(eventSourceUrl);
+      var isRendering = false;
+
+      source.onmessage = function(ev) {
+        var msg = JSON.parse(ev.data);
+        if (msg.updating) {
+          isRendering = true;
+          document.title = '(Rendering) ' + document.title;
+        } else {
+          isRendering = false;
+          document.title = initialTitle;
+          contentElement.innerHTML = msg.content;
+          showCanonicalImages();
+        }
+      }
+
+      source.onerror = function(e) {
+        if (e.readyState === EventSource.CLOSED && isRendering) {
+          isRendering = false;
+          document.title = initialTitle;
+        }
+      }
+    }
+
+    window.onhashchange = function() {
+      scrollToHash();
+    }
+
+    window.onload = function() {
+      scrollToHash();
+    }
+
+    showCanonicalImages();
+
+    var autorefreshUrl = document.getElementById('preview-page').getAttribute('data-autorefresh-url');
+    if (autorefreshUrl) {
+      autorefreshContent(autorefreshUrl);
+    }
+  </script>
+
+</body></html>

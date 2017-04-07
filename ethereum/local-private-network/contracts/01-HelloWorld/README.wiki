@@ -1,6 +1,6 @@
 = Creating, Deploying and Using a Contract =
 
-<blockquote>This example is a continuation of the [[./Setting%20Up%20a%20Local%20Private%20Test%20Network%20with%20One%20Node.md|Setting Up a Local Private Test Network with One Node]] example.
+<blockquote>This example is a continuation of the [[../..//README.md|Setting Up a Local Private Test Network with One Node]] example.
 </blockquote>
 == Before you begin ==
 
@@ -62,10 +62,10 @@ Contracts can be compiled either using an online compiler or an offline compiler
 
 If you do not have the Solidity compiler <code>solc</code> installed, you can simply use the [https://ethereum.github.io/browser-solidity/ online Solidity compiler]. On the online compiler, create a new file <code>HelloWorld.sol</code> and then copy the source code above into this file. After a second, the compiled code should appear on the right pane.
 
-Now go back to the terminal window and create a <code>HelloWorld.js</code> file.
+Now go back to the terminal window and create a <code>deploy.js</code> file.
 
-<source lang="bash">$ nano HelloWorld.js</source>
-And then go back to the online compiler and copy the code in the box labeled <code>Web3 deploy</code> into <code>HelloWorld.js</code>.
+<source lang="bash">$ nano deploy.js</source>
+And then go back to the online compiler and copy the code in the box labeled <code>Web3 deploy</code> into <code>deploy.js</code>.
 
 <source lang="bash">var helloworld_sol_helloworldContract = web3.eth.contract([{"constant":true,"inputs":[],"name":"sayHello","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"inputs":[],"payable":false,"type":"constructor"}]);
 var helloworld_sol_helloworld = helloworld_sol_helloworldContract.new(
@@ -97,7 +97,7 @@ After unlocking the account, we can deploy the contract by using the <code>loadS
 > </source>
 Then deploy the contract.
 
-<source lang="javascript">> loadScript("HelloWorld.js")
+<source lang="javascript">> loadScript("deploy.js")
 null [object Object]
 true
 > null [object Object]
@@ -121,5 +121,5 @@ As you can verify also, no cost is paid for the usage of the contract.
 
 == What is next? ==
 
-You learned about the very basics of the contracts. Now it is time to into a bit more details. You can continue to the [[./Receiving%20Ethers%20Using%20a%20Contract.md|Receiving Ethers Using a Contract]] example.
+You learned about the very basics of the contracts. Now it is time to into a bit more details. You can continue to the [[../ReceiveEther/README.md|Receiving Ethers Using a Contract]] example.
 

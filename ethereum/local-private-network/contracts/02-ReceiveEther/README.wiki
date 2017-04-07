@@ -1,6 +1,6 @@
 = Receiving Ethers Using a Contract =
 
-<blockquote>This example is a continuation of the [[./Creating,%20Deploying%20and%20Using%20a%20Contract.md|Creating, Deploying and Using Contracts]] example.
+<blockquote>This example is a continuation of the [[../01-HelloWorld/README.md|Creating, Deploying and Using Contracts]] example.
 </blockquote>
 == Before you begin ==
 
@@ -82,9 +82,9 @@ One thing here we are missing is that, in geth, accounts are locked by default. 
 
 === Deploying the Contract ===
 
-Now save the above code as <code>ReceiveEther.js</code> and deploy it using <code>loadScript("ReceiveEther.js")</code>.
+Now save the above code as <code>deploy.js</code> and deploy it using <code>loadScript("deploy.js")</code>.
 
-<source lang="bash">> loadScript("ReceiveEther.js")
+<source lang="bash">> loadScript("deploy.js")
 null [object Object]
 true
 > null [object Object]
@@ -180,9 +180,9 @@ var untitled_receiveether = untitled_receiveetherContract.new(
      });
     }
  })</source>
-Now save the above code as <code>ReceiveEtherWithLog.js</code> and use it like before.
+Now save the above code as <code>deployWithLog.js</code> and use it like before.
 
-<source lang="bash">> loadScript("ReceiveEtherWithLog.js")
+<source lang="bash">> loadScript("deployWithLog.js")
 
 null [object Object]
 true
@@ -202,5 +202,5 @@ As you can see, each time a transaction is processed by the contract the <code>[
 
 == What is next? ==
 
-You have learned how to get payments using contracts. Now it is time to design a simple trading contract. You can continue to the [[./Simple%20Bidding%20Contract.md|Simple Bidding Contract]] example.
+You have learned how to get payments using contracts. Now it is time to design a simple trading contract. You can continue to the [[../03-SimpleBidding/README.md|Simple Bidding Contract]] example.
 

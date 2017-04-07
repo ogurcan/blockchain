@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://localhost:6419/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <title>README.md - Grip</title>
+  <link rel="icon" href="http://localhost:6419/__/grip/static/favicon.ico">
+  <link rel="stylesheet" href="./index_files/frameworks-5b61aadc846f0818981ceec31b49c475fb084c163fdec5efbc2c21ef539092a9.css">
+  <link rel="stylesheet" href="./index_files/github-9e591dcc1f30d2a6ac3773da2f8c05987a4a148bae15713c4be9bb62b6e92b26.css">
+  <link rel="stylesheet" href="./index_files/site-f4fa6ace91e5f0fabb47e8405e5ecf6a9815949cd3958338f6578e626cd443d7.css">
+  <link rel="stylesheet" href="./index_files/octicons.css">
+  <style>
+    /* Page tweaks */
+    .preview-page {
+      margin-top: 64px;
+    }
+    /* User-content tweaks */
+    .timeline-comment-wrapper > .timeline-comment:after,
+    .timeline-comment-wrapper > .timeline-comment:before {
+      content: none;
+    }
+    /* User-content overrides */
+    .discussion-timeline.wide {
+      width: 920px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div id="preview-page" class="preview-page" data-autorefresh-url="/__/grip/refresh/">
+
+    
+
+      <div role="main" class="main-content">
+        <div class="container new-discussion-timeline experiment-repo-nav">
+          <div class="repository-content">
+            <div id="readme" class="readme boxed-group clearfix announce instapaper_body md">
+              
+                <h3>
+                  <span class="octicon octicon-book"></span>
+                  README.md
+                </h3>
+              
+              <article class="markdown-body entry-content" itemprop="text" id="grip-content">
+                <h1>
+<a id="user-content-setting-up-a-local-private-test-network-with-one-node" class="anchor" href="http://localhost:6419/#setting-up-a-local-private-test-network-with-one-node" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Setting Up a Local Private Test Network with One Node</h1>
+
+<h2>
+<a id="user-content-before-you-begin" class="anchor" href="http://localhost:6419/#before-you-begin" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Before you begin</h2>
+
+<p>Before you begin, make sure that the Go implementation <code>geth</code> is installed as described <a href="https://github.com/ethereum/go-ethereum/wiki/Building-Ethereum%20here">here</a>.</p>
+
+<p>This example is prepared by using the geth version <code>1.5.7-stable</code> which is using Go version <code>go1.7.4</code> and tested on <code>macOS Sierra</code> and <code>Ubuntu 14.04.5</code>. </p>
+
+<div class="highlight highlight-source-shell"><pre>Geth
+Version: 1.5.7-stable
+Git Commit: da2a22c384a9b621ec853fe4b1aa651d606cf42b
+Protocol Versions: [63 62]
+Network Id: 1
+Go Version: go1.7.4
+OS: darwin
+GOPATH=
+GOROOT=/usr/local/Cellar/go/1.7.4_2/libexec</pre></div>
+
+<h2>
+<a id="user-content-introduction" class="anchor" href="http://localhost:6419/#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h2>
+
+<p>In this example, we will create a local private test network with a single node which has several accounts. The objective is to show you how to initialize a node, how to interact with that node, how to create accounts, how to set initial ethers for the accounts and how to make transactions (e.g., to send ethers).</p>
+
+<p>The things that are required to specify in a private chain are:</p>
+
+<ul>
+<li>Custom Genesis File</li>
+<li>Custom Data Directory</li>
+<li>Custom NetworkID </li>
+</ul>
+
+<p>We also need to create a directory for the test network. </p>
+
+<div class="highlight highlight-source-shell"><pre>$ mkdir local-private-network</pre></div>
+
+<p>Then enter to this directory. </p>
+
+<div class="highlight highlight-source-shell"><pre>$ <span class="pl-c1">cd</span> local-private-network</pre></div>
+
+<h2>
+<a id="user-content-create-the-genesis-file" class="anchor" href="http://localhost:6419/#create-the-genesis-file" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Create the Genesis File</h2>
+
+<p>The genesis block is the start of the blockchain - the first block, block 0, and the only block that does not point to a predecessor block. The protocol ensures that no other node will agree with your version of the blockchain unless they have the same genesis block, so you can make as many private testnet blockchains as you’d like!</p>
+
+<div class="highlight highlight-source-shell"><pre>$ nano CustomGenesis.json</pre></div>
+
+<p>Paste the following code, save and exit:</p>
+
+<div class="highlight highlight-source-js"><pre>{
+   <span class="pl-s"><span class="pl-pds">"</span>nonce<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x0000000000000042<span class="pl-pds">"</span></span>,
+   <span class="pl-s"><span class="pl-pds">"</span>timestamp<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x0<span class="pl-pds">"</span></span>,
+   <span class="pl-s"><span class="pl-pds">"</span>parentHash<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x0000000000000000000000000000000000000000000000000000000000000000<span class="pl-pds">"</span></span>,
+   <span class="pl-s"><span class="pl-pds">"</span>extraData<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x0<span class="pl-pds">"</span></span>,
+   <span class="pl-s"><span class="pl-pds">"</span>gasLimit<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x8000000<span class="pl-pds">"</span></span>,
+   <span class="pl-s"><span class="pl-pds">"</span>difficulty<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x400<span class="pl-pds">"</span></span>,
+   <span class="pl-s"><span class="pl-pds">"</span>mixhash<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x0000000000000000000000000000000000000000000000000000000000000000<span class="pl-pds">"</span></span>,
+   <span class="pl-s"><span class="pl-pds">"</span>coinbase<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x3333333333333333333333333333333333333333<span class="pl-pds">"</span></span>,
+   <span class="pl-s"><span class="pl-pds">"</span>alloc<span class="pl-pds">"</span></span><span class="pl-k">:</span> {
+   }
+}</pre></div>
+
+<h2>
+<a id="user-content-initialize-the-node" class="anchor" href="http://localhost:6419/#initialize-the-node" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Initialize the Node</h2>
+
+<p>To initialize the the first node with the custom genesis block, execute the following command:</p>
+
+<div class="highlight highlight-source-shell"><pre>$ geth --identity=<span class="pl-s"><span class="pl-pds">"</span>Node01<span class="pl-pds">"</span></span> --datadir=<span class="pl-s"><span class="pl-pds">"</span>./Node01<span class="pl-pds">"</span></span> -verbosity 6 --port 30301 --rpcport 8101 --networkid=<span class="pl-s"><span class="pl-pds">"</span>12345<span class="pl-pds">"</span></span> init ./CustomGenesis.json <span class="pl-k">2&gt;&gt;</span> ./Node01.log</pre></div>
+
+<p>where the name of the node is <code>Node01</code>, the data directory is <code>./Node01</code>, the unique id of the network is <code>12345</code>.</p>
+
+<h2>
+<a id="user-content-interact-with-the-node" class="anchor" href="http://localhost:6419/#interact-with-the-node" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Interact with the Node</h2>
+
+<p>We can interact with the node through <a href="https://github.com/ethereum/go-ethereum/wiki/JavaScript-Console">the Geth JavaScript console</a>. </p>
+
+<p>To do so first enter:</p>
+
+<div class="highlight highlight-source-shell"><pre>$ geth --identity=<span class="pl-s"><span class="pl-pds">"</span>Node01<span class="pl-pds">"</span></span> --datadir=<span class="pl-s"><span class="pl-pds">"</span>./Node01<span class="pl-pds">"</span></span> -verbosity 6 --port 30301 --rpcport 8101 --networkid=<span class="pl-s"><span class="pl-pds">"</span>12345<span class="pl-pds">"</span></span> --nodiscover console <span class="pl-k">2&gt;&gt;</span> ./Node01.log</pre></div>
+
+<p>This will open a geth console (as below) for a node named <code>Node01</code> whose <code>--datadir</code> is <code>./Node01</code>. The <code>--nodiscover</code> flag turns off peer discovery and prevents geth from trying to find peers for your network id on the internet. The <code>2&gt;&gt; ./Node01.log</code> flag redirects the geth output to the <code>Node01.log</code> log file.</p>
+
+<div class="highlight highlight-source-shell"><pre>Welcome to the Geth JavaScript console<span class="pl-k">!</span>
+
+instance: Geth/node01/v1.5.7-stable-da2a22c3/linux/go1.7.3
+ modules: admin:1.0 debug:1.0 eth:1.0 miner:1.0 net:1.0 personal:1.0 rpc:1.0 txpool:1.0 web3:1.0
+
+<span class="pl-k">&gt;</span> </pre></div>
+
+<p>For seeing the logs at real-time, open another terminal window and execute the <code>tail</code> command.</p>
+
+<div class="highlight highlight-source-shell"><pre>$ tail -f Node01.log</pre></div>
+
+<p>Now go back to the first terminal and start interacting. For example, to get the info about the node, type the following command:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">&gt;</span> <span class="pl-smi">admin</span>.<span class="pl-smi">nodeInfo</span></pre></div>
+
+<p>The result will be something like this:</p>
+
+<div class="highlight highlight-source-js"><pre>{
+  enode<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>enode://7d1c6e5ea7e79ceb8123847a61aecc817683f0a715f4ccf342e6cdb516e42a7dab6ddab0c807f92cca1b28f068b4917899f58c1faae21c15e4618fc29571844f@[::]:30301<span class="pl-pds">"</span></span>,
+  id<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>7d1c6e5ea7e79ceb8123847a61aecc817683f0a715f4ccf342e6cdb516e42a7dab6ddab0c807f92cca1b28f068b4917899f58c1faae21c15e4618fc29571844f<span class="pl-pds">"</span></span>,
+  ip<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>::<span class="pl-pds">"</span></span>,
+  listenAddr<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>[::]:30301<span class="pl-pds">"</span></span>,
+  name<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>Geth/Node01/v1.5.7-stable-da2a22c3/linux/go1.7.3<span class="pl-pds">"</span></span>,
+  ports<span class="pl-k">:</span> {
+    discovery<span class="pl-k">:</span> <span class="pl-c1">30301</span>,
+    listener<span class="pl-k">:</span> <span class="pl-c1">30301</span>
+  },
+  protocols<span class="pl-k">:</span> {
+    eth<span class="pl-k">:</span> {
+      difficulty<span class="pl-k">:</span> <span class="pl-c1">1024</span>,
+      genesis<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x6650a0ac6c5e805475e7ca48eae5df0e32a2147a154bb2222731c770ddb5c158<span class="pl-pds">"</span></span>,
+      head<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x6650a0ac6c5e805475e7ca48eae5df0e32a2147a154bb2222731c770ddb5c158<span class="pl-pds">"</span></span>,
+      network<span class="pl-k">:</span> <span class="pl-c1">12345</span>
+    }
+  }
+}</pre></div>
+
+<p>Note that <code>genesis</code> and <code>head</code> have the same value since there is no block yet in the blockchain, but <code>genesis</code>.</p>
+
+<p>If we only get the enode, type the following command:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">&gt;</span> <span class="pl-smi">admin</span>.<span class="pl-smi">nodeInfo</span>.<span class="pl-smi">enode</span>
+<span class="pl-s"><span class="pl-pds">"</span>enode://7d1c6e5ea7e79ceb8123847a61aecc817683f0a715f4ccf342e6cdb516e42a7dab6ddab0c807f92cca1b28f068b4917899f58c1faae21c15e4618fc29571844f@[::]:30301<span class="pl-pds">"</span></span>
+<span class="pl-k">&gt;</span></pre></div>
+
+<p>To be sure that <code>Node01</code> is listening to the network, type:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">&gt;</span> <span class="pl-smi">net</span>.<span class="pl-smi">listening</span>
+<span class="pl-c1">true</span>
+<span class="pl-k">&gt;</span> </pre></div>
+
+<p>However, no peers will be added since this is a private network:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">&gt;</span> <span class="pl-smi">net</span>.<span class="pl-smi">peerCount</span>
+<span class="pl-c1">0</span>
+<span class="pl-k">&gt;</span> <span class="pl-smi">admin</span>.<span class="pl-smi">peers</span>
+[]
+<span class="pl-k">&gt;</span></pre></div>
+
+<h2>
+<a id="user-content-create-accounts" class="anchor" href="http://localhost:6419/#create-accounts" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Create Accounts</h2>
+
+<p>Now it is time to do some real stuff like making transactions. However, the node initiated above do not have any [[Ether|ethers]] for making transactions, in addition it is not possible to mine to earn ethers.</p>
+
+<p>In fact, the node do not even have any accounts for holding ethers, and they should have at least one. So, lets start from creating accounts for this node.</p>
+
+<p>Creating account is accomplised by using the <code>personal.newAccount("password")</code> command with a given password. Come back to the console of <code>Node01</code> and type that command with a simple passwords three times to create three accounts:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">&gt;</span> <span class="pl-smi">personal</span>.<span class="pl-en">newAccount</span>(<span class="pl-s"><span class="pl-pds">"</span>Node01Account00<span class="pl-pds">"</span></span>) 
+<span class="pl-s"><span class="pl-pds">"</span>0xf50fee0099f5776a9a13ed7e5d554ee16c36bf70<span class="pl-pds">"</span></span>
+<span class="pl-k">&gt;</span> <span class="pl-smi">personal</span>.<span class="pl-en">newAccount</span>(<span class="pl-s"><span class="pl-pds">"</span>Node01Account01<span class="pl-pds">"</span></span>) 
+<span class="pl-s"><span class="pl-pds">"</span>0x195998f3491f37d9887cb93ae99c56eec8f67182<span class="pl-pds">"</span></span>
+<span class="pl-k">&gt;</span> <span class="pl-smi">personal</span>.<span class="pl-en">newAccount</span>(<span class="pl-s"><span class="pl-pds">"</span>Node01Account02<span class="pl-pds">"</span></span>) 
+<span class="pl-s"><span class="pl-pds">"</span>0xa33f1327bd37793d8b5eaca4c7f8f0fc3b302b00<span class="pl-pds">"</span></span>
+<span class="pl-k">&gt;</span> </pre></div>
+
+<p>The hash codes are the addresses of the created accounts.</p>
+
+<blockquote>
+<p>Note that, in your computer the addresses of the accounts will be different.</p>
+</blockquote>
+
+<p>Note that, nodes may have several accounts (at least one) and they can be listed by using either <code>personal.listAccounts</code> or <code>eth.accounts</code> command:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">&gt;</span> <span class="pl-smi">personal</span>.<span class="pl-smi">listAccounts</span>
+[<span class="pl-s"><span class="pl-pds">"</span>0xf50fee0099f5776a9a13ed7e5d554ee16c36bf70<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>0x195998f3491f37d9887cb93ae99c56eec8f67182<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>0xa33f1327bd37793d8b5eaca4c7f8f0fc3b302b00<span class="pl-pds">"</span></span>]
+<span class="pl-k">&gt;</span> <span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>
+[<span class="pl-s"><span class="pl-pds">"</span>0xf50fee0099f5776a9a13ed7e5d554ee16c36bf70<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>0x195998f3491f37d9887cb93ae99c56eec8f67182<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>0xa33f1327bd37793d8b5eaca4c7f8f0fc3b302b00<span class="pl-pds">"</span></span>]
+<span class="pl-k">&gt;</span> </pre></div>
+
+<h2>
+<a id="user-content-allocate-initial-ethers-to-the-accounts" class="anchor" href="http://localhost:6419/#allocate-initial-ethers-to-the-accounts" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Allocate Initial Ethers to the Accounts</h2>
+
+<p>To allocate initial ethers to the accounts, the genesis block (which is inside <code>CustomGenesis.json</code>) should be modified as below. However, to be able to make such a modification, you should first exit from the console by using the <code>exit</code> command and then stop the execution of <code>geth</code> by pressing <code>Ctrl+C</code>. </p>
+
+<div class="highlight highlight-source-js"><pre>{
+   <span class="pl-s"><span class="pl-pds">"</span>nonce<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x0000000000000042<span class="pl-pds">"</span></span>,
+   <span class="pl-s"><span class="pl-pds">"</span>timestamp<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x0<span class="pl-pds">"</span></span>,
+   <span class="pl-s"><span class="pl-pds">"</span>parentHash<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x0000000000000000000000000000000000000000000000000000000000000000<span class="pl-pds">"</span></span>,
+   <span class="pl-s"><span class="pl-pds">"</span>extraData<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x0<span class="pl-pds">"</span></span>,
+   <span class="pl-s"><span class="pl-pds">"</span>gasLimit<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x8000000<span class="pl-pds">"</span></span>,
+   <span class="pl-s"><span class="pl-pds">"</span>difficulty<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x400<span class="pl-pds">"</span></span>,
+   <span class="pl-s"><span class="pl-pds">"</span>mixhash<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x0000000000000000000000000000000000000000000000000000000000000000<span class="pl-pds">"</span></span>,
+   <span class="pl-s"><span class="pl-pds">"</span>coinbase<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x3333333333333333333333333333333333333333<span class="pl-pds">"</span></span>,
+   <span class="pl-s"><span class="pl-pds">"</span>alloc<span class="pl-pds">"</span></span><span class="pl-k">:</span> {
+      <span class="pl-s"><span class="pl-pds">"</span>0xf50fee0099f5776a9a13ed7e5d554ee16c36bf70<span class="pl-pds">"</span></span> <span class="pl-k">:</span> {
+       <span class="pl-s"><span class="pl-pds">"</span>balance<span class="pl-pds">"</span></span> <span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>10000000000000000000<span class="pl-pds">"</span></span>
+      },
+      <span class="pl-s"><span class="pl-pds">"</span>0x195998f3491f37d9887cb93ae99c56eec8f67182<span class="pl-pds">"</span></span> <span class="pl-k">:</span> {
+       <span class="pl-s"><span class="pl-pds">"</span>balance<span class="pl-pds">"</span></span> <span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>20000000000000000000<span class="pl-pds">"</span></span>
+      },
+      <span class="pl-s"><span class="pl-pds">"</span>0xa33f1327bd37793d8b5eaca4c7f8f0fc3b302b00<span class="pl-pds">"</span></span> <span class="pl-k">:</span> {
+       <span class="pl-s"><span class="pl-pds">"</span>balance<span class="pl-pds">"</span></span> <span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>30000000000000000000<span class="pl-pds">"</span></span>
+      }
+   }
+}</pre></div>
+
+<p>Now we need to reinitialize the node and attach to it as shown above before.</p>
+
+<p>To veirfy if the accounts are initialized with the correct balance values we specified in the Custom Genesis Block, use the <code>eth.getBalance()</code> command on the console of each node using their associated account numbers (which can be retrieved by the <code>eth.accounts</code> command).</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">&gt;</span> <span class="pl-smi">eth</span>.<span class="pl-en">getBalance</span>(<span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">0</span>])
+<span class="pl-c1">10000000000000000000</span>
+<span class="pl-k">&gt;</span> <span class="pl-smi">eth</span>.<span class="pl-en">getBalance</span>(<span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">1</span>])
+<span class="pl-c1">20000000000000000000</span>
+<span class="pl-k">&gt;</span> <span class="pl-smi">eth</span>.<span class="pl-en">getBalance</span>(<span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">2</span>])
+<span class="pl-c1">30000000000000000000</span>
+<span class="pl-k">&gt;</span> </pre></div>
+
+<p>Note that <code>getBalance()</code> returns ether in wei which is like 1 trillionth of an ether.
+To check the balance in terms of ether, type the following command:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">&gt;</span> <span class="pl-smi">web3</span>.<span class="pl-en">fromWei</span>(<span class="pl-smi">eth</span>.<span class="pl-en">getBalance</span>(<span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">1</span>]), <span class="pl-s"><span class="pl-pds">"</span>ether<span class="pl-pds">"</span></span>)
+<span class="pl-c1">20</span>
+<span class="pl-k">&gt;</span></pre></div>
+
+<p>Perfect! Now it is time to play around in our small private test network.</p>
+
+<h2>
+<a id="user-content-start-ethereum-mining" class="anchor" href="http://localhost:6419/#start-ethereum-mining" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Start Ethereum Mining</h2>
+
+<p>The ethereum network needs a mining node to process transactions:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">&gt;</span> <span class="pl-smi">miner</span>.<span class="pl-c1">start</span>(<span class="pl-c1">1</span>)
+<span class="pl-c1">true</span>
+<span class="pl-k">&gt;</span></pre></div>
+
+<blockquote>
+<p>The <code>(1)</code> signifies the number of threads you want to use during mining. That number depends on the prowess of your system, and how much total percent of cpu on your system you want to use. You can generally run it at <code>miner.start(1)</code> or <code>miner.start(2)</code>. To mine with your gpu, which is better at mining ether, use the following command <code>miner.startAutoDAG()</code>.</p>
+</blockquote>
+
+<p>The first time you run geth on your machine, it will generate a <code>DAG</code>. This can take several minutes depending upon the speed of your CPU. Once it finishes generating the DAG.</p>
+
+<div class="highlight highlight-source-shell"><pre>...
+I0213 16:28:01.652643 vendor/github.com/ethereum/ethash/ethash.go:291] Generating DAG: 22%
+I0213 16:28:04.881279 vendor/github.com/ethereum/ethash/ethash.go:291] Generating DAG: 23%
+I0213 16:28:07.210075 eth/downloader/downloader.go:1474] Quality of service: rtt 20s, conf 1.000, ttl 1m0s
+I0213 16:28:08.136458 vendor/github.com/ethereum/ethash/ethash.go:291] Generating DAG: 24%
+I0213 16:28:11.633341 vendor/github.com/ethereum/ethash/ethash.go:291] Generating DAG: 25%
+...</pre></div>
+
+<p>When start <code>Generating DAG</code> reaches <code>100%</code>, you will know that the mining has started. Depending on your cpu and ram, it can take from a few minutes to an hour. For this example with the configuration given in the beginning, it took around 7 minutes to start mining.</p>
+
+<p>The mining node (<code>Node01</code>) deposits ethereum into its <code>coinbase</code> (queried by <code>eth.coinbase</code>). By default, the coinbase of a node is its <code>Account 0</code> (queried by <code>eth.accounts[0]</code>).
+To check if the node is mining, you can time to time check the balance of the <code>coinbase</code> or <code>Account 0</code>.</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">&gt;</span> <span class="pl-smi">eth</span>.<span class="pl-en">getBalance</span>(<span class="pl-smi">eth</span>.<span class="pl-smi">coinbase</span>)
+<span class="pl-c1">220781250000000000000</span>
+<span class="pl-k">&gt;</span> <span class="pl-smi">eth</span>.<span class="pl-en">getBalance</span>(<span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">0</span>])
+<span class="pl-c1">220781250000000000000</span>
+<span class="pl-k">&gt;</span></pre></div>
+
+<h2>
+<a id="user-content-make-a-transaction-send-ether-from-one-account-to-another" class="anchor" href="http://localhost:6419/#make-a-transaction-send-ether-from-one-account-to-another" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Make a Transaction: Send ether from one account to another</h2>
+
+<p>Suppose, we want to send  <code>1.23</code> ethers from <code>Account 1</code> to <code>Account 2</code>. To do so, we need to create a transaction object <code>tx</code> first:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">&gt;</span> <span class="pl-k">var</span> tx <span class="pl-k">=</span> {from<span class="pl-k">:</span>  <span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">1</span>], to<span class="pl-k">:</span> <span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">2</span>], value<span class="pl-k">:</span> <span class="pl-smi">web3</span>.<span class="pl-en">toWei</span>(<span class="pl-c1">1.23</span>, <span class="pl-s"><span class="pl-pds">"</span>ether<span class="pl-pds">"</span></span>)}
+<span class="pl-c1">undefined</span>
+<span class="pl-k">&gt;</span> </pre></div>
+
+<p>Do not take into account the message "undefined". The transaction object <code>tx</code> is created. Now we can execute this transaction as follows (by providing the password of the sender account):</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">&gt;</span> <span class="pl-smi">personal</span>.<span class="pl-en">sendTransaction</span>(tx, <span class="pl-s"><span class="pl-pds">"</span>Node01Account01<span class="pl-pds">"</span></span>)
+<span class="pl-s"><span class="pl-pds">"</span>0x9c1116b8718fad9e84422e51d94045265d5ef78d553ada1833d8e4964943f5d5<span class="pl-pds">"</span></span>
+<span class="pl-k">&gt;</span> </pre></div>
+
+<p>Voila! The transaction is on the way. It can be seen inside pending transactions. Howeber, with a fast enough computer, you will see this list empty since the transaction has already been performed.</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">&gt;</span> <span class="pl-smi">eth</span>.<span class="pl-smi">pendingTransactions</span>
+[{
+    blockHash<span class="pl-k">:</span> <span class="pl-c1">null</span>,
+    blockNumber<span class="pl-k">:</span> <span class="pl-c1">null</span>,
+    from<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0xf50fee0099f5776a9a13ed7e5d554ee16c36bf70<span class="pl-pds">"</span></span>,
+    gas<span class="pl-k">:</span> <span class="pl-c1">90000</span>,
+    gasPrice<span class="pl-k">:</span> <span class="pl-c1">21771860000</span>,
+    hash<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x9c1116b8718fad9e84422e51d94045265d5ef78d553ada1833d8e4964943f5d5<span class="pl-pds">"</span></span>,
+    input<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x<span class="pl-pds">"</span></span>,
+    nonce<span class="pl-k">:</span> <span class="pl-c1">0</span>,
+    r<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x60229effbf98b4e664a5aac86ef8cbe209860be78f9c2f08d67bf753a61feaf3<span class="pl-pds">"</span></span>,
+    s<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x37cab764d8b865303aa2a7cf992f7daefbfe4deb3df43d090f4840fdb2bca46b<span class="pl-pds">"</span></span>,
+    to<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x195998f3491f37d9887cb93ae99c56eec8f67182<span class="pl-pds">"</span></span>,
+    transactionIndex<span class="pl-k">:</span> <span class="pl-c1">0</span>,
+    v<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x1b<span class="pl-pds">"</span></span>,
+    value<span class="pl-k">:</span> <span class="pl-c1">1230000000000000000</span>
+}]
+<span class="pl-k">&gt;</span></pre></div>
+
+<p>After the transaction is mined and put inside a block, the pending transactions will be empty and the transaction will have a <code>blockHash</code>, a <code>blockNumber</code> and a <code>nonce</code>.</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">&gt;</span> <span class="pl-smi">eth</span>.<span class="pl-smi">pendingTransactions</span>
+[]
+<span class="pl-k">&gt;</span> <span class="pl-smi">eth</span>.<span class="pl-en">getTransaction</span>(<span class="pl-s"><span class="pl-pds">"</span>0xbfdfbb1658f8eba1b769a809ab2be6deb4645533e558489e9acfc8f81adcdc5d<span class="pl-pds">"</span></span>)
+{
+  blockHash<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x2be3249c2c44b4dd5f4de0c8321f18a97bf4a38e88e0e5fd438a9cada8a11128<span class="pl-pds">"</span></span>,
+  blockNumber<span class="pl-k">:</span> <span class="pl-c1">6448</span>,
+    from<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0xf50fee0099f5776a9a13ed7e5d554ee16c36bf70<span class="pl-pds">"</span></span>,
+    gas<span class="pl-k">:</span> <span class="pl-c1">90000</span>,
+    gasPrice<span class="pl-k">:</span> <span class="pl-c1">21771860000</span>,
+    hash<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x9c1116b8718fad9e84422e51d94045265d5ef78d553ada1833d8e4964943f5d5<span class="pl-pds">"</span></span>,
+    input<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x<span class="pl-pds">"</span></span>,
+    nonce<span class="pl-k">:</span> <span class="pl-c1">11</span>,
+    r<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x60229effbf98b4e664a5aac86ef8cbe209860be78f9c2f08d67bf753a61feaf3<span class="pl-pds">"</span></span>,
+    s<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x37cab764d8b865303aa2a7cf992f7daefbfe4deb3df43d090f4840fdb2bca46b<span class="pl-pds">"</span></span>,
+    to<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x195998f3491f37d9887cb93ae99c56eec8f67182<span class="pl-pds">"</span></span>,
+    transactionIndex<span class="pl-k">:</span> <span class="pl-c1">0</span>,
+    v<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>0x1b<span class="pl-pds">"</span></span>,
+    value<span class="pl-k">:</span> <span class="pl-c1">1230000000000000000</span>
+}
+<span class="pl-k">&gt;</span></pre></div>
+
+<p>Check the balances of the two accounts and verify the transaction about ether transfer.</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">&gt;</span> <span class="pl-smi">eth</span>.<span class="pl-en">getBalance</span>(<span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">1</span>])
+<span class="pl-c1">18769580000000000000</span>
+<span class="pl-k">&gt;</span> <span class="pl-smi">eth</span>.<span class="pl-en">getBalance</span>(<span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">2</span>])
+<span class="pl-c1">31230000000000000000</span></pre></div>
+
+<p>These values are a bit hard to read. So we check the balances as ethers.</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">&gt;</span> <span class="pl-smi">web3</span>.<span class="pl-en">fromWei</span>(<span class="pl-smi">eth</span>.<span class="pl-en">getBalance</span>(<span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">1</span>]), <span class="pl-s"><span class="pl-pds">"</span>ether<span class="pl-pds">"</span></span>)
+<span class="pl-c1">18.76958</span>
+<span class="pl-k">&gt;</span> <span class="pl-smi">web3</span>.<span class="pl-en">fromWei</span>(<span class="pl-smi">eth</span>.<span class="pl-en">getBalance</span>(<span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">2</span>]), <span class="pl-s"><span class="pl-pds">"</span>ether<span class="pl-pds">"</span></span>)
+<span class="pl-c1">31.23000</span>
+<span class="pl-k">&gt;</span></pre></div>
+
+<p>The balance of <code>Account 1</code> is reduced by <code>1.23042</code> and the balance of <code>Account 2</code> is increase by <code>1.23</code>. The reason more than <code>1.23</code> is gone from the ether balance of <code>Account 1</code> is because it costs ether to execute the send ether transaction.  This transaction fee is given to the miner, i.e. <code>Account 0</code>.</p>
+
+<h2>
+<a id="user-content-what-is-next" class="anchor" href="http://localhost:6419/#what-is-next" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What is next?</h2>
+
+<p>You are ready to learn about contracts now. You can continue to the <a href="http://localhost:6419/contracts/01-HelloWorld/README.md">Creating, Deploying and Using Contracts</a> example.</p>
+
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    
+
+  </div>
+  <div>&nbsp;</div>
+  </div><script>
+    function showCanonicalImages() {
+      var images = document.getElementsByTagName('img');
+      if (!images) {
+        return;
+      }
+      for (var index = 0; index < images.length; index++) {
+        var image = images[index];
+        if (image.getAttribute('data-canonical-src') && image.src !== image.getAttribute('data-canonical-src')) {
+          image.src = image.getAttribute('data-canonical-src');
+        }
+      }
+    }
+
+    function scrollToHash() {
+      if (location.hash && !document.querySelector(':target')) {
+        var element = document.getElementById('user-content-' + location.hash.slice(1));
+        if (element) {
+           element.scrollIntoView();
+        }
+      }
+    }
+
+    function autorefreshContent(eventSourceUrl) {
+      var initialTitle = document.title;
+      var contentElement = document.getElementById('grip-content');
+      var source = new EventSource(eventSourceUrl);
+      var isRendering = false;
+
+      source.onmessage = function(ev) {
+        var msg = JSON.parse(ev.data);
+        if (msg.updating) {
+          isRendering = true;
+          document.title = '(Rendering) ' + document.title;
+        } else {
+          isRendering = false;
+          document.title = initialTitle;
+          contentElement.innerHTML = msg.content;
+          showCanonicalImages();
+        }
+      }
+
+      source.onerror = function(e) {
+        if (e.readyState === EventSource.CLOSED && isRendering) {
+          isRendering = false;
+          document.title = initialTitle;
+        }
+      }
+    }
+
+    window.onhashchange = function() {
+      scrollToHash();
+    }
+
+    window.onload = function() {
+      scrollToHash();
+    }
+
+    showCanonicalImages();
+
+    var autorefreshUrl = document.getElementById('preview-page').getAttribute('data-autorefresh-url');
+    if (autorefreshUrl) {
+      autorefreshContent(autorefreshUrl);
+    }
+  </script>
+
+</body></html>

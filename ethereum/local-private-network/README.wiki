@@ -137,9 +137,11 @@ The hash codes are the addresses of the created accounts.
 
 <blockquote>Note that, in your computer the addresses of the accounts will be different.
 </blockquote>
-Note that, nodes may have several accounts (at least one) and they can be listed by using the command:
+Note that, nodes may have several accounts (at least one) and they can be listed by using either <code>personal.listAccounts</code> or <code>eth.accounts</code> command:
 
 <source lang="javascript">> personal.listAccounts
+["0xf50fee0099f5776a9a13ed7e5d554ee16c36bf70", "0x195998f3491f37d9887cb93ae99c56eec8f67182", "0xa33f1327bd37793d8b5eaca4c7f8f0fc3b302b00"]
+> eth.accounts
 ["0xf50fee0099f5776a9a13ed7e5d554ee16c36bf70", "0x195998f3491f37d9887cb93ae99c56eec8f67182", "0xa33f1327bd37793d8b5eaca4c7f8f0fc3b302b00"]
 > </source>
 == Allocate Initial Ethers to the Accounts ==
@@ -169,18 +171,18 @@ To allocate initial ethers to the accounts, the genesis block (which is inside <
 }</source>
 Now we need to reinitialize the node and attach to it as shown above before.
 
-To veirfy if the accounts are initialized with the correct balance values we specified in the Custom Genesis Block, use the <code>eth.getBalance()</code> command on the console of each node using their associated account numbers (which can be retrieved by the <code>personal.listAccounts</code> command).
+To veirfy if the accounts are initialized with the correct balance values we specified in the Custom Genesis Block, use the <code>eth.getBalance()</code> command on the console of each node using their associated account numbers (which can be retrieved by the <code>eth.accounts</code> command).
 
-<source lang="javascript">> eth.getBalance(personal.listAccounts[0])
+<source lang="javascript">> eth.getBalance(eth.accounts[0])
 10000000000000000000
-> eth.getBalance(personal.listAccounts[1])
+> eth.getBalance(eth.accounts[1])
 20000000000000000000
-> eth.getBalance(personal.listAccounts[2])
+> eth.getBalance(eth.accounts[2])
 30000000000000000000
 > </source>
 Note that <code>getBalance()</code> returns ether in wei which is like 1 trillionth of an ether.<br />To check the balance in terms of ether, type the following command:
 
-<source lang="javascript">> web3.fromWei(eth.getBalance(personal.listAccounts[1]), "ether")
+<source lang="javascript">> web3.fromWei(eth.getBalance(eth.accounts[1]), "ether")
 20
 ></source>
 Perfect! Now it is time to play around in our small private test network.
@@ -205,23 +207,23 @@ I0213 16:28:11.633341 vendor/github.com/ethereum/ethash/ethash.go:291] Generatin
 ...</source>
 When start <code>Generating DAG</code> reaches <code>100%</code>, you will know that the mining has started. Depending on your cpu and ram, it can take from a few minutes to an hour. For this example with the configuration given in the beginning, it took around 7 minutes to start mining.
 
-The mining node (<code>Node01</code>) deposits ethereum into its <code>coinbase</code> (queried by <code>eth.coinbase</code>). By default, the coinbase of a node is its <code>Account 0</code> (queried by <code>personal.listAccounts[0]</code>).<br />To check if the node is mining, you can time to time check the balance of the <code>coinbase</code> or <code>Account 0</code>.
+The mining node (<code>Node01</code>) deposits ethereum into its <code>coinbase</code> (queried by <code>eth.coinbase</code>). By default, the coinbase of a node is its <code>Account 0</code> (queried by <code>eth.accounts[0]</code>).<br />To check if the node is mining, you can time to time check the balance of the <code>coinbase</code> or <code>Account 0</code>.
 
 <source lang="javascript">> eth.getBalance(eth.coinbase)
 220781250000000000000
-> eth.getBalance(personal.listAccounts[0])
+> eth.getBalance(eth.accounts[0])
 220781250000000000000
 ></source>
 == Make a Transaction: Send ether from one account to another ==
 
 Suppose, we want to send <code>1.23</code> ethers from <code>Account 1</code> to <code>Account 2</code>. To do so, we need to create a transaction object <code>tx</code> first:
 
-<source lang="javascript">> var tx = {from:  personal.listAccounts[1], to: personal.listAccounts[2], value: web3.toWei(1.23, "ether")}
+<source lang="javascript">> var tx = {from:  eth.accounts[1], to: eth.accounts[2], value: web3.toWei(1.23, "ether")}
 undefined
 > </source>
 Do not take into account the message "undefined". The transaction object <code>tx</code> is created. Now we can execute this transaction as follows (by providing the password of the sender account):
 
-<source lang="javascript">> personal.sendTransaction(tx, "Node01Account1")
+<source lang="javascript">> personal.sendTransaction(tx, "Node01Account01")
 "0x9c1116b8718fad9e84422e51d94045265d5ef78d553ada1833d8e4964943f5d5"
 > </source>
 Voila! The transaction is on the way. It can be seen inside pending transactions. Howeber, with a fast enough computer, you will see this list empty since the transaction has already been performed.
@@ -268,20 +270,20 @@ After the transaction is mined and put inside a block, the pending transactions 
 ></source>
 Check the balances of the two accounts and verify the transaction about ether transfer.
 
-<source lang="javascript">> eth.getBalance(personal.listAccounts[1])
+<source lang="javascript">> eth.getBalance(eth.accounts[1])
 18769580000000000000
-> eth.getBalance(personal.listAccounts[2])
+> eth.getBalance(eth.accounts[2])
 31230000000000000000</source>
 These values are a bit hard to read. So we check the balances as ethers.
 
-<source lang="javascript">> web3.fromWei(eth.getBalance(personal.listAccounts[1]), "ether")
+<source lang="javascript">> web3.fromWei(eth.getBalance(eth.accounts[1]), "ether")
 18.76958
-> web3.fromWei(eth.getBalance(personal.listAccounts[2]), "ether")
+> web3.fromWei(eth.getBalance(eth.accounts[2]), "ether")
 31.23000
 ></source>
 The balance of <code>Account 1</code> is reduced by <code>1.23042</code> and the balance of <code>Account 2</code> is increase by <code>1.23</code>. The reason more than <code>1.23</code> is gone from the ether balance of <code>Account 1</code> is because it costs ether to execute the send ether transaction. This transaction fee is given to the miner, i.e. <code>Account 0</code>.
 
 == What is next? ==
 
-You are ready to learn about contracts now. You can continue to the [[./Creating,%20Deploying%20and%20Using%20a%20Contract.md|Creating, Deploying and Using Contracts]] example.
+You are ready to learn about contracts now. You can continue to the [[./contracts/01-HelloWorld/README.md|Creating, Deploying and Using Contracts]] example.
 

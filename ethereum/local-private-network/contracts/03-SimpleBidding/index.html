@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://localhost:6419/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <title>README.md - Grip</title>
+  <link rel="icon" href="http://localhost:6419/__/grip/static/favicon.ico">
+  <link rel="stylesheet" href="./index_files/frameworks-5b61aadc846f0818981ceec31b49c475fb084c163fdec5efbc2c21ef539092a9.css">
+  <link rel="stylesheet" href="./index_files/github-9e591dcc1f30d2a6ac3773da2f8c05987a4a148bae15713c4be9bb62b6e92b26.css">
+  <link rel="stylesheet" href="./index_files/site-f4fa6ace91e5f0fabb47e8405e5ecf6a9815949cd3958338f6578e626cd443d7.css">
+  <link rel="stylesheet" href="./index_files/octicons.css">
+  <style>
+    /* Page tweaks */
+    .preview-page {
+      margin-top: 64px;
+    }
+    /* User-content tweaks */
+    .timeline-comment-wrapper > .timeline-comment:after,
+    .timeline-comment-wrapper > .timeline-comment:before {
+      content: none;
+    }
+    /* User-content overrides */
+    .discussion-timeline.wide {
+      width: 920px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div id="preview-page" class="preview-page" data-autorefresh-url="/__/grip/refresh/">
+
+    
+
+      <div role="main" class="main-content">
+        <div class="container new-discussion-timeline experiment-repo-nav">
+          <div class="repository-content">
+            <div id="readme" class="readme boxed-group clearfix announce instapaper_body md">
+              
+                <h3>
+                  <span class="octicon octicon-book"></span>
+                  README.md
+                </h3>
+              
+              <article class="markdown-body entry-content" itemprop="text" id="grip-content">
+                <h1>
+<a id="user-content-simple-bidding-contract" class="anchor" href="http://localhost:6419/#simple-bidding-contract" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Simple Bidding Contract</h1>
+
+<blockquote>
+<p>This example is a continuation of the <a href="http://localhost:6419/02-ReceiveEther/README.md">Receiving Ethers Using a Contract</a> example.</p>
+</blockquote>
+
+<h2>
+<a id="user-content-before-you-begin" class="anchor" href="http://localhost:6419/#before-you-begin" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Before you begin</h2>
+
+<p>Before you begin, make sure that the <a href="http://solidity.readthedocs.io/en/develop/index.html">Solidity</a> compiler is installed as described <a href="https://github.com/ethereum/go-ethereum/wiki/Contract-Tutorial#install-solc-on-ubuntu">here</a>. To verify if Solidy is installed correctly, go to the geth console and type the <code>eth.getCompilers()</code> command.</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">&gt;</span> <span class="pl-smi">eth</span>.<span class="pl-en">getCompilers</span>()
+[<span class="pl-s"><span class="pl-pds">"</span>Solidity<span class="pl-pds">"</span></span>]
+<span class="pl-k">&gt;</span> </pre></div>
+
+<p>This example is prepared by using the geth version <code>1.5.9-stable</code> which is using Go version <code>go1.7.3</code> and tested on <code>Ubuntu 14.04.5</code>. </p>
+
+<div class="highlight highlight-source-shell"><pre>Geth
+Version: 1.5.9-stable
+Git Commit: a07539fb88db7231d18db918ed7a6a4e32f97450
+Protocol Versions: [63 62]
+Network Id: 1
+Go Version: go1.7.3
+OS: linux
+GOPATH=
+GOROOT=/usr/lib/go-1.7</pre></div>
+
+<h2>
+<a id="user-content-introduction" class="anchor" href="http://localhost:6419/#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h2>
+
+<p>In this example, we will develop a simple bidding contract to show how to define and use structures, arrays and functions in more detail.</p>
+
+<p>The simplified bidding process is as follows. First, vendors register to the contract with their asset and stock information. Then a client makes a request to buy the asset. After that, the contract starts a bidding process which ends when a specific number of proposals from the vendors is made. Vendors propose prices for the dedicated asset. Upon finishing the bidding, the contract announces the cheapest proposal for the dedicated asset. The client then sends the expected amount to the contract if it wants to buy the asset with the proposed price. The contract verifies the payment, transfers the amount to the dedicated vendor (Note that the client does not know about the vendor.), updates the stock information of the vendor about the asset and finally ships the asset to the client.</p>
+
+<blockquote>
+<p>Note that in this simple example several assumptions and simplification are made. It is assumed that there will be one single asset and one single client. Stock management and transportation is made by the bidding contract. A more realistic scenario will be given in the next example.</p>
+</blockquote>
+
+<p>Now let's proceed to the development of this system using Solidity in Ethereum.</p>
+
+<h2>
+<a id="user-content-contract-simplebidding" class="anchor" href="http://localhost:6419/#contract-simplebidding" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contract: SimpleBidding</h2>
+
+<p>In this section, we will develop step by step the <code>SimpleBidding</code> contract. </p>
+
+<h3>
+<a id="user-content-designing-the-contract" class="anchor" href="http://localhost:6419/#designing-the-contract" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Designing the Contract</h3>
+
+<p>To reveal the functions of the contract, we designed a sequence diagram of the aforementioned scenario.</p>
+
+<p><a href="./index_files/Simple_Bidding_Interaction.png" target="_blank"><img src="./index_files/Simple_Bidding_Interaction.png" alt="Example Simple Bidding Scenario" style="max-width:100%;"></a></p>
+
+<p>The next subsection will show how to implement this scenario as a contract.</p>
+
+<h3>
+<a id="user-content-creating-the-contract" class="anchor" href="http://localhost:6419/#creating-the-contract" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Creating the Contract</h3>
+
+<p>Step by step creation of the contract is as follows.</p>
+
+<h4>
+<a id="user-content-contract-body" class="anchor" href="http://localhost:6419/#contract-body" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contract body</h4>
+
+<p>First, we create the contract body. In the constructor, we save the account address of <code>contractOwner</code> using <code>msg.sender</code>, and set the deadline in which we can <code>dispose()</code> the contract and transfer the funds back.</p>
+
+<div class="highlight highlight-source-js"><pre>pragma solidity <span class="pl-k">^</span><span class="pl-c1">0.4</span>.<span class="pl-ii">10</span>;
+
+<span class="pl-c">/* Contract accepting bids during 30 minutes */</span>
+contract SimpleBidding {
+
+    <span class="pl-c"><span class="pl-c">//</span> contract information</span>
+    address contractOwner;
+    uint deadline;
+
+    <span class="pl-c">/* Constructor */</span>
+    <span class="pl-k">function</span> <span class="pl-en">SimpleBidding</span>() {
+        <span class="pl-c"><span class="pl-c">//</span> set the owner of this contract</span>
+        contractOwner <span class="pl-k">=</span> <span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>;
+        <span class="pl-c"><span class="pl-c">//</span> set the deadline of the contract as 10 minutes</span>
+        deadline <span class="pl-k">=</span> now <span class="pl-k">+</span> <span class="pl-c1">30</span> <span class="pl-k">*</span> <span class="pl-c1">1</span> minutes;
+    }         
+
+    modifier <span class="pl-en">afterDeadline</span>() { <span class="pl-k">if</span> (now <span class="pl-k">&gt;=</span> deadline) _; }
+
+    <span class="pl-c">/* when the time limit has been reached and the contract can be ended. */</span>
+    <span class="pl-k">function</span> <span class="pl-en">dispose</span>() afterDeadline {
+        <span class="pl-en">selfdestruct</span>(contractOwner);
+    }
+}</pre></div>
+
+<h4>
+<a id="user-content-vendors-register-themselves" class="anchor" href="http://localhost:6419/#vendors-register-themselves" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Vendors register themselves</h4>
+
+<p>Now, for each function, we will elaborate the contract code. For the <code>registerVendor</code> functionality, we add the following: a struct <code>Vendor</code> for keeping vendor information, a mapping from <code>address</code> to <code>Vendor</code> named <code>vendors</code> (it is like a hashtable), an event which is fired when <code>VendorRegistered</code> and the function to <code>registerVendor()</code>.</p>
+
+<div class="highlight highlight-source-js"><pre>    <span class="pl-k">...</span>
+
+    <span class="pl-c"><span class="pl-c">//</span> vendor information</span>
+    struct Vendor {
+        bool isRegistered;
+        string name;
+        address account;
+        uint assetBarcode;
+        uint stockCount;
+    }
+    <span class="pl-en">mapping</span> (<span class="pl-smi">address</span> <span class="pl-k">=&gt;</span> Vendor) vendors;
+    <span class="pl-c1">event</span> <span class="pl-en">VendorRegistered</span>(string name, address account, uint assetBarcode, uint stockCount);
+
+    <span class="pl-k">...</span>
+
+    <span class="pl-c">/* Used by vendors to register themselves. */</span>
+    <span class="pl-k">function</span> <span class="pl-en">registerVendor</span>(<span class="pl-smi">string</span> <span class="pl-smi">name</span>, <span class="pl-smi">uint</span> <span class="pl-smi">assetBarcode</span>, <span class="pl-smi">uint</span> <span class="pl-smi">stockCount</span>) {
+        <span class="pl-c"><span class="pl-c">//</span> if the vendor is already registered, exit the function.</span>
+        <span class="pl-k">if</span> (vendors[<span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>].<span class="pl-smi">isRegistered</span>) <span class="pl-k">throw</span>;
+        <span class="pl-c"><span class="pl-c">//</span> else register the vendor.</span>
+        vendors[<span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>] <span class="pl-k">=</span> <span class="pl-en">Vendor</span>(<span class="pl-c1">true</span>, name, <span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>, assetBarcode, stockCount);
+        <span class="pl-en">VendorRegistered</span>(name, <span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>, assetBarcode, stockCount);
+    }
+
+    <span class="pl-k">...</span>
+</pre></div>
+
+<p>To see if a vendor is registered properly, and to show how to write a method that returns several values, a <code>constant</code> function <code>getVendor()</code> is implemented.</p>
+
+<div class="highlight highlight-source-js"><pre>   <span class="pl-k">...</span>
+
+    <span class="pl-c">/* returns the vendor information of the caller */</span>
+    <span class="pl-k">function</span> <span class="pl-en">getMyVendorInfo</span>() constant returns (string name, address acc, uint barcode, uint numAssets) {
+        <span class="pl-k">var</span> vendor <span class="pl-k">=</span> vendors[<span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>];
+        name <span class="pl-k">=</span> <span class="pl-smi">vendor</span>.<span class="pl-c1">name</span>;
+        acc <span class="pl-k">=</span> <span class="pl-smi">vendor</span>.<span class="pl-smi">account</span>;
+        barcode <span class="pl-k">=</span> <span class="pl-smi">vendor</span>.<span class="pl-smi">assetBarcode</span>;
+        numAssets <span class="pl-k">=</span> <span class="pl-smi">vendor</span>.<span class="pl-smi">stockCount</span>;
+    }
+
+   <span class="pl-k">...</span></pre></div>
+
+<h4>
+<a id="user-content-client-requests-an-asset" class="anchor" href="http://localhost:6419/#client-requests-an-asset" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Client requests an asset</h4>
+
+<p>After the vendors are registered, the client can <code>requestAsset</code>. A client requests an asset with its <code>barcode</code>. Upon receival of this request, an <code>AssetRequested</code> event is fired. And then, a bidding process which is expecting <code>2</code> proposals for finding the cheapest price is started.</p>
+
+<div class="highlight highlight-source-js"><pre>    <span class="pl-k">...</span>
+
+     <span class="pl-c"><span class="pl-c">//</span> request information</span>
+    address client;
+    uint requestedAssetBarcode;
+    <span class="pl-c1">event</span> <span class="pl-en">AssetRequested</span>(address client, uint barcode);
+
+    <span class="pl-c"><span class="pl-c">//</span> bidding information</span>
+    uint expectedProposals;
+    address bestVendor;
+    uint bestPrice;
+
+    <span class="pl-k">...</span>
+
+    <span class="pl-c">/* Used by clients to request assets and start bidding.     */</span> 
+    <span class="pl-k">function</span> <span class="pl-en">requestAsset</span>(<span class="pl-smi">uint</span> <span class="pl-smi">barcode</span>) {
+        <span class="pl-c"><span class="pl-c">//</span> save the requester</span>
+        client <span class="pl-k">=</span> <span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>;
+
+        <span class="pl-c"><span class="pl-c">//</span> save the asset barcode</span>
+        requestedAssetBarcode <span class="pl-k">=</span> barcode;
+
+        <span class="pl-c"><span class="pl-c">//</span> create the event</span>
+        <span class="pl-en">AssetRequested</span>(client, requestedAssetBarcode);
+
+        <span class="pl-c"><span class="pl-c">//</span> initialize the bidding process</span>
+        expectedProposals <span class="pl-k">=</span> <span class="pl-c1">2</span>;
+        bestPrice <span class="pl-k">=</span> <span class="pl-c1">999999</span>;
+    }
+
+    <span class="pl-k">...</span>   </pre></div>
+
+<h4>
+<a id="user-content-vendors-propose-prices" class="anchor" href="http://localhost:6419/#vendors-propose-prices" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Vendors propose prices</h4>
+
+<p>Vendors propose prices by using the <code>proposePrice()</code> function. When no proposal are expected anymore, the bidding is finished by the contract, and a <code>BiddingFinished</code> event is fired with the bidding result.</p>
+
+<div class="highlight highlight-source-js"><pre>    <span class="pl-k">...</span>
+
+    <span class="pl-c1">event</span> <span class="pl-en">PriceProposed</span>(string vendorName, uint barcode, uint price);
+    <span class="pl-c1">event</span> <span class="pl-en">BiddingFinished</span>(uint barcode, uint price);
+
+    <span class="pl-k">...</span>
+
+     <span class="pl-c">/* used for checking if a function is called by a registered vendor */</span>
+    modifier <span class="pl-en">onlyVendor</span>() { <span class="pl-k">if</span> (vendors[<span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>].<span class="pl-smi">isRegistered</span>) _; }
+
+    <span class="pl-c">/* Used by vendors to propose a price for an asset. */</span>
+    <span class="pl-k">function</span> <span class="pl-en">proposePrice</span>(<span class="pl-smi">uint</span> <span class="pl-smi">barcode</span>, <span class="pl-smi">uint</span> <span class="pl-smi">price</span>) onlyVendor {
+        <span class="pl-c"><span class="pl-c">//</span> process the proposal</span>
+        <span class="pl-en">PriceProposed</span>(vendors[<span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>].<span class="pl-c1">name</span>, barcode, price);
+        <span class="pl-k">if</span> (price <span class="pl-k">&lt;</span> bestPrice) {
+            bestPrice <span class="pl-k">=</span> price;
+            bestVendor <span class="pl-k">=</span> <span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>;
+        }
+
+        <span class="pl-c"><span class="pl-c">//</span> update bidding condition</span>
+        expectedProposals<span class="pl-k">--</span>;
+
+        <span class="pl-k">if</span> (expectedProposals <span class="pl-k">==</span> <span class="pl-c1">0</span>) {
+            <span class="pl-en">BiddingFinished</span>(requestedAssetBarcode, bestPrice);
+        }
+    }
+
+    <span class="pl-k">...</span></pre></div>
+
+<h4>
+<a id="user-content-client-makes-the-payment" class="anchor" href="http://localhost:6419/#client-makes-the-payment" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Client makes the payment</h4>
+
+<p>If the client accepts the price, it make a plain ether transaction which, in response, invokes the nameless <code>()</code> function. This function checks the sender and the <code>amount</code>, transfers the <code>amount</code> to the winning vendor and then fires a <code>PaymentReceived</code> event. Lastly, it fires an <code>AssetShipped</code> event to complete the scenario.</p>
+
+<div class="highlight highlight-source-js"><pre>    <span class="pl-k">...</span>
+
+    <span class="pl-c"><span class="pl-c">//</span> payment information</span>
+    <span class="pl-c1">event</span> <span class="pl-en">PaymentReceived</span>(address sender, uint amount, uint barcode);
+    <span class="pl-c1">event</span> <span class="pl-en">AssetShipped</span>(uint barcode, uint trackingNumber);
+
+    <span class="pl-k">...</span>
+
+    <span class="pl-c">/* used for checking if a function is called by a registered vendor */</span>
+    modifier <span class="pl-en">onlyClient</span>() { <span class="pl-k">if</span> (<span class="pl-smi">msg</span>.<span class="pl-smi">sender</span> <span class="pl-k">==</span> client) _; }
+
+    <span class="pl-c">/* The function without name is the default function that is called whenever </span>
+<span class="pl-c">       anyone sends funds to a contract */</span>
+    <span class="pl-k">function</span> () public payable onlyClient {
+        uint amount <span class="pl-k">=</span> <span class="pl-smi">msg</span>.<span class="pl-c1">value</span>;
+        <span class="pl-k">if</span> (amount <span class="pl-k">==</span> bestPrice) {
+            <span class="pl-c"><span class="pl-c">//</span> transfer the payment to the vendor</span>
+            <span class="pl-smi">bestVendor</span>.<span class="pl-c1">send</span>(amount);
+            <span class="pl-c"><span class="pl-c">//</span> reduce the asset from the vendor's stock</span>
+            <span class="pl-c"><span class="pl-c">//</span> ...to be implemented...</span>
+
+            <span class="pl-c"><span class="pl-c">//</span> create the event</span>
+            <span class="pl-en">PaymentReceived</span>(<span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>, <span class="pl-smi">msg</span>.<span class="pl-c1">value</span>, requestedAssetBarcode);
+
+            <span class="pl-c"><span class="pl-c">//</span> ship the asset</span>
+            uint trackingNumber <span class="pl-k">=</span> <span class="pl-c1">78623235235</span>;
+            <span class="pl-en">AssetShipped</span>(requestedAssetBarcode, trackingNumber);
+        }
+    }
+
+    <span class="pl-k">...</span></pre></div>
+
+<h4>
+<a id="user-content-final-contract-code" class="anchor" href="http://localhost:6419/#final-contract-code" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Final Contract Code</h4>
+
+<p>Finally, the full contract code will be as below.</p>
+
+<div class="highlight highlight-source-js"><pre>pragma solidity <span class="pl-k">^</span><span class="pl-c1">0.4</span>.<span class="pl-ii">10</span>;
+
+<span class="pl-c">/* Contract accepting bids during 30 minutes */</span>
+contract SimpleBidding {
+
+    <span class="pl-c"><span class="pl-c">//</span> contract information</span>
+    address contractOwner;
+    uint deadline;
+
+    <span class="pl-c"><span class="pl-c">//</span> vendor information</span>
+    struct Vendor {
+        bool isRegistered;
+        string name;
+        address account;
+        uint assetBarcode;
+        uint stockCount;
+    }
+    <span class="pl-en">mapping</span> (<span class="pl-smi">address</span> <span class="pl-k">=&gt;</span> Vendor) vendors;
+    <span class="pl-c1">event</span> <span class="pl-en">VendorRegistered</span>(string name, address account, uint assetBarcode, uint stockCount);
+
+    <span class="pl-c"><span class="pl-c">//</span> request information</span>
+    address client;
+    uint requestedAssetBarcode;
+    <span class="pl-c1">event</span> <span class="pl-en">AssetRequested</span>(address client, uint barcode);
+
+    <span class="pl-c"><span class="pl-c">//</span> bidding information</span>
+    uint expectedProposals;
+    address bestVendor;
+    uint bestPrice;
+    <span class="pl-c1">event</span> <span class="pl-en">PriceProposed</span>(string vendorName, uint barcode, uint price);
+    <span class="pl-c1">event</span> <span class="pl-en">BiddingFinished</span>(uint barcode, uint price);
+
+    <span class="pl-c"><span class="pl-c">//</span> payment information</span>
+    <span class="pl-c1">event</span> <span class="pl-en">PaymentReceived</span>(address sender, uint amount, uint barcode);
+    <span class="pl-c1">event</span> <span class="pl-en">AssetShipped</span>(uint barcode, uint trackingNumber);
+
+    <span class="pl-c">/* Constructor */</span>
+    <span class="pl-k">function</span> <span class="pl-en">SimpleBidding</span>() {
+        <span class="pl-c"><span class="pl-c">//</span> set the owner of this contract</span>
+        contractOwner <span class="pl-k">=</span> <span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>;
+        <span class="pl-c"><span class="pl-c">//</span> set the deadline of the contract as 10 minutes</span>
+        deadline <span class="pl-k">=</span> now <span class="pl-k">+</span> <span class="pl-c1">30</span> <span class="pl-k">*</span> <span class="pl-c1">1</span> minutes;
+    }  
+
+    <span class="pl-c">/* Used by vendors to register themselves. */</span>
+    <span class="pl-k">function</span> <span class="pl-en">registerVendor</span>(<span class="pl-smi">string</span> <span class="pl-smi">name</span>, <span class="pl-smi">uint</span> <span class="pl-smi">assetBarcode</span>, <span class="pl-smi">uint</span> <span class="pl-smi">stockCount</span>) {
+        <span class="pl-c"><span class="pl-c">//</span> if the vendor is already registered, exit the function.</span>
+        <span class="pl-k">if</span> (vendors[<span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>].<span class="pl-smi">isRegistered</span>) <span class="pl-k">throw</span>;
+        <span class="pl-c"><span class="pl-c">//</span> else register the vendor.</span>
+        vendors[<span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>] <span class="pl-k">=</span> <span class="pl-en">Vendor</span>(<span class="pl-c1">true</span>, name, <span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>, assetBarcode, stockCount);
+        <span class="pl-en">VendorRegistered</span>(name, <span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>, assetBarcode, stockCount);
+    }
+
+    <span class="pl-c">/* Used by clients to request assets and start bidding.     */</span> 
+    <span class="pl-k">function</span> <span class="pl-en">requestAsset</span>(<span class="pl-smi">uint</span> <span class="pl-smi">barcode</span>) {
+        <span class="pl-c"><span class="pl-c">//</span> save the requester</span>
+        client <span class="pl-k">=</span> <span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>;
+
+        <span class="pl-c"><span class="pl-c">//</span> save the asset barcode</span>
+        requestedAssetBarcode <span class="pl-k">=</span> barcode;
+
+        <span class="pl-c"><span class="pl-c">//</span> create the event</span>
+        <span class="pl-en">AssetRequested</span>(client, requestedAssetBarcode);
+
+        <span class="pl-c"><span class="pl-c">//</span> initialize the bidding process</span>
+        expectedProposals <span class="pl-k">=</span> <span class="pl-c1">2</span>;
+        bestPrice <span class="pl-k">=</span> <span class="pl-c1">999999</span>;
+    }
+
+    <span class="pl-c">/* used for checking if a function is called by a registered vendor */</span>
+    modifier <span class="pl-en">onlyVendor</span>() { <span class="pl-k">if</span> (vendors[<span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>].<span class="pl-smi">isRegistered</span>) _; }
+
+    <span class="pl-c">/* Used by vendors to propose a price for an asset. */</span>
+    <span class="pl-k">function</span> <span class="pl-en">proposePrice</span>(<span class="pl-smi">uint</span> <span class="pl-smi">barcode</span>, <span class="pl-smi">uint</span> <span class="pl-smi">price</span>) onlyVendor {
+        <span class="pl-c"><span class="pl-c">//</span> process the proposal</span>
+        <span class="pl-en">PriceProposed</span>(vendors[<span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>].<span class="pl-c1">name</span>, barcode, price);
+        <span class="pl-k">if</span> (price <span class="pl-k">&lt;</span> bestPrice) {
+            bestPrice <span class="pl-k">=</span> price;
+            bestVendor <span class="pl-k">=</span> <span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>;
+        }
+
+        <span class="pl-c"><span class="pl-c">//</span> update bidding condition</span>
+        expectedProposals<span class="pl-k">--</span>;
+
+        <span class="pl-k">if</span> (expectedProposals <span class="pl-k">==</span> <span class="pl-c1">0</span>) {
+            <span class="pl-en">BiddingFinished</span>(requestedAssetBarcode, bestPrice);
+        }
+    }
+
+    <span class="pl-c">/* used for checking if a function is called by a registered vendor */</span>
+    modifier <span class="pl-en">onlyClient</span>() { <span class="pl-k">if</span> (<span class="pl-smi">msg</span>.<span class="pl-smi">sender</span> <span class="pl-k">==</span> client) _; }
+
+    <span class="pl-c">/* The function without name is the default function that is called whenever </span>
+<span class="pl-c">       anyone sends funds to a contract */</span>
+    <span class="pl-k">function</span> () public payable onlyClient {
+        uint amount <span class="pl-k">=</span> <span class="pl-smi">msg</span>.<span class="pl-c1">value</span>;
+        <span class="pl-k">if</span> (amount <span class="pl-k">==</span> bestPrice) {
+            <span class="pl-c"><span class="pl-c">//</span> transfer the payment to the vendor</span>
+            <span class="pl-smi">bestVendor</span>.<span class="pl-c1">send</span>(amount);
+            <span class="pl-c"><span class="pl-c">//</span> reduce the asset from the vendor's stock</span>
+            <span class="pl-c"><span class="pl-c">//</span> ...to be implemented...</span>
+
+            <span class="pl-c"><span class="pl-c">//</span> create the event</span>
+            <span class="pl-en">PaymentReceived</span>(<span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>, <span class="pl-smi">msg</span>.<span class="pl-c1">value</span>, requestedAssetBarcode);
+
+            <span class="pl-c"><span class="pl-c">//</span> ship the asset</span>
+            uint trackingNumber <span class="pl-k">=</span> <span class="pl-c1">78623235235</span>;
+            <span class="pl-en">AssetShipped</span>(requestedAssetBarcode, trackingNumber);
+        }
+    }
+
+    <span class="pl-c">/* returns the vendor information of the caller */</span>
+    <span class="pl-k">function</span> <span class="pl-en">getMyVendorInfo</span>() constant returns (string name, address acc, uint barcode, uint numAssets) {
+        <span class="pl-k">var</span> vendor <span class="pl-k">=</span> vendors[<span class="pl-smi">msg</span>.<span class="pl-smi">sender</span>];
+        name <span class="pl-k">=</span> <span class="pl-smi">vendor</span>.<span class="pl-c1">name</span>;
+        acc <span class="pl-k">=</span> <span class="pl-smi">vendor</span>.<span class="pl-smi">account</span>;
+        barcode <span class="pl-k">=</span> <span class="pl-smi">vendor</span>.<span class="pl-smi">assetBarcode</span>;
+        numAssets <span class="pl-k">=</span> <span class="pl-smi">vendor</span>.<span class="pl-smi">stockCount</span>;
+    }
+
+    modifier <span class="pl-en">afterDeadline</span>() { <span class="pl-k">if</span> (now <span class="pl-k">&gt;=</span> deadline) _; }
+
+    <span class="pl-c">/* when the time limit has been reached and the contract can be ended. */</span>
+    <span class="pl-k">function</span> <span class="pl-en">dispose</span>() afterDeadline {
+        <span class="pl-en">selfdestruct</span>(contractOwner);
+    }
+}</pre></div>
+
+<p>You can only directly call the functions that do not modify the state of the contract, i.e. <code>constant functions</code>. Functions modifying the state of a contract (i.e. <code>non-constant function</code>) can only be called via transactions.</p>
+
+<h3>
+<a id="user-content-compiling-the-contract" class="anchor" href="http://localhost:6419/#compiling-the-contract" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Compiling the Contract</h3>
+
+<p>Upon compiling the above solidty code using the <a href="https://ethereum.github.io/browser-solidity/">online Solidity compiler</a>, we will have a JavaScript code as below.</p>
+
+<div class="highlight highlight-source-js"><pre>var simplebidding_sol_simplebiddingContract = web3.eth.contract([{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"assetBarcode","type":"uint256"},{"name":"stockCount","type":"uint256"}],"name":"registerVendor","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"barcode","type":"uint256"}],"name":"requestAsset","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"dispose","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"getMyVendorInfo","outputs":[{"name":"name","type":"string"},{"name":"acc","type":"address"},{"name":"barcode","type":"uint256"},{"name":"numAssets","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"barcode","type":"uint256"},{"name":"price","type":"uint256"}],"name":"proposePrice","outputs":[],"payable":false,"type":"function"},{"inputs":[],"payable":false,"type":"constructor"},{"payable":true,"type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"name","type":"string"},{"indexed":false,"name":"account","type":"address"},{"indexed":false,"name":"assetBarcode","type":"uint256"},{"indexed":false,"name":"stockCount","type":"uint256"}],"name":"VendorRegistered","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"client","type":"address"},{"indexed":false,"name":"barcode","type":"uint256"}],"name":"AssetRequested","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"vendorName","type":"string"},{"indexed":false,"name":"barcode","type":"uint256"},{"indexed":false,"name":"price","type":"uint256"}],"name":"PriceProposed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"barcode","type":"uint256"},{"indexed":false,"name":"price","type":"uint256"}],"name":"BiddingFinished","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"sender","type":"address"},{"indexed":false,"name":"amount","type":"uint256"},{"indexed":false,"name":"barcode","type":"uint256"}],"name":"PaymentReceived","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"barcode","type":"uint256"},{"indexed":false,"name":"trackingNumber","type":"uint256"}],"name":"AssetShipped","type":"event"}]);
+<span class="pl-k">var</span> simplebidding_sol_simplebidding <span class="pl-k">=</span> <span class="pl-smi">simplebidding_sol_simplebiddingContract</span>.<span class="pl-en">new</span>(
+   {
+     from<span class="pl-k">:</span> <span class="pl-smi">web3</span>.<span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">0</span>], 
+     data: '0x6060604052341561000c57fe5b5b60008054600160a060020a03191633600160a060020a031617905542610708016001555b5b610844806100416000396000f300606060405236156100515763ffffffff60e060020a600035041663056b2add81146101435780632b25d4fd146101a25780634c86659e146101b75780636a807d41146101c9578063e161926914610285575b6101415b600354600090819033600160a060020a039081169116141561013a5734915060075482141561013a57600654604051600160a060020a039091169083156108fc029084906000818181858888f1505060045460408051600160a060020a033316815234602082015280820192909252517f5677b5d4cf976ac32defbd95a6a5aaf0d1fee450a11fc26f3c11aae6e6c33d0694509081900360600192509050a1506004546040805191825264124e4f5ca360208301819052815190927fb392290afa7f5b07c58b82f2a4f36a13e77050183671211ed5b5f27ca86b135e92908290030190a15b5b5b5b5050565b005b341561014b57fe5b610141600480803590602001908201803590602001908080601f016020809104026020016040519081016040528093929190818152602001838380828437509496505084359460200135935061029d92505050565b005b34156101aa57fe5b610141600435610447565b005b34156101bf57fe5b6101416104c8565b005b34156101d157fe5b6101d96104e3565b604051808060200185600160a060020a0316600160a060020a03168152602001848152602001838152602001828103825286818151815260200191508051906020019080838360008314610248575b80518252602083111561024857601f199092019160209182019101610228565b505050905090810190601f1680156102745780820380516001836020036101000a031916815260200191505b509550505050505060405180910390f35b341561028d57fe5b6101416004356024356105c0565b005b600160a060020a03331660009081526002602052604090205460ff16156102c45760006000fd5b6040805160a0810182526001808252602080830187815233600160a060020a03168486018190526060850188905260808501879052600090815260028352949094208351815460ff19169015151781559351805193949361032c938501929190910190610766565b5060408201518160020160006101000a815481600160a060020a030219169083600160a060020a0316021790555060608201518160030155608082015181600401559050507ff69139b4209a3ee7db09bbe1d00359ca79993b7f7e1cc501f2784240c58aca6c83338484604051808060200185600160a060020a0316600160a060020a03168152602001848152602001838152602001828103825286818151815260200191508051906020019080838360008314610405575b80518252602083111561040557601f1990920191602091820191016103e5565b505050905090810190601f1680156104315780820380516001836020036101000a031916815260200191505b509550505050505060405180910390a15b505050565b6003805473ffffffffffffffffffffffffffffffffffffffff191633600160a060020a0390811691909117918290556004839055604080519290911682526020820183905280517f182330bdae199ac3ad3e13c76eb719f687f880653f8dee040adc74327eaf3a669281900390910190a16002600555620f423f6007555b50565b60015442106104df57600054600160a060020a0316ff5b5b5b565b6104eb6107e5565b33600160a060020a031660009081526002602081815260408084206001808201805484519281161561010002600019011695909504601f8101859004850282018501909352828152859485949293919290919083018282801561058f5780601f106105645761010080835404028352916020019161058f565b820191906000526020600020905b81548152906001019060200180831161057257829003601f168201915b505050600284015460038501546004860154949950600160a060020a039091169750955091935050505b5090919293565b600160a060020a03331660009081526002602052604090205460ff161561013a577f4cc192b974e708b4556e771d6b0425e65a284b111616339527df19b8b9c31ce46002600033600160a060020a0316600160a060020a03168152602001908152602001600020600101838360405180806020018481526020018381526020018281038252858181546001816001161561010002031660029004815260200191508054600181600116156101000203166002900480156106c15780601f10610696576101008083540402835291602001916106c1565b820191906000526020600020905b8154815290600101906020018083116106a457829003601f168201915b505094505050505060405180910390a16007548110156107095760078190556006805473ffffffffffffffffffffffffffffffffffffffff191633600160a060020a03161790555b600580546000190190819055151561013a577fc17eabdf34dbdda04d4e5bc7f639984fff1d8a51ba4bb7f728e59744c3320e07600454600754604051808381526020018281526020019250505060405180910390a15b5b5b5b5050565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f106107a757805160ff19168380011785556107d4565b828001600101855582156107d4579182015b828111156107d45782518255916020019190600101906107b9565b5b506107e19291506107f7565b5090565b60408051602081019091526000815290565b61081591905b808211156107e157600081556001016107fd565b5090565b905600a165627a7a7230582070719b8c4e2de7175362453101cd0e55547ebec9d080b9f9c8c5bf47a485e3c70029', 
+     gas<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>4700000<span class="pl-pds">'</span></span>
+   }, <span class="pl-k">function</span> (<span class="pl-smi">e</span>, <span class="pl-smi">contract</span>){
+    <span class="pl-en">console</span>.<span class="pl-c1">log</span>(e, contract);
+    <span class="pl-k">if</span> (<span class="pl-k">typeof</span> <span class="pl-smi">contract</span>.<span class="pl-smi">address</span> <span class="pl-k">!==</span> <span class="pl-s"><span class="pl-pds">'</span>undefined<span class="pl-pds">'</span></span>) {
+         <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">'</span>Contract mined! address: <span class="pl-pds">'</span></span> <span class="pl-k">+</span> <span class="pl-smi">contract</span>.<span class="pl-smi">address</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">'</span> transactionHash: <span class="pl-pds">'</span></span> <span class="pl-k">+</span> <span class="pl-smi">contract</span>.<span class="pl-smi">transactionHash</span>);
+    }
+ })</pre></div>
+
+<p>However, as you remember in geth accounts are locked by default. Thus, we need to embed the unlock command inside the JavaSacript code.
+In addition, we need to configure the watchers for the events we want to follow. The final deployment script becomes as below.</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-c"><span class="pl-c">//</span> unlock all accounts</span>
+<span class="pl-en">loadScript</span>(<span class="pl-s"><span class="pl-pds">"</span>config/UnlockAccounts.js<span class="pl-pds">"</span></span>);
+<span class="pl-c"><span class="pl-c">//</span> contract code</span>
+var simplebidding_sol_simplebiddingContract = web3.eth.contract([{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"assetBarcode","type":"uint256"},{"name":"stockCount","type":"uint256"}],"name":"registerVendor","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"barcode","type":"uint256"}],"name":"requestAsset","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"dispose","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"getMyVendorInfo","outputs":[{"name":"name","type":"string"},{"name":"acc","type":"address"},{"name":"barcode","type":"uint256"},{"name":"numAssets","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"barcode","type":"uint256"},{"name":"price","type":"uint256"}],"name":"proposePrice","outputs":[],"payable":false,"type":"function"},{"inputs":[],"payable":false,"type":"constructor"},{"payable":true,"type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"name","type":"string"},{"indexed":false,"name":"account","type":"address"},{"indexed":false,"name":"assetBarcode","type":"uint256"},{"indexed":false,"name":"stockCount","type":"uint256"}],"name":"VendorRegistered","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"client","type":"address"},{"indexed":false,"name":"barcode","type":"uint256"}],"name":"AssetRequested","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"vendorName","type":"string"},{"indexed":false,"name":"barcode","type":"uint256"},{"indexed":false,"name":"price","type":"uint256"}],"name":"PriceProposed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"barcode","type":"uint256"},{"indexed":false,"name":"price","type":"uint256"}],"name":"BiddingFinished","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"sender","type":"address"},{"indexed":false,"name":"amount","type":"uint256"},{"indexed":false,"name":"barcode","type":"uint256"}],"name":"PaymentReceived","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"barcode","type":"uint256"},{"indexed":false,"name":"trackingNumber","type":"uint256"}],"name":"AssetShipped","type":"event"}]);
+<span class="pl-k">var</span> simplebidding_sol_simplebidding <span class="pl-k">=</span> <span class="pl-smi">simplebidding_sol_simplebiddingContract</span>.<span class="pl-en">new</span>(
+   {
+     from<span class="pl-k">:</span> <span class="pl-smi">web3</span>.<span class="pl-smi">eth</span>.<span class="pl-smi">accounts</span>[<span class="pl-c1">0</span>], 
+     data: '0x6060604052341561000c57fe5b5b60008054600160a060020a03191633600160a060020a031617905542610708016001555b5b610844806100416000396000f300606060405236156100515763ffffffff60e060020a600035041663056b2add81146101435780632b25d4fd146101a25780634c86659e146101b75780636a807d41146101c9578063e161926914610285575b6101415b600354600090819033600160a060020a039081169116141561013a5734915060075482141561013a57600654604051600160a060020a039091169083156108fc029084906000818181858888f1505060045460408051600160a060020a033316815234602082015280820192909252517f5677b5d4cf976ac32defbd95a6a5aaf0d1fee450a11fc26f3c11aae6e6c33d0694509081900360600192509050a1506004546040805191825264124e4f5ca360208301819052815190927fb392290afa7f5b07c58b82f2a4f36a13e77050183671211ed5b5f27ca86b135e92908290030190a15b5b5b5b5050565b005b341561014b57fe5b610141600480803590602001908201803590602001908080601f016020809104026020016040519081016040528093929190818152602001838380828437509496505084359460200135935061029d92505050565b005b34156101aa57fe5b610141600435610447565b005b34156101bf57fe5b6101416104c8565b005b34156101d157fe5b6101d96104e3565b604051808060200185600160a060020a0316600160a060020a03168152602001848152602001838152602001828103825286818151815260200191508051906020019080838360008314610248575b80518252602083111561024857601f199092019160209182019101610228565b505050905090810190601f1680156102745780820380516001836020036101000a031916815260200191505b509550505050505060405180910390f35b341561028d57fe5b6101416004356024356105c0565b005b600160a060020a03331660009081526002602052604090205460ff16156102c45760006000fd5b6040805160a0810182526001808252602080830187815233600160a060020a03168486018190526060850188905260808501879052600090815260028352949094208351815460ff19169015151781559351805193949361032c938501929190910190610766565b5060408201518160020160006101000a815481600160a060020a030219169083600160a060020a0316021790555060608201518160030155608082015181600401559050507ff69139b4209a3ee7db09bbe1d00359ca79993b7f7e1cc501f2784240c58aca6c83338484604051808060200185600160a060020a0316600160a060020a03168152602001848152602001838152602001828103825286818151815260200191508051906020019080838360008314610405575b80518252602083111561040557601f1990920191602091820191016103e5565b505050905090810190601f1680156104315780820380516001836020036101000a031916815260200191505b509550505050505060405180910390a15b505050565b6003805473ffffffffffffffffffffffffffffffffffffffff191633600160a060020a0390811691909117918290556004839055604080519290911682526020820183905280517f182330bdae199ac3ad3e13c76eb719f687f880653f8dee040adc74327eaf3a669281900390910190a16002600555620f423f6007555b50565b60015442106104df57600054600160a060020a0316ff5b5b5b565b6104eb6107e5565b33600160a060020a031660009081526002602081815260408084206001808201805484519281161561010002600019011695909504601f8101859004850282018501909352828152859485949293919290919083018282801561058f5780601f106105645761010080835404028352916020019161058f565b820191906000526020600020905b81548152906001019060200180831161057257829003601f168201915b505050600284015460038501546004860154949950600160a060020a039091169750955091935050505b5090919293565b600160a060020a03331660009081526002602052604090205460ff161561013a577f4cc192b974e708b4556e771d6b0425e65a284b111616339527df19b8b9c31ce46002600033600160a060020a0316600160a060020a03168152602001908152602001600020600101838360405180806020018481526020018381526020018281038252858181546001816001161561010002031660029004815260200191508054600181600116156101000203166002900480156106c15780601f10610696576101008083540402835291602001916106c1565b820191906000526020600020905b8154815290600101906020018083116106a457829003601f168201915b505094505050505060405180910390a16007548110156107095760078190556006805473ffffffffffffffffffffffffffffffffffffffff191633600160a060020a03161790555b600580546000190190819055151561013a577fc17eabdf34dbdda04d4e5bc7f639984fff1d8a51ba4bb7f728e59744c3320e07600454600754604051808381526020018281526020019250505060405180910390a15b5b5b5b5050565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f106107a757805160ff19168380011785556107d4565b828001600101855582156107d4579182015b828111156107d45782518255916020019190600101906107b9565b5b506107e19291506107f7565b5090565b60408051602081019091526000815290565b61081591905b808211156107e157600081556001016107fd565b5090565b905600a165627a7a7230582070719b8c4e2de7175362453101cd0e55547ebec9d080b9f9c8c5bf47a485e3c70029', 
+     gas<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>4700000<span class="pl-pds">'</span></span>
+   }, <span class="pl-k">function</span> (<span class="pl-smi">e</span>, <span class="pl-smi">contract</span>){
+    <span class="pl-en">console</span>.<span class="pl-c1">log</span>(e, contract);
+    <span class="pl-k">if</span> (<span class="pl-k">typeof</span> <span class="pl-smi">contract</span>.<span class="pl-smi">address</span> <span class="pl-k">!==</span> <span class="pl-s"><span class="pl-pds">'</span>undefined<span class="pl-pds">'</span></span>) {
+        <span class="pl-c"><span class="pl-c">//</span> Contract is mined.</span>
+        <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">'</span>Contract mined! address: <span class="pl-pds">'</span></span> <span class="pl-k">+</span> <span class="pl-smi">contract</span>.<span class="pl-smi">address</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">'</span> transactionHash: <span class="pl-pds">'</span></span> <span class="pl-k">+</span> <span class="pl-smi">contract</span>.<span class="pl-smi">transactionHash</span>);   
+        <span class="pl-c"><span class="pl-c">//</span> Event VendorRegistered</span>
+        <span class="pl-smi">contract</span>.<span class="pl-en">VendorRegistered</span>().<span class="pl-c1">watch</span>(<span class="pl-k">function</span>(<span class="pl-smi">error</span>, <span class="pl-smi">result</span>){
+       <span class="pl-k">if</span> (<span class="pl-k">!</span>error)
+          <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">"</span>[<span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-c1">name</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> has been registered as a vendor with the account number <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">account</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>. It has <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">stockCount</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> number of the asset <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">barcode</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> in its stock.]<span class="pl-pds">"</span></span>);
+    });
+        <span class="pl-c"><span class="pl-c">//</span> Event AssetRequested</span>
+        <span class="pl-smi">contract</span>.<span class="pl-en">AssetRequested</span>().<span class="pl-c1">watch</span>(<span class="pl-k">function</span>(<span class="pl-smi">error</span>, <span class="pl-smi">result</span>){
+       <span class="pl-k">if</span> (<span class="pl-k">!</span>error)
+          <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">"</span>[Asset <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">barcode</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> requested by <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">client</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>]<span class="pl-pds">"</span></span>);
+    });   
+    <span class="pl-c"><span class="pl-c">//</span> Event PriceProposed      </span>
+    <span class="pl-smi">contract</span>.<span class="pl-en">PriceProposed</span>().<span class="pl-c1">watch</span>(<span class="pl-k">function</span>(<span class="pl-smi">error</span>, <span class="pl-smi">result</span>){
+       <span class="pl-k">if</span> (<span class="pl-k">!</span>error)
+          <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">"</span>[A price <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">price</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> is proposed for the asset <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">barcode</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> by <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">vendorName</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>]<span class="pl-pds">"</span></span>);
+    });  
+    <span class="pl-c"><span class="pl-c">//</span> Event BiddingFinished</span>
+    <span class="pl-smi">contract</span>.<span class="pl-en">BiddingFinished</span>().<span class="pl-c1">watch</span>(<span class="pl-k">function</span>(<span class="pl-smi">error</span>, <span class="pl-smi">result</span>){
+       <span class="pl-k">if</span> (<span class="pl-k">!</span>error)
+          <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">"</span>[Bidding finished for the asset <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">barcode</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> with the price <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">price</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>. Make the payment if you want to buy the asset.]<span class="pl-pds">"</span></span>);
+    });
+    <span class="pl-c"><span class="pl-c">//</span> Event PaymentReceived</span>
+    <span class="pl-smi">contract</span>.<span class="pl-en">PaymentReceived</span>().<span class="pl-c1">watch</span>(<span class="pl-k">function</span>(<span class="pl-smi">error</span>, <span class="pl-smi">result</span>){
+       <span class="pl-k">if</span> (<span class="pl-k">!</span>error)
+          <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">"</span>[A payment of <span class="pl-pds">"</span></span><span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">amount</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> is received from <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">sender</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> for the asset <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">barcode</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>.]<span class="pl-pds">"</span></span>);
+    });
+    <span class="pl-c"><span class="pl-c">//</span> Event AssetShipped</span>
+        <span class="pl-smi">contract</span>.<span class="pl-en">AssetShipped</span>().<span class="pl-c1">watch</span>(<span class="pl-k">function</span>(<span class="pl-smi">error</span>, <span class="pl-smi">result</span>){
+       <span class="pl-k">if</span> (<span class="pl-k">!</span>error)
+          <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">"</span>[The asset <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">barcode</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> has been shipped with the tracking number <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">trackingNumber</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>.]<span class="pl-pds">"</span></span>);
+    });
+    }
+ })</pre></div>
+
+<p>Save the above code as <code>deploy.js</code> under <code>contracts/SimpleBidding/</code>.</p>
+
+<h3>
+<a id="user-content-deploying-the-contract" class="anchor" href="http://localhost:6419/#deploying-the-contract" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Deploying the Contract</h3>
+
+<p>Now open the geth console and start the mining process.</p>
+
+<div class="highlight highlight-source-shell"><pre>$ sh ./bin/console.sh 
+Welcome to the Geth JavaScript console<span class="pl-k">!</span>
+
+instance: Geth/Node01/v1.5.9-stable-a07539fb/linux/go1.7.3
+coinbase: 0x6c1eddcce57c4d7b2231515fe3586ebaac20c661
+at block: 439 (Mon, 03 Apr 2017 11:33:07 CEST)
+ datadir: /export/home/og240447/blockchain/ethereum/local-private-network/Node01
+ modules: admin:1.0 debug:1.0 eth:1.0 miner:1.0 net:1.0 personal:1.0 rpc:1.0 txpool:1.0 web3:1.0
+
+<span class="pl-k">&gt;</span> miner.start(2)
+<span class="pl-c1">true</span>
+<span class="pl-k">&gt;</span></pre></div>
+
+<p>Then deploy <code>deploy.js</code> using <code>loadScript()</code>.</p>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-k">&gt;</span> loadScript(<span class="pl-s"><span class="pl-pds">"</span>contracts/SimpleBidding/deploy.js<span class="pl-pds">"</span></span>)
+null [object Object]
+<span class="pl-c1">true</span>
+<span class="pl-k">&gt;</span> null [object Object]
+Contract mined<span class="pl-k">!</span> address: 0x56a4e1d0e5ee212e18bf5cd70c3a5f417990b54b transactionHash: 0xb6fb60c6a0f05e69bda76e2a8ac005df0cc430d4a5487c7bc39c9be69d0b4c0e
+<span class="pl-k">&gt;</span>   </pre></div>
+
+<h3>
+<a id="user-content-using-the-contract" class="anchor" href="http://localhost:6419/#using-the-contract" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Using the Contract</h3>
+
+<p>After the contract is mined successfully, clients and vendors can use it. It is assumed that there is one client and two vendors and they use <code>Account 0</code>, <code>Account 1</code> and <code>Account 2</code> respectively. Suppose the two vendors, <code>Vendor1</code> and <code>Vendor2</code>, have an asset with the barcode number <code>1234</code>&nbsp;in their stock. <code>Vendor1</code> has <code>2</code> assets.</p>
+
+<p>It is assumed that the contract is deployed and used by all actors from the same Geth JavaScript console.</p>
+
+<p><a href="./index_files/contract_usage_single_console.png" target="_blank"><img src="./index_files/contract_usage_single_console.png" alt="Single Console Usage" style="max-width:100%;"></a></p>
+
+<p>First, <code>Vendor1</code> sends a registration request to the contract by using the <code>registerVendor()</code> function. Note that, this is a <code>non-constant</code> function (i.e. a function that change the state of the contract) and such functions can only be called via a transaction (i.e. you need to pay for it). That's why, apart from the function parameters, an <code>address</code> in which the fees will be taken and a quantity of <code>gas</code> that this function call (i.e. transaction) suppose to consume at maximum should be provided using <code>{from: address, gas: uint}</code>.</p>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-k">&gt;</span> simplebidding_sol_simplebidding.registerVendor(<span class="pl-s"><span class="pl-pds">"</span>Vendor1<span class="pl-pds">"</span></span>, 1234, 2, {from: eth.accounts[1], gas: 1000000})<span class="pl-k">;</span>
+<span class="pl-s"><span class="pl-pds">"</span>0x4b965d379706b601acf60be3feb73b96f4fd399cc62da77dca023925d5f0948d<span class="pl-pds">"</span></span>
+<span class="pl-k">&gt;</span> [Vendor1 has been registered as a vendor with the account number 0xaad7a7d0dc77e8cf2c1bbbaab556bc0d5dff4bdc. It has 2 number of the asset undefined <span class="pl-k">in</span> its stock.]
+<span class="pl-k">&gt;</span></pre></div>
+
+<p>Then, <code>Vendor2</code> sends a registration request to the contract. </p>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-k">&gt;</span> simplebidding_sol_simplebidding.registerVendor(<span class="pl-s"><span class="pl-pds">"</span>Vendor2<span class="pl-pds">"</span></span>, 1234, 1, {from: eth.accounts[2], gas: 1000000})<span class="pl-k">;</span>
+<span class="pl-s"><span class="pl-pds">"</span>0x231c18488039e4a6acb4da81a441e31ae28eb38dc0849fb170206e5072932a77<span class="pl-pds">"</span></span>
+<span class="pl-k">&gt;</span> [Vendor2 has been registered as a vendor with the account number 0x25c6bf0b1637b9c04a4f715876c0f891e9daba32. It has 1 number of the asset undefined <span class="pl-k">in</span> its stock.]
+<span class="pl-k">&gt;</span></pre></div>
+
+<p>Anytime after, <code>Client</code> makes a request for the asset <code>1234</code>.</p>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-k">&gt;</span> simplebidding_sol_simplebidding.requestAsset(1234, {from: eth.accounts[0], gas: 1000000})<span class="pl-k">;</span>
+<span class="pl-s"><span class="pl-pds">"</span>0x275921ed7b3110d6037166db65ebc08e013a44280e0f697bbd542ef814790139<span class="pl-pds">"</span></span>
+<span class="pl-k">&gt;</span> [Asset 1234 requested by 0x6c1eddcce57c4d7b2231515fe3586ebaac20c661]
+<span class="pl-k">&gt;</span></pre></div>
+
+<p>Upon the start of the bidding, <code>Vendor1</code> and <code>Vendor2</code> propose the prices <code>11</code> and <code>10</code> respectively.</p>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-k">&gt;</span> simplebidding_sol_simplebidding.proposePrice(1234, 11, {from: eth.accounts[1], gas: 1000000})<span class="pl-k">;</span>
+<span class="pl-s"><span class="pl-pds">"</span>0xd6951ba946f01b235155e4e41b045c9c2314349ad09d9f34d25001c6a369cdb3<span class="pl-pds">"</span></span>
+<span class="pl-k">&gt;</span> [A price 11 is proposed <span class="pl-k">for</span> the asset 1234 by Vendor1]
+<span class="pl-k">&gt;</span> simplebidding_sol_simplebidding.proposePrice(1234, 10, {from: eth.accounts[2], gas: 1000000})<span class="pl-k">;</span>
+<span class="pl-s"><span class="pl-pds">"</span>0x127006762ba19dd1990982b12cb931ab0a2823dec1984ef341d3c8b71eb0d308<span class="pl-pds">"</span></span>
+<span class="pl-k">&gt;</span> [A price 10 is proposed <span class="pl-k">for</span> the asset 1234 by Vendor2]</pre></div>
+
+<p>Having two proposal finishes the bidding process and the contract announces the best price.</p>
+
+<div class="highlight highlight-source-shell"><pre>[Bidding finished <span class="pl-k">for</span> the asset 1234 with the price 10. Make the payment <span class="pl-k">if</span> you want to buy the asset.]</pre></div>
+
+<p><code>Client</code> sends the requested amount <code>10</code> to the contract using the address that was verbosed when the contract was mined (<code>0x56a4e1d0e5ee212e18bf5cd70c3a5f417990b54b</code>). </p>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-k">&gt;</span> var tx = {from:  eth.accounts[0], to: <span class="pl-s"><span class="pl-pds">"</span>0x56a4e1d0e5ee212e18bf5cd70c3a5f417990b54b<span class="pl-pds">"</span></span>, value: 10}
+undefined
+<span class="pl-k">&gt;</span> personal.sendTransaction(tx, <span class="pl-s"><span class="pl-pds">"</span>Node01Account00<span class="pl-pds">"</span></span>)
+<span class="pl-s"><span class="pl-pds">"</span>0x6fd3b765669594279cc9a0ca75a68bb1b4a73960727c548b348d3b84d6ea0146<span class="pl-pds">"</span></span></pre></div>
+
+<p>The contract receives the amount, announces that and ships the asset to <code>Client</code>.</p>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-k">&gt;</span> [A payment of 10 is received from 0x6c1eddcce57c4d7b2231515fe3586ebaac20c661 <span class="pl-k">for</span> the asset 1234.]
+[The asset 1234 has been shipped with the tracking number 78623235235.]
+<span class="pl-k">&gt;</span> </pre></div>
+
+<h2>
+<a id="user-content-separating-the-geth-clients" class="anchor" href="http://localhost:6419/#separating-the-geth-clients" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Separating the Geth Clients</h2>
+
+<p>It is hard to follow which stakeholder doing what when we show them inside one single <code>geth</code> client. A better (and more realistic) practice would be opening a <code>geth</code> client for each stakeholder.</p>
+
+<blockquote>
+<p>Remember that, we are running our examples in a local private network where there is one single node (for instance) which has several accounts.</p>
+</blockquote>
+
+<p><a href="./index_files/contract_usage_several_consoles.png" target="_blank"><img src="./index_files/contract_usage_several_consoles.png" alt="Separated Console Usage" style="max-width:100%;"></a></p>
+
+<p>In order realize this scenario, first we need to open the geth console like before, start the mining process and deploy the contract. Then, we need to open the other terminal windows (2 for the vendors, 1 for the client), attach to the already running geth console, load the deployed contract using its <code>abi</code> and <code>address</code>. </p>
+
+<h3>
+<a id="user-content-loading-a-deployed-contract" class="anchor" href="http://localhost:6419/#loading-a-deployed-contract" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Loading a Deployed Contract</h3>
+
+<p>To facilitate the processes of vendors and clients, we can prepare script files and then load them at their dedicated consoles. </p>
+
+<h4>
+<a id="user-content-loading-the-contract-for-vendors" class="anchor" href="http://localhost:6419/#loading-the-contract-for-vendors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Loading the Contract for Vendors</h4>
+
+<p>The script for the vendors is as follows.</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-c"><span class="pl-c">//</span> unlock all accounts</span>
+<span class="pl-en">loadScript</span>(<span class="pl-s"><span class="pl-pds">"</span>config/UnlockAccounts.js<span class="pl-pds">"</span></span>);
+
+<span class="pl-c"><span class="pl-c">//</span> creation of contract object</span>
+var simplebidding_sol_simplebiddingContract = web3.eth.contract([{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"assetBarcode","type":"uint256"},{"name":"stockCount","type":"uint256"}],"name":"registerVendor","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"barcode","type":"uint256"}],"name":"requestAsset","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"dispose","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"getMyVendorInfo","outputs":[{"name":"name","type":"string"},{"name":"acc","type":"address"},{"name":"barcode","type":"uint256"},{"name":"numAssets","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"barcode","type":"uint256"},{"name":"price","type":"uint256"}],"name":"proposePrice","outputs":[],"payable":false,"type":"function"},{"inputs":[],"payable":false,"type":"constructor"},{"payable":true,"type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"name","type":"string"},{"indexed":false,"name":"account","type":"address"},{"indexed":false,"name":"assetBarcode","type":"uint256"},{"indexed":false,"name":"stockCount","type":"uint256"}],"name":"VendorRegistered","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"client","type":"address"},{"indexed":false,"name":"barcode","type":"uint256"}],"name":"AssetRequested","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"vendorName","type":"string"},{"indexed":false,"name":"barcode","type":"uint256"},{"indexed":false,"name":"price","type":"uint256"}],"name":"PriceProposed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"barcode","type":"uint256"},{"indexed":false,"name":"price","type":"uint256"}],"name":"BiddingFinished","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"sender","type":"address"},{"indexed":false,"name":"amount","type":"uint256"},{"indexed":false,"name":"barcode","type":"uint256"}],"name":"PaymentReceived","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"barcode","type":"uint256"},{"indexed":false,"name":"trackingNumber","type":"uint256"}],"name":"AssetShipped","type":"event"}]);
+
+<span class="pl-c"><span class="pl-c">//</span> initiate contract for an address</span>
+<span class="pl-k">var</span> simplebidding_sol_simplebidding <span class="pl-k">=</span> <span class="pl-smi">simplebidding_sol_simplebiddingContract</span>.<span class="pl-en">at</span>(contractAddress);
+
+<span class="pl-c"><span class="pl-c">//</span> add a watch for the event VendorRegistered</span>
+<span class="pl-smi">simplebidding_sol_simplebidding</span>.<span class="pl-en">VendorRegistered</span>().<span class="pl-c1">watch</span>(<span class="pl-k">function</span>(<span class="pl-smi">error</span>, <span class="pl-smi">result</span>){
+   <span class="pl-k">if</span> (<span class="pl-k">!</span>error)
+      <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">"</span>[<span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-c1">name</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> has been registered as a vendor with the account number <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">account</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>. It has <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">stockCount</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> number of the asset <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">barcode</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> in its stock.]<span class="pl-pds">"</span></span>);
+});
+
+<span class="pl-c"><span class="pl-c">//</span> add a watch for the event VendorRegistered</span>
+<span class="pl-smi">simplebidding_sol_simplebidding</span>.<span class="pl-en">AssetRequested</span>().<span class="pl-c1">watch</span>(<span class="pl-k">function</span>(<span class="pl-smi">error</span>, <span class="pl-smi">result</span>){
+   <span class="pl-k">if</span> (<span class="pl-k">!</span>error)
+      <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">"</span>[Asset <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">barcode</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> requested by <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">client</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>]<span class="pl-pds">"</span></span>);
+});
+
+<span class="pl-c"><span class="pl-c">//</span> add a watch for the event PriceProposed</span>
+<span class="pl-smi">simplebidding_sol_simplebidding</span>.<span class="pl-en">PriceProposed</span>().<span class="pl-c1">watch</span>(<span class="pl-k">function</span>(<span class="pl-smi">error</span>, <span class="pl-smi">result</span>){
+   <span class="pl-k">if</span> (<span class="pl-k">!</span>error)
+      <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">"</span>[A price <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">price</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> is proposed for the asset <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">barcode</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> by <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">vendorName</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>]<span class="pl-pds">"</span></span>);
+});
+
+<span class="pl-c"><span class="pl-c">//</span> add a watch for the event BiddingFinished</span>
+<span class="pl-smi">simplebidding_sol_simplebidding</span>.<span class="pl-en">BiddingFinished</span>().<span class="pl-c1">watch</span>(<span class="pl-k">function</span>(<span class="pl-smi">error</span>, <span class="pl-smi">result</span>){
+   <span class="pl-k">if</span> (<span class="pl-k">!</span>error)
+      <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">"</span>[Bidding finished for the asset <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">barcode</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> with the price <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">price</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>. Make the payment if you want to buy the asset.]<span class="pl-pds">"</span></span>);
+});</pre></div>
+
+<p>Save this file as <code>load4Vendor.js</code>. </p>
+
+<blockquote>
+<p>Note that, only the events related to vendors are considered for watching. However, there is no restriction for watching other events also, it is transparent.</p>
+</blockquote>
+
+<h4>
+<a id="user-content-loading-the-contract-for-clients" class="anchor" href="http://localhost:6419/#loading-the-contract-for-clients" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Loading the Contract for Clients</h4>
+
+<p>The script for the clients, on the other hand, is as follows.</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-c"><span class="pl-c">//</span> unlock all accounts</span>
+<span class="pl-en">loadScript</span>(<span class="pl-s"><span class="pl-pds">"</span>config/UnlockAccounts.js<span class="pl-pds">"</span></span>);
+
+<span class="pl-c"><span class="pl-c">//</span> creation of contract object</span>
+var simplebidding_sol_simplebiddingContract = web3.eth.contract([{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"assetBarcode","type":"uint256"},{"name":"stockCount","type":"uint256"}],"name":"registerVendor","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"barcode","type":"uint256"}],"name":"requestAsset","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"dispose","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"getMyVendorInfo","outputs":[{"name":"name","type":"string"},{"name":"acc","type":"address"},{"name":"barcode","type":"uint256"},{"name":"numAssets","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"barcode","type":"uint256"},{"name":"price","type":"uint256"}],"name":"proposePrice","outputs":[],"payable":false,"type":"function"},{"inputs":[],"payable":false,"type":"constructor"},{"payable":true,"type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"name","type":"string"},{"indexed":false,"name":"account","type":"address"},{"indexed":false,"name":"assetBarcode","type":"uint256"},{"indexed":false,"name":"stockCount","type":"uint256"}],"name":"VendorRegistered","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"client","type":"address"},{"indexed":false,"name":"barcode","type":"uint256"}],"name":"AssetRequested","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"vendorName","type":"string"},{"indexed":false,"name":"barcode","type":"uint256"},{"indexed":false,"name":"price","type":"uint256"}],"name":"PriceProposed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"barcode","type":"uint256"},{"indexed":false,"name":"price","type":"uint256"}],"name":"BiddingFinished","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"sender","type":"address"},{"indexed":false,"name":"amount","type":"uint256"},{"indexed":false,"name":"barcode","type":"uint256"}],"name":"PaymentReceived","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"barcode","type":"uint256"},{"indexed":false,"name":"trackingNumber","type":"uint256"}],"name":"AssetShipped","type":"event"}]);
+
+<span class="pl-c"><span class="pl-c">//</span> initiate contract for an address</span>
+<span class="pl-k">var</span> simplebidding_sol_simplebidding <span class="pl-k">=</span> <span class="pl-smi">simplebidding_sol_simplebiddingContract</span>.<span class="pl-en">at</span>(contractAddress);
+
+<span class="pl-c"><span class="pl-c">//</span> add a watch for the event BiddingFinished</span>
+<span class="pl-smi">simplebidding_sol_simplebidding</span>.<span class="pl-en">BiddingFinished</span>().<span class="pl-c1">watch</span>(<span class="pl-k">function</span>(<span class="pl-smi">error</span>, <span class="pl-smi">result</span>){
+   <span class="pl-k">if</span> (<span class="pl-k">!</span>error)
+      <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">"</span>[Bidding finished for the asset <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">barcode</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> with the price <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">price</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>. Make the payment if you want to buy the asset.]<span class="pl-pds">"</span></span>);
+});
+
+<span class="pl-c"><span class="pl-c">//</span> add a watch for the event PaymentReceived</span>
+<span class="pl-smi">simplebidding_sol_simplebidding</span>.<span class="pl-en">PaymentReceived</span>().<span class="pl-c1">watch</span>(<span class="pl-k">function</span>(<span class="pl-smi">error</span>, <span class="pl-smi">result</span>){
+   <span class="pl-k">if</span> (<span class="pl-k">!</span>error)
+      <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">"</span>[A payment of <span class="pl-pds">"</span></span><span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">amount</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> is received from <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">sender</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> for the asset <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">barcode</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>.]<span class="pl-pds">"</span></span>);
+});
+
+<span class="pl-c"><span class="pl-c">//</span> add a watch for the event AssetShipped</span>
+<span class="pl-smi">simplebidding_sol_simplebidding</span>.<span class="pl-en">AssetShipped</span>().<span class="pl-c1">watch</span>(<span class="pl-k">function</span>(<span class="pl-smi">error</span>, <span class="pl-smi">result</span>){
+   <span class="pl-k">if</span> (<span class="pl-k">!</span>error)
+      <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">"</span>[The asset <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">barcode</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span> has been shipped with the tracking number <span class="pl-pds">"</span></span> <span class="pl-k">+</span> <span class="pl-smi">result</span>.<span class="pl-smi">args</span>.<span class="pl-smi">trackingNumber</span> <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>.]<span class="pl-pds">"</span></span>);
+});</pre></div>
+
+<p>Save this file as <code>load4Client.js</code>. </p>
+
+<blockquote>
+<p>Note that, only the events related to clients are considered for watching.</p>
+</blockquote>
+
+<h3>
+<a id="user-content-using-the-contract-via-separate-consoles" class="anchor" href="http://localhost:6419/#using-the-contract-via-separate-consoles" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Using the Contract via Separate Consoles</h3>
+
+<h4>
+<a id="user-content-main-console-contract-owner" class="anchor" href="http://localhost:6419/#main-console-contract-owner" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Main Console (Contract Owner)</h4>
+
+<p>First open the geth console like before and start the mining process.</p>
+
+<div class="highlight highlight-source-shell"><pre>$ sh ./bin/console.sh 
+Welcome to the Geth JavaScript console<span class="pl-k">!</span>
+
+instance: Geth/Node01/v1.5.9-stable-a07539fb/linux/go1.7.3
+coinbase: 0x6c1eddcce57c4d7b2231515fe3586ebaac20c661
+at block: 439 (Mon, 03 Apr 2017 11:33:07 CEST)
+ datadir: /export/home/og240447/blockchain/ethereum/local-private-network/Node01
+ modules: admin:1.0 debug:1.0 eth:1.0 miner:1.0 net:1.0 personal:1.0 rpc:1.0 txpool:1.0 web3:1.0
+
+<span class="pl-k">&gt;</span> miner.start(2)
+<span class="pl-c1">true</span>
+<span class="pl-k">&gt;</span></pre></div>
+
+<p>Then deploy <code>deploy.js</code> using <code>loadScript()</code>.</p>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-k">&gt;</span> loadScript(<span class="pl-s"><span class="pl-pds">"</span>contracts/SimpleBidding/deploy.js<span class="pl-pds">"</span></span>)
+null [object Object]
+<span class="pl-c1">true</span>
+<span class="pl-k">&gt;</span> null [object Object]
+Contract mined<span class="pl-k">!</span> address: 0x56a4e1d0e5ee212e18bf5cd70c3a5f417990b54b transactionHash: 0xb6fb60c6a0f05e69bda76e2a8ac005df0cc430d4a5487c7bc39c9be69d0b4c0e
+<span class="pl-k">&gt;</span>   </pre></div>
+
+<h4>
+<a id="user-content-vendor-console" class="anchor" href="http://localhost:6419/#vendor-console" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Vendor Console</h4>
+
+<p>Then open another terminal window for <code>Vendor1</code> and type the following to attach to the geth client.</p>
+
+<div class="highlight highlight-source-shell"><pre>$ geth attach ipc://export/home/og240447/blockchain/ethereum/local-private-network/Node01/geth.ipc</pre></div>
+
+<p>You will see the same messages and then a geth javascript console will open.</p>
+
+<div class="highlight highlight-source-js"><pre>Welcome to the Geth JavaScript <span class="pl-en">console</span><span class="pl-k">!</span>
+
+instance<span class="pl-k">:</span> Geth<span class="pl-k">/</span>Node01<span class="pl-k">/</span>v1.<span class="pl-ii">5</span>.<span class="pl-ii">9</span><span class="pl-k">-</span>stable<span class="pl-k">-</span>a07539fb<span class="pl-k">/</span>linux<span class="pl-k">/</span>go1.<span class="pl-ii">7</span>.<span class="pl-ii">3</span>
+coinbase<span class="pl-k">:</span> <span class="pl-c1">0x6c1eddcce57c4d7b2231515fe3586ebaac20c661</span>
+at block<span class="pl-k">:</span> <span class="pl-ii">20107</span> (Thu, <span class="pl-c1">06</span> Apr <span class="pl-c1">2017</span> <span class="pl-c1">15</span><span class="pl-k">:</span><span class="pl-c1">14</span><span class="pl-k">:</span><span class="pl-c1">57</span> <span class="pl-c1">CEST</span>)
+ datadir<span class="pl-k">:</span><span class="pl-sr"> <span class="pl-pds">/</span>export<span class="pl-pds">/</span></span>home<span class="pl-k">/</span>og240447<span class="pl-k">/</span>blockchain<span class="pl-k">/</span>ethereum<span class="pl-k">/</span>local<span class="pl-k">-</span><span class="pl-k">private</span><span class="pl-k">-</span>network<span class="pl-k">/</span>Node01
+ modules<span class="pl-k">:</span> admin<span class="pl-k">:</span><span class="pl-c1">1.0</span> debug<span class="pl-k">:</span><span class="pl-c1">1.0</span> eth<span class="pl-k">:</span><span class="pl-c1">1.0</span> miner<span class="pl-k">:</span><span class="pl-c1">1.0</span> net<span class="pl-k">:</span><span class="pl-c1">1.0</span> personal<span class="pl-k">:</span><span class="pl-c1">1.0</span> rpc<span class="pl-k">:</span><span class="pl-c1">1.0</span> txpool<span class="pl-k">:</span><span class="pl-c1">1.0</span> web3<span class="pl-k">:</span><span class="pl-c1">1.0</span>
+
+<span class="pl-k">&gt;</span></pre></div>
+
+<p>To load the deployed contract, first put the contract address in a variable <code>contractAddress</code> and then load the <code>load4Vendor.js</code> script.</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">&gt;</span> <span class="pl-k">var</span> contractAddress <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>0x56a4e1d0e5ee212e18bf5cd70c3a5f417990b54b<span class="pl-pds">"</span></span>
+<span class="pl-c1">undefined</span>
+<span class="pl-k">&gt;</span> <span class="pl-en">loadScript</span>(<span class="pl-s"><span class="pl-pds">"</span>contracts/SimpleBidding/load4Vendor.js<span class="pl-pds">"</span></span>)
+<span class="pl-c1">true</span>
+<span class="pl-k">&gt;</span> </pre></div>
+
+<p>That's it. Now you can use the contract as a vendor. Repeat the same steps for the second vendor.</p>
+
+<h4>
+<a id="user-content-client-console" class="anchor" href="http://localhost:6419/#client-console" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Client Console</h4>
+
+<p>Then open another terminal window for <code>Client</code> and type the following to attach to the geth client.</p>
+
+<div class="highlight highlight-source-shell"><pre>$ geth attach ipc://export/home/og240447/blockchain/ethereum/local-private-network/Node01/geth.ipc</pre></div>
+
+<p>You will see the same messages and then a geth javascript console will open.</p>
+
+<div class="highlight highlight-source-js"><pre>Welcome to the Geth JavaScript <span class="pl-en">console</span><span class="pl-k">!</span>
+
+instance<span class="pl-k">:</span> Geth<span class="pl-k">/</span>Node01<span class="pl-k">/</span>v1.<span class="pl-ii">5</span>.<span class="pl-ii">9</span><span class="pl-k">-</span>stable<span class="pl-k">-</span>a07539fb<span class="pl-k">/</span>linux<span class="pl-k">/</span>go1.<span class="pl-ii">7</span>.<span class="pl-ii">3</span>
+coinbase<span class="pl-k">:</span> <span class="pl-c1">0x6c1eddcce57c4d7b2231515fe3586ebaac20c661</span>
+at block<span class="pl-k">:</span> <span class="pl-ii">20107</span> (Thu, <span class="pl-c1">06</span> Apr <span class="pl-c1">2017</span> <span class="pl-c1">15</span><span class="pl-k">:</span><span class="pl-c1">14</span><span class="pl-k">:</span><span class="pl-c1">57</span> <span class="pl-c1">CEST</span>)
+ datadir<span class="pl-k">:</span><span class="pl-sr"> <span class="pl-pds">/</span>export<span class="pl-pds">/</span></span>home<span class="pl-k">/</span>og240447<span class="pl-k">/</span>blockchain<span class="pl-k">/</span>ethereum<span class="pl-k">/</span>local<span class="pl-k">-</span><span class="pl-k">private</span><span class="pl-k">-</span>network<span class="pl-k">/</span>Node01
+ modules<span class="pl-k">:</span> admin<span class="pl-k">:</span><span class="pl-c1">1.0</span> debug<span class="pl-k">:</span><span class="pl-c1">1.0</span> eth<span class="pl-k">:</span><span class="pl-c1">1.0</span> miner<span class="pl-k">:</span><span class="pl-c1">1.0</span> net<span class="pl-k">:</span><span class="pl-c1">1.0</span> personal<span class="pl-k">:</span><span class="pl-c1">1.0</span> rpc<span class="pl-k">:</span><span class="pl-c1">1.0</span> txpool<span class="pl-k">:</span><span class="pl-c1">1.0</span> web3<span class="pl-k">:</span><span class="pl-c1">1.0</span>
+
+<span class="pl-k">&gt;</span></pre></div>
+
+<p>To load the deployed contract, first put the contract address in a variable <code>contractAddress</code> and then load the <code>load4Client.js</code> script.</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">&gt;</span> <span class="pl-k">var</span> contractAddress <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>0x56a4e1d0e5ee212e18bf5cd70c3a5f417990b54b<span class="pl-pds">"</span></span>
+<span class="pl-c1">undefined</span>
+<span class="pl-k">&gt;</span> <span class="pl-en">loadScript</span>(<span class="pl-s"><span class="pl-pds">"</span>contracts/SimpleBidding/load4Client.js<span class="pl-pds">"</span></span>)
+<span class="pl-c1">true</span>
+<span class="pl-k">&gt;</span> </pre></div>
+
+<p>That's it. Now you can use the contract as a client.</p>
+
+<h2>
+<a id="user-content-whats-next" class="anchor" href="http://localhost:6419/#whats-next" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What's next?</h2>
+
+<p>You have learned how to develop a relatively simple contract that makes bidding between several vendors for an asset requtested by a client. You have learned how to use and implement modifiers, events, constant function with several return values and non-constant functions. </p>
+
+<p>You can continue to the <a href="http://localhost:6419/04-MarketPlace-v01/README.md">MarketPlace (v01)</a> contract  example.</p>
+
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    
+
+  </div>
+  <div>&nbsp;</div>
+  </div><script>
+    function showCanonicalImages() {
+      var images = document.getElementsByTagName('img');
+      if (!images) {
+        return;
+      }
+      for (var index = 0; index < images.length; index++) {
+        var image = images[index];
+        if (image.getAttribute('data-canonical-src') && image.src !== image.getAttribute('data-canonical-src')) {
+          image.src = image.getAttribute('data-canonical-src');
+        }
+      }
+    }
+
+    function scrollToHash() {
+      if (location.hash && !document.querySelector(':target')) {
+        var element = document.getElementById('user-content-' + location.hash.slice(1));
+        if (element) {
+           element.scrollIntoView();
+        }
+      }
+    }
+
+    function autorefreshContent(eventSourceUrl) {
+      var initialTitle = document.title;
+      var contentElement = document.getElementById('grip-content');
+      var source = new EventSource(eventSourceUrl);
+      var isRendering = false;
+
+      source.onmessage = function(ev) {
+        var msg = JSON.parse(ev.data);
+        if (msg.updating) {
+          isRendering = true;
+          document.title = '(Rendering) ' + document.title;
+        } else {
+          isRendering = false;
+          document.title = initialTitle;
+          contentElement.innerHTML = msg.content;
+          showCanonicalImages();
+        }
+      }
+
+      source.onerror = function(e) {
+        if (e.readyState === EventSource.CLOSED && isRendering) {
+          isRendering = false;
+          document.title = initialTitle;
+        }
+      }
+    }
+
+    window.onhashchange = function() {
+      scrollToHash();
+    }
+
+    window.onload = function() {
+      scrollToHash();
+    }
+
+    showCanonicalImages();
+
+    var autorefreshUrl = document.getElementById('preview-page').getAttribute('data-autorefresh-url');
+    if (autorefreshUrl) {
+      autorefreshContent(autorefreshUrl);
+    }
+  </script>
+
+</body></html>

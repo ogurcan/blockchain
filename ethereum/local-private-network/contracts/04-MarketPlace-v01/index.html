@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://localhost:6419/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <title>README.md - Grip</title>
+  <link rel="icon" href="http://localhost:6419/__/grip/static/favicon.ico">
+  <link rel="stylesheet" href="./index_files/frameworks-5b61aadc846f0818981ceec31b49c475fb084c163fdec5efbc2c21ef539092a9.css">
+  <link rel="stylesheet" href="./index_files/github-9e591dcc1f30d2a6ac3773da2f8c05987a4a148bae15713c4be9bb62b6e92b26.css">
+  <link rel="stylesheet" href="./index_files/site-f4fa6ace91e5f0fabb47e8405e5ecf6a9815949cd3958338f6578e626cd443d7.css">
+  <link rel="stylesheet" href="./index_files/octicons.css">
+  <style>
+    /* Page tweaks */
+    .preview-page {
+      margin-top: 64px;
+    }
+    /* User-content tweaks */
+    .timeline-comment-wrapper > .timeline-comment:after,
+    .timeline-comment-wrapper > .timeline-comment:before {
+      content: none;
+    }
+    /* User-content overrides */
+    .discussion-timeline.wide {
+      width: 920px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div id="preview-page" class="preview-page" data-autorefresh-url="/__/grip/refresh/">
+
+    
+
+      <div role="main" class="main-content">
+        <div class="container new-discussion-timeline experiment-repo-nav">
+          <div class="repository-content">
+            <div id="readme" class="readme boxed-group clearfix announce instapaper_body md">
+              
+                <h3>
+                  <span class="octicon octicon-book"></span>
+                  README.md
+                </h3>
+              
+              <article class="markdown-body entry-content" itemprop="text" id="grip-content">
+                <h1>
+<a id="user-content-marketplace-contract-v01" class="anchor" href="http://localhost:6419/#marketplace-contract-v01" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>MarketPlace Contract v01</h1>
+
+<h2>
+<a id="user-content-todo-list" class="anchor" href="http://localhost:6419/#todo-list" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>ToDo List</h2>
+
+<ul>
+<li>Add filters for functions</li>
+<li>Catch <code>throws</code> from geth console.
+
+<ul>
+<li>aContract.aMethod(value, {gas: 3000000}).then(function(){console.log('worked');}, function(){console.log('failed');});</li>
+</ul>
+</li>
+</ul>
+
+<h3>
+<a id="user-content-designing-the-contract" class="anchor" href="http://localhost:6419/#designing-the-contract" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Designing the Contract</h3>
+
+<p>To reveal the functions of the contract, we designed a sequence diagram of the aforementioned scenario.</p>
+
+<p><a href="./index_files/sequence_diagram.png" target="_blank"><img src="./index_files/sequence_diagram.png" alt="Market Place Scenario (v1)" style="max-width:100%;"></a></p>
+
+<p>The next subsection will show how to implement this scenario as a contract.</p>
+
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    
+
+  </div>
+  <div>&nbsp;</div>
+  </div><script>
+    function showCanonicalImages() {
+      var images = document.getElementsByTagName('img');
+      if (!images) {
+        return;
+      }
+      for (var index = 0; index < images.length; index++) {
+        var image = images[index];
+        if (image.getAttribute('data-canonical-src') && image.src !== image.getAttribute('data-canonical-src')) {
+          image.src = image.getAttribute('data-canonical-src');
+        }
+      }
+    }
+
+    function scrollToHash() {
+      if (location.hash && !document.querySelector(':target')) {
+        var element = document.getElementById('user-content-' + location.hash.slice(1));
+        if (element) {
+           element.scrollIntoView();
+        }
+      }
+    }
+
+    function autorefreshContent(eventSourceUrl) {
+      var initialTitle = document.title;
+      var contentElement = document.getElementById('grip-content');
+      var source = new EventSource(eventSourceUrl);
+      var isRendering = false;
+
+      source.onmessage = function(ev) {
+        var msg = JSON.parse(ev.data);
+        if (msg.updating) {
+          isRendering = true;
+          document.title = '(Rendering) ' + document.title;
+        } else {
+          isRendering = false;
+          document.title = initialTitle;
+          contentElement.innerHTML = msg.content;
+          showCanonicalImages();
+        }
+      }
+
+      source.onerror = function(e) {
+        if (e.readyState === EventSource.CLOSED && isRendering) {
+          isRendering = false;
+          document.title = initialTitle;
+        }
+      }
+    }
+
+    window.onhashchange = function() {
+      scrollToHash();
+    }
+
+    window.onload = function() {
+      scrollToHash();
+    }
+
+    showCanonicalImages();
+
+    var autorefreshUrl = document.getElementById('preview-page').getAttribute('data-autorefresh-url');
+    if (autorefreshUrl) {
+      autorefreshContent(autorefreshUrl);
+    }
+  </script>
+
+</body></html>
