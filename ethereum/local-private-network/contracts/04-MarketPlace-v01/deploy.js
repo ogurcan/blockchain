@@ -15,7 +15,7 @@ var marketplace_sol_marketplace = marketplace_sol_marketplaceContract.new(
         // Event VendorRegistered
     	contract.VendorRegistered().watch(function(error, result){
 	   if (!error)
-	      console.log("[" + result.args.name + " has been registered as a vendor with the account number " + result.args.account + ". It has " + result.args.stockCount + " number of the asset " + result.args.barcode + " in its stock.]");
+	      console.log("[" + result.args.name + " has been registered as a vendor with the account number " + result.args.account + ". It has " + result.args.stockCount + " number of the asset " + result.args.barcode + " in its stock and it delivers in " + result.args.deliverySpeed + ".]");
 	});
     	// Event AssetRequested
     	contract.AssetRequested().watch(function(error, result){
