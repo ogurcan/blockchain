@@ -35,7 +35,7 @@ var marketplace_sol_marketplace = marketplace_sol_marketplaceContract.new(
 	// Event PaymentReceived
 	contract.PaymentReceived().watch(function(error, result){
 	   if (!error)
-	      console.log("[A payment of "+ result.args.amount + " is received from " + result.args.sender + " for the asset " + result.args.barcode + ".]");
+	      console.log("[A payment of "+ result.args.amount + " is received from " + result.args.sender + " for the asset " + result.args.barcode + " successfully.]");
 	});
 	// Event AssetShipped
         contract.AssetShipped().watch(function(error, result){
