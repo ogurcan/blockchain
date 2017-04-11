@@ -34,7 +34,7 @@ In this example, we will elaborate the `SimpleBidding` contract to develop a mor
 
 In this section, we will develop the `MarketPlace` contract.
 
-> It is assumed that you are now used to contract codes, that's why we will not present it step by step.
+> It is assumed that you are now used to contract codes, that's why we will not present it step by step. If you do not feel confortable, go back to the `SimpleBidding` example and revise the steps.
 
 ### Designing the Contract
 
