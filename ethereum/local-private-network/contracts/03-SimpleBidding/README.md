@@ -452,7 +452,7 @@ var simplebidding_sol_simplebidding = simplebidding_sol_simplebiddingContract.ne
  })
 ```
 
-Save the above code as `deploy.js` under `contracts/SimpleBidding/`.
+Save the above code as `deploy.js` under `contracts/03-SimpleBidding/`.
 
 ### Deploying the Contract
 
