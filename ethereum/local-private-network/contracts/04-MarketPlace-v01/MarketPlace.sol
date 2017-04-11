@@ -111,7 +111,7 @@ contract MarketPlace {
        anyone sends funds to a contract */
     function () public payable onlyClient {
         uint amount = msg.value;
-        if (amount == bestPrice) {
+        if (verifyPayment(amount)) {
             // transfer the payment to the vendor
             bestVendor.send(amount);
             // reduce the asset from the vendor's stock
@@ -124,6 +124,11 @@ contract MarketPlace {
             uint trackingNumber = 78623235235;
             AssetShipped(request.assetBarcode, trackingNumber);
         }
+    }
+    
+    /* verifies if the payment made with the correct amount */
+    function verifyPayment(uint amount) private returns (bool result) {
+        result = amount == bestPrice;
     }
     
     /* reset the request because the client refused the offer */
