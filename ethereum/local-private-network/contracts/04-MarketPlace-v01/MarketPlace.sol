@@ -115,7 +115,7 @@ contract MarketPlace {
             // transfer the payment to the vendor
             bestVendor.send(amount);
             // reduce the asset from the vendor's stock
-            // ...to be implemented...
+            vendors[bestVendor].stockCount = vendors[bestVendor].stockCount - request.quantity;
             
             // create the event
             PaymentReceived(msg.sender, msg.value, request.assetBarcode);
@@ -124,6 +124,16 @@ contract MarketPlace {
             uint trackingNumber = 78623235235;
             AssetShipped(request.assetBarcode, trackingNumber);
         }
+    }
+    
+    /* reset the request because the client refused the offer */
+    function refuseOffer() onlyClient {
+        request.client = 0;
+    }
+    
+    /* reset the request because the client canceled the request */
+    function cancelRequest() onlyClient {
+        request.client = 0;
     }
     
     /* returns the vendor information of the caller */
