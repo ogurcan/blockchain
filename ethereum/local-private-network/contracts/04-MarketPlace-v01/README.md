@@ -128,7 +128,7 @@ contract MarketPlace {
     function makeOffer(uint barcode, uint price) onlyVendor {
         Vendor vendor = vendors[msg.sender];
 
-        if (inStock(vendor, barcode)) throw;
+        if (!inStock(vendor, barcode)) throw;
 
         processTheOffer(vendor, barcode, price);
         
