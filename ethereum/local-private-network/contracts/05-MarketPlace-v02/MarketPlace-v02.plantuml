@@ -2,9 +2,9 @@
 hide footbox
 title The MarketPlace contract (v02)
 
-participant Vendor1 <<Contract>>
-participant Vendor2 <<Contract>>
-participant MarketPlace <<Contract>>
+participant Vendor1 << (C,#ADD1B2) Vendor >>
+participant Vendor2 << (C,#ADD1B2) Vendor >>
+participant MarketPlace << (C,#ADD1B2) MarketPlace >>
 actor Client
 
 Vendor1->MarketPlace : registerVendor(name1, barcode, stockCount1, deliverySpeed1)
