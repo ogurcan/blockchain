@@ -28,7 +28,7 @@ contract ReputationSystem {
     }
     
     mapping (uint => BusinessProcess) businessProcessList;
-    uint businessProcessID = 0;
+    uint businessProcessID = 1; // starts from 1
     
     struct Evaluation {
         uint businessProcessID; // for which business process
@@ -65,19 +65,22 @@ contract ReputationSystem {
     }  
     
     /* Add stakeholders to the system. */ 
-    function addStakeholder(string name, address id, uint profession) {
+    function addStakeholder(string name, uint profession) {
+        address id = msg.sender;
         stakeholders[id] = Stakeholder(name, id, profession);
     }
     
     /* Create a business between stakeholders */
-    function createBusiness(address foodProviderID, address breederID, address animalCarrierID, 
-                            address slaughterHouseID, address refrigeratedCarrierID, address brandID) {
+    function createBusinessProcess(address foodProviderID, address breederID, address animalCarrierID, 
+                            address slaughterHouseID, address refrigeratedCarrierID, address brandID) returns (uint bpID) {
         if ((stakeholders[foodProviderID].profession == 0) && (stakeholders[breederID].profession == 1) &&
             (stakeholders[animalCarrierID].profession == 2) && (stakeholders[slaughterHouseID].profession == 3) &&
-            (stakeholders[refrigeratedCarrierID].profession == 4) && (stakeholders[brandID].profession == 5))
+            (stakeholders[refrigeratedCarrierID].profession == 4) && (stakeholders[brandID].profession == 5)) {
           
             businessProcessList[businessProcessID++] = BusinessProcess(foodProviderID, breederID, animalCarrierID, 
                             slaughterHouseID, refrigeratedCarrierID, brandID);
+            return businessProcessID;
+        } else return 0;
     }
     
     /* Reputate a stakeholder (evaluated) for a business with a score from 0 to 3. */
@@ -119,10 +122,11 @@ contract ReputationSystem {
         return (c0 || c1 || c2 || c3 || c4 || c5);
     }    
     
-    /* Calculate and return the reputation value for the given stakeholder. */
+    /* Calculate and return the reputation value for the given stakeholder. 
+       Returns 1.5 if the stakeholder has never been reputated before. */
     function getReputation(address stakeholderID) constant returns (uint reputation) {
-        uint totalWeight = 0;
-        uint totalWeightedScore = 0;
+        uint totalWeight = 2; // initial weight for everyone 
+        uint totalWeightedScore = 3; // initial weighted score for everyone
         
         for (uint i = 0; i < evaluationCount - 1; i++) {
             Evaluation evaluation = evaluations[i];
@@ -132,6 +136,6 @@ contract ReputationSystem {
             }
         }
         
-        return totalWeightedScore/totalWeight;
+        return totalWeightedScore/totalWeight; // calculated reputation value
     }
 }
