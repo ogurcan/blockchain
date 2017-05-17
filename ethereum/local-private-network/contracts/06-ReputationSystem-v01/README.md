@@ -180,6 +180,7 @@ contract ReputationSystem {
 
 ### Using the Contract
 
+First prepare the local private network for testing the contract.
 ```js
 ~/blockchain/ethereum/local-private-network$ sh bin/init.sh 
 ~/blockchain/ethereum/local-private-network$ sh bin/console.sh
@@ -226,6 +227,10 @@ true
 > exit
 ~/blockchain/ethereum/local-private-network$ gedit config/CustomGenesis.json
 ~/blockchain/ethereum/local-private-network$ sh bin/reinit.sh 
+```
+
+Then deploy the contract.
+```js
 ~/blockchain/ethereum/local-private-network$ sh bin/console.sh
 Welcome to the Geth JavaScript console!
 
@@ -242,6 +247,10 @@ null [object Object]
 true
 > null [object Object]
 Contract mined! address: 0x5f7cb1b96d298c9f903aa1b89f58ba47b5f78f9d transactionHash: 0x08cade4c39afb219825cf9174d2bdc4ffc7db8ac64a3ac5f25f52756d2727068
+```
+
+Now we can interact with the contract. We first need to add stakeholders to the system.
+```js
 > reputationSystem.addStakeholder("FoodProvider01", 0, {from: eth.accounts[0], gas: 100000});
 "0x80f8dc9586c06d6031bf4bdfef99ca0ec9ea65877ee75493ee6004b58c82eb6e"
 > reputationSystem.addStakeholder("Breeder01", 1, {from: eth.accounts[1], gas: 100000});
@@ -254,23 +263,42 @@ Contract mined! address: 0x5f7cb1b96d298c9f903aa1b89f58ba47b5f78f9d transactionH
 "0x181c88f7bdca57f7cf06920310bda77d1507ddb0de80dacd7fc61dd325d3a18e"
 > reputationSystem.addStakeholder("Brand01", 5, {from: eth.accounts[5], gas: 100000});
 "0x25d1c902ca8242e50514c837fd103c298edfe5764293a186aaf84e059d5fa2df"
+```
+
+Then create a business process between them.
+```js
 > reputationSystem.createBusinessProcess(eth.accounts[0], eth.accounts[1], eth.accounts[2], eth.accounts[3], eth.accounts[4], eth.accounts[5], {from: eth.coinbase, gas: 100000});
 "0xecd6961aa5c32562f02881dfbf304e6b32bfd1f7354d0e20b86e742c2f147e2a"
+```
+
+Initially, the reputation of all the stakeholders are `1`.
+```js
 > reputationSystem.getReputation(eth.accounts[0]);
 1
 > reputationSystem.getReputation(eth.accounts[1]);
 1
+```
+
+After a while `Breeder01` (`eth.accounts[1]`) reputates `FoodProvider01` (`eth.accounts[0]`) by a score of `3`.
+```js
 > reputationSystem.reputate(1, eth.accounts[0], 3, {from: eth.accounts[1], gas: 100000});
 "0xacb3b4562c4354900aafaaed546157d5c04c3d7bfc86bb13c1f4d0188728f2b9"
+```
+
+Now the reputation of `Breeder01` is `2`.
+``` js
 > reputationSystem.getReputation(eth.accounts[0]);
 2
+```
+
+Similarly, 
+``` js
 > reputationSystem.reputate(1, eth.accounts[1], 1, {from: eth.accounts[2], gas: 100000});
 "0xc57e22bbed0669e515473c7414de4f51be05040b5d39684d2cfd56a0c3dc0d73"
 > reputationSystem.reputate(1, eth.accounts[1], 0, {from: eth.accounts[3], gas: 100000});
 "0x349699477eff10ef86a801bb8e6c3e4adf2fb34a6d3c1a687cbedd6066e02038"
 > reputationSystem.getReputation(eth.accounts[1]);
 1
-
 ```
 
 
