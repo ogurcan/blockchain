@@ -249,7 +249,8 @@ true
 Contract mined! address: 0x5f7cb1b96d298c9f903aa1b89f58ba47b5f78f9d transactionHash: 0x08cade4c39afb219825cf9174d2bdc4ffc7db8ac64a3ac5f25f52756d2727068
 ```
 
-Now we can interact with the contract. We first need to add stakeholders to the system.
+Now we can interact with the contract. We first need to add stakeholders to the system: `FoodProvider01`, `Breeder01`, `AnimalCarrier01`, `SlaughterHouse`, `RefrigeratedCarrier01` and `Brand01`.
+> Note that each stakeholder is using a different account.
 ```js
 > reputationSystem.addStakeholder("FoodProvider01", 0, {from: eth.accounts[0], gas: 100000});
 "0x80f8dc9586c06d6031bf4bdfef99ca0ec9ea65877ee75493ee6004b58c82eb6e"
@@ -257,7 +258,7 @@ Now we can interact with the contract. We first need to add stakeholders to the 
 "0xa70bb2f2370d49ce13f4aa7575983105d1a72eb17f743623ec02f5752dc3107c"
 > reputationSystem.addStakeholder("AnimalCarrier01", 2, {from: eth.accounts[2], gas: 100000});
 "0x36bedea26b6944e039c87c12be579132deb4b5534df848bc99ceea2e6450e287"
-> reputationSystem.addStakeholder("SalughterHouse01", 3, {from: eth.accounts[3], gas: 100000});
+> reputationSystem.addStakeholder("SlaughterHouse01", 3, {from: eth.accounts[3], gas: 100000});
 "0x51c7ed41103f8ec6340410d0b3b21bba9b5a228a61790294765fa85b44139b9f"
 > reputationSystem.addStakeholder("RefrigeratedCarrier01", 4, {from: eth.accounts[4], gas: 100000});
 "0x181c88f7bdca57f7cf06920310bda77d1507ddb0de80dacd7fc61dd325d3a18e"
