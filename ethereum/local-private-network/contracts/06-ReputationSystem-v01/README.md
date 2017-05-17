@@ -1,4 +1,4 @@
-# ReputationSystem Contract
+# The ReputationSystem Contract
 
 ## Before you begin
 
