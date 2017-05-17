@@ -75,6 +75,8 @@ Contract mined! address: 0x5f7cb1b96d298c9f903aa1b89f58ba47b5f78f9d transactionH
 "0xecd6961aa5c32562f02881dfbf304e6b32bfd1f7354d0e20b86e742c2f147e2a"
 > reputationSystem.getReputation(eth.accounts[0]);
 1
+> reputationSystem.getReputation(eth.accounts[1]);
+1
 > reputationSystem.reputate(1, eth.accounts[0], 3, {from: eth.accounts[1], gas: 100000});
 "0xacb3b4562c4354900aafaaed546157d5c04c3d7bfc86bb13c1f4d0188728f2b9"
 > reputationSystem.getReputation(eth.accounts[0]);
