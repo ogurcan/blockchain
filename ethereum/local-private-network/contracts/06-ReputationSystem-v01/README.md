@@ -328,4 +328,7 @@ And the reputation of `Breeder01` remains the same.
 1
 ```
 
+## Tracing the Data
+
+In this section we will show you how to trace data written in the blockchain.
 
