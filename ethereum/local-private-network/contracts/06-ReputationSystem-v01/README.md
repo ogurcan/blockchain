@@ -251,17 +251,39 @@ Contract mined! address: 0x5f7cb1b96d298c9f903aa1b89f58ba47b5f78f9d transactionH
 
 Now we can interact with the contract. We first need to add stakeholders to the system: `FoodProvider01`, `Breeder01`, `AnimalCarrier01`, `SlaughterHouse`, `RefrigeratedCarrier01` and `Brand01`.
 > Note that each stakeholder is using a different account.
+
+Food provider.
 ```js
 > reputationSystem.addStakeholder("FoodProvider01", 0, {from: eth.accounts[0], gas: 100000});
 "0x80f8dc9586c06d6031bf4bdfef99ca0ec9ea65877ee75493ee6004b58c82eb6e"
+```
+
+Breeder.
+```js
 > reputationSystem.addStakeholder("Breeder01", 1, {from: eth.accounts[1], gas: 100000});
 "0xa70bb2f2370d49ce13f4aa7575983105d1a72eb17f743623ec02f5752dc3107c"
+```
+
+Animal carrier.
+```js
 > reputationSystem.addStakeholder("AnimalCarrier01", 2, {from: eth.accounts[2], gas: 100000});
 "0x36bedea26b6944e039c87c12be579132deb4b5534df848bc99ceea2e6450e287"
+```
+
+Slaughter house.
+```js
 > reputationSystem.addStakeholder("SlaughterHouse01", 3, {from: eth.accounts[3], gas: 100000});
 "0x51c7ed41103f8ec6340410d0b3b21bba9b5a228a61790294765fa85b44139b9f"
+```
+
+Refrigerated Carrier.
+```js
 > reputationSystem.addStakeholder("RefrigeratedCarrier01", 4, {from: eth.accounts[4], gas: 100000});
 "0x181c88f7bdca57f7cf06920310bda77d1507ddb0de80dacd7fc61dd325d3a18e"
+```
+
+Brand.
+```js
 > reputationSystem.addStakeholder("Brand01", 5, {from: eth.accounts[5], gas: 100000});
 "0x25d1c902ca8242e50514c837fd103c298edfe5764293a186aaf84e059d5fa2df"
 ```
@@ -292,12 +314,16 @@ Now the reputation of `Breeder01` is `2`.
 2
 ```
 
-Similarly, 
+Similarly, `AnimalCarrier01` and `SlaughterHouse01` are reputating `Breeder01` with score `1` and `0` respectively.
 ``` js
 > reputationSystem.reputate(1, eth.accounts[1], 1, {from: eth.accounts[2], gas: 100000});
 "0xc57e22bbed0669e515473c7414de4f51be05040b5d39684d2cfd56a0c3dc0d73"
 > reputationSystem.reputate(1, eth.accounts[1], 0, {from: eth.accounts[3], gas: 100000});
 "0x349699477eff10ef86a801bb8e6c3e4adf2fb34a6d3c1a687cbedd6066e02038"
+```
+
+And the reputation of `Breeder01` remains the same.
+```js
 > reputationSystem.getReputation(eth.accounts[1]);
 1
 ```
