@@ -124,11 +124,11 @@ contract ReputationSystem {
     
     /* Calculate and return the reputation value for the given stakeholder. 
        Returns 1.5 if the stakeholder has never been reputated before. */
-    function getReputation(address stakeholderID) constant returns (uint reputation) {
+    function getReputation(address stakeholderID) constant returns (uint) {
         uint totalWeight = 2; // initial weight for everyone 
         uint totalWeightedScore = 3; // initial weighted score for everyone
         
-        for (uint i = 0; i < evaluationCount - 1; i++) {
+        for (uint i = 0; i < evaluationCount; i++) {
             Evaluation evaluation = evaluations[i];
             if (evaluation.evaluatedID == stakeholderID) {
                totalWeight += evaluation.weight;
