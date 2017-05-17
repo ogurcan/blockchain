@@ -49,7 +49,7 @@ Welcome to the Geth JavaScript console!
 instance: Geth/Node01/v1.5.9-stable-a07539fb/linux/go1.7.3
 coinbase: 0x8899906bfe74778bf17d1d76a1ac0c3ad734b738
 at block: 0 (Thu, 01 Jan 1970 01:00:00 CET)
- datadir: /export/home/og240447/zaynah/blockchain/ethereum/local-private-network/Node01
+ datadir: /export/home/og240447/blockchain/ethereum/local-private-network/Node01
  modules: admin:1.0 debug:1.0 eth:1.0 miner:1.0 net:1.0 personal:1.0 rpc:1.0 txpool:1.0 web3:1.0
 
 > miner.start(2);
