@@ -9,7 +9,8 @@ contract ReputationSystem {
     struct Stakeholder {
         string name; // stakeholder name
         address id; // id as address
-        uint profession; // 0 food provider, 1 breeder, 2 alive pig carrier, 3 slaughterhouse, 4 cool meat carrier, 5 brand
+        uint profession; // 0 food provider, 1 breeder, 2 animal carrier, 
+                         // 3 slaughterhouse, 4 refrigerated carrier, 5 brand
     }
     
     mapping (address => Stakeholder) stakeholders;
@@ -20,12 +21,10 @@ contract ReputationSystem {
     struct BusinessProcess {
         address foodProviderID;
         address breederID;
-        address pigCarrierID;
+        address animalCarrierID;
         address slaughterHouseID;
-        address meatCarrierID;
+        address refrigeratedCarrierID;
         address brandID;
-        uint stage; // 0 no evaluation, 1: breeder evaluated, 2: pig carrier evaluated, 
-                    // 3: slaughterhouse evaluated, 4 meat carrier evaluated, 5: brand evaluated
     }
     
     mapping (uint => BusinessProcess) businessProcessList;
@@ -71,14 +70,14 @@ contract ReputationSystem {
     }
     
     /* Create a business between stakeholders */
-    function createBusiness(address foodProviderID, address breederID, address pigCarrierID, 
-                            address slaughterHouseID, address meatCarrierID, address brandID) {
+    function createBusiness(address foodProviderID, address breederID, address animalCarrierID, 
+                            address slaughterHouseID, address refrigeratedCarrierID, address brandID) {
         if ((stakeholders[foodProviderID].profession == 0) && (stakeholders[breederID].profession == 1) &&
-            (stakeholders[pigCarrierID].profession == 2) && (stakeholders[slaughterHouseID].profession == 3) &&
-            (stakeholders[meatCarrierID].profession == 4) && (stakeholders[brandID].profession == 5))
+            (stakeholders[animalCarrierID].profession == 2) && (stakeholders[slaughterHouseID].profession == 3) &&
+            (stakeholders[refrigeratedCarrierID].profession == 4) && (stakeholders[brandID].profession == 5))
           
-            businessProcessList[businessProcessID++] = BusinessProcess(foodProviderID, breederID, pigCarrierID, 
-                            slaughterHouseID, meatCarrierID, brandID, 0);
+            businessProcessList[businessProcessID++] = BusinessProcess(foodProviderID, breederID, animalCarrierID, 
+                            slaughterHouseID, refrigeratedCarrierID, brandID);
     }
     
     /* Reputate a stakeholder (evaluated) for a business with a score from 0 to 3. */
@@ -89,8 +88,7 @@ contract ReputationSystem {
         
         if (canReputate(businessProcessID, evaluator, evaluated)) {
             uint reputationOfEvaluator = getReputation(evaluatorID);
-            Evaluation evaluation = Evaluation(businessProcessID, evaluatorID, evaluatedID, reputationOfEvaluator, score);
-            evaluations[evaluationCount++] = evaluation;
+            evaluations[evaluationCount++] = Evaluation(businessProcessID, evaluatorID, evaluatedID, reputationOfEvaluator, score);
         }
     }
     
@@ -114,9 +112,9 @@ contract ReputationSystem {
         Stakeholder stakeholder = stakeholders[stakeholderID];
         bool c0 = (stakeholder.profession == 0) && (stakeholderID == businessProcess.foodProviderID);
         bool c1 = (stakeholder.profession == 1) && (stakeholderID == businessProcess.breederID);
-        bool c2 = (stakeholder.profession == 2) && (stakeholderID == businessProcess.pigCarrierID);
+        bool c2 = (stakeholder.profession == 2) && (stakeholderID == businessProcess.animalCarrierID);
         bool c3 = (stakeholder.profession == 3) && (stakeholderID == businessProcess.slaughterHouseID);
-        bool c4 = (stakeholder.profession == 4) && (stakeholderID == businessProcess.meatCarrierID);
+        bool c4 = (stakeholder.profession == 4) && (stakeholderID == businessProcess.refrigeratedCarrierID);
         bool c5 = (stakeholder.profession == 5) && (stakeholderID == businessProcess.brandID);
         return (c0 || c1 || c2 || c3 || c4 || c5);
     }    
