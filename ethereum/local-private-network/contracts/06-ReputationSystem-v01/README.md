@@ -308,7 +308,7 @@ After a while `Breeder01` (`eth.accounts[1]`) reputates `FoodProvider01` (`eth.a
 "0xacb3b4562c4354900aafaaed546157d5c04c3d7bfc86bb13c1f4d0188728f2b9"
 ```
 
-Now the reputation of `Breeder01` is `2`.
+Now the reputation of `FoodProvider01` is `2`.
 ``` js
 > reputationSystem.getReputation(eth.accounts[0]);
 2
