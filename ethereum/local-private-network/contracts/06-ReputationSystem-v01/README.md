@@ -35,7 +35,7 @@ In this example, we will develop a reputation system contract.
 The full contract code is as below.
 
 ``` js
-pragma solidity ^0.4.10;
+pragma solidity ^0.4.11;
 
 /* Contract managing reputations of stakeholders */
 contract ReputationSystem {
@@ -53,7 +53,7 @@ contract ReputationSystem {
     mapping (address => Stakeholder) stakeholders;
     
     // 1st index evaluator profession, 2nd index evaluated profession
-    mapping (uint => mapping(uint => bool)) evaluationRelationships;
+    mapping (uint => mapping(uint => bool)) feedbackRelationships;
     
     struct BusinessProcess {
         address foodProviderID;
@@ -67,7 +67,7 @@ contract ReputationSystem {
     mapping (uint => BusinessProcess) businessProcessList;
     uint businessProcessID = 1; // starts from 1
     
-    struct Evaluation {
+    struct Feedback {
         uint businessProcessID; // for which business process
         address evaluatorID; // by which stakeholder
         address evaluatedID; // for which stakeholder
@@ -75,9 +75,9 @@ contract ReputationSystem {
         uint score; // score value of the evaluator
     }
     
-    // Evaluation list holding all evaluations
-    mapping (uint => Evaluation) public evaluations;
-    uint evaluationCount = 0;
+    // Feedback list holding all feedbacks
+    mapping (uint => Feedback) public feedbacks;
+    uint feedbackCount = 0;
    
     /* Constructor */
     function ReputationSystem() {
@@ -86,19 +86,19 @@ contract ReputationSystem {
         
         // since default bool value is false we just need to set the true ones
         // 1 can evaluate 0 and 2.
-        evaluationRelationships[1][0] = true;
-        evaluationRelationships[1][2] = true;
+        feedbackRelationships[1][0] = true;
+        feedbackRelationships[1][2] = true;
         // 2 can evaluate 1.
-        evaluationRelationships[2][1] = true;
+        feedbackRelationships[2][1] = true;
         // 3 can evaluate 1, 2 and 4.
-        evaluationRelationships[3][1] = true;
-        evaluationRelationships[3][2] = true;
-        evaluationRelationships[3][4] = true;
+        feedbackRelationships[3][1] = true;
+        feedbackRelationships[3][2] = true;
+        feedbackRelationships[3][4] = true;
         // 4 can evaluate 3.
-        evaluationRelationships[4][3] = true;
+        feedbackRelationships[4][3] = true;
         // 5 can evaluate 3 and 4.
-        evaluationRelationships[5][3] = true;
-        evaluationRelationships[5][4] = true;
+        feedbackRelationships[5][3] = true;
+        feedbackRelationships[5][4] = true;
     }  
     
     /* Add stakeholders to the system. */ 
@@ -128,7 +128,7 @@ contract ReputationSystem {
         
         if (canReputate(businessProcessID, evaluator, evaluated)) {
             uint reputationOfEvaluator = getReputation(evaluatorID);
-            evaluations[evaluationCount++] = Evaluation(businessProcessID, evaluatorID, evaluatedID, reputationOfEvaluator, score);
+            feedbacks[feedbackCount++] = Feedback(businessProcessID, evaluatorID, evaluatedID, reputationOfEvaluator, score);
         }
     }
     
@@ -141,7 +141,7 @@ contract ReputationSystem {
         // check if the evaluator has not already reputated the evaluated // TODO
         
         // check if evaluator can evaluate the evaluated regarding to the relation rules
-        bool b3 = evaluationRelationships[evaluator.profession][evaluated.profession];
+        bool b3 = feedbackRelationships[evaluator.profession][evaluated.profession];
         
         // if all are true return true, false otherwise.
         return (b1 && b2 && b3);
@@ -165,11 +165,11 @@ contract ReputationSystem {
         uint totalWeight = 2; // initial weight for everyone 
         uint totalWeightedScore = 3; // initial weighted score for everyone
         
-        for (uint i = 0; i < evaluationCount; i++) {
-            Evaluation evaluation = evaluations[i];
-            if (evaluation.evaluatedID == stakeholderID) {
-               totalWeight += evaluation.weight;
-               totalWeightedScore += evaluation.weight * evaluation.score;
+        for (uint i = 0; i < feedbackCount; i++) {
+            Feedback feedback = feedbacks[i];
+            if (feedback.evaluatedID == stakeholderID) {
+               totalWeight += feedback.weight;
+               totalWeightedScore += feedback.weight * feedback.score;
             }
         }
         
