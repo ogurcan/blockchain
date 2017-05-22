@@ -13,8 +13,11 @@ var reputationSystem = reputationSystemContract.new(
          console.log('Contract mined! address: ' + contract.address + ' transactionHash: ' + contract.transactionHash);
          // Event StakeholderAdded
       	 contract.StakeholderAdded().watch(function(error, result){
-	      if (!error)
+	      if (!error) {
 	         console.log("[" + result.args.name + " has been added as a stakeholder with the ID " + result.args.id + " and the profession number " + result.args.profession + ".]");
+	      } else {
+		 console.log(result.args);
+	      }      
 	 });
 	 // Event BusinessProcessCreated
       	 contract.BusinessProcessCreated().watch(function(error, result){
