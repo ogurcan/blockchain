@@ -1,3 +1,6 @@
+// unlock all accounts
+loadScript("config/UnlockAccounts.js");
+// now add stakeholder
 reputationSystem.addStakeholder("FoodProvider01", 0, {from: eth.accounts[0], gas: 100000});
 reputationSystem.addStakeholder("Breeder01", 1, {from: eth.accounts[1], gas: 100000});
 reputationSystem.addStakeholder("AnimalCarrier01", 2, {from: eth.accounts[2], gas: 100000});
