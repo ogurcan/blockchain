@@ -75,7 +75,7 @@ contract ReputationSystem {
         StakeholderAdded(name, id, role);
     }
     
-    /* Create a business between stakeholders */
+    /* Create a transition between stakeholders */
     function createTransition(address foodProviderID, address breederID, address animalCarrierID, 
                             address slaughterHouseID, address refrigeratedCarrierID, address brandID) {
         if ((stakeholders[foodProviderID].role == 0) && (stakeholders[breederID].role == 1) &&
@@ -89,7 +89,7 @@ contract ReputationSystem {
         } else throw;
     }
     
-    /* Reputate a stakeholder (evaluated) for a business with a rate from 0 to 3. */
+    /* Rate a stakeholder (evaluated) for a transition with a rate from 0 to 3. */
     function rate(uint transitionID, address evaluatedID, uint rate) {
         address evaluatorID = msg.sender;
         Stakeholder evaluator = stakeholders[evaluatorID];
@@ -102,7 +102,7 @@ contract ReputationSystem {
         }
     }
     
-    /* Check if the evaluator can reputate the evaluated for the transition */ 
+    /* Check if the evaluator can rate the evaluated for the transition */ 
     function canRate(uint transitionID, Stakeholder evaluator, Stakeholder evaluated) private constant returns (bool result) {
         // check if these stakeholders are in this business
         bool b1 = isInsideTransition(transitionID, evaluator.id);
