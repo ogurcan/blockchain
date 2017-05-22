@@ -21,13 +21,19 @@ var reputationSystem = reputationSystemContract.new(
 	 });
 	 // Event BusinessProcessCreated
       	 contract.BusinessProcessCreated().watch(function(error, result){
-	      if (!error)
+	      if (!error) {
 	         console.log("[The business process has been created with the ID " + result.args.bpID + ".]");
+	      } else {
+		 console.log(result.args);
+	      }   
 	 });
 	 // Event FeedbackGiven
       	 contract.FeedbackGiven().watch(function(error, result){
-	      if (!error)
+	      if (!error) {
 	         console.log("[" + result.args.evaluatorName + " has rated " + result.args.evaluatedName + " with a rate of " + result.args.rate + ".]");
+	      } else {
+		 console.log(result.args);
+	      }   
 	 });
     }
  })
