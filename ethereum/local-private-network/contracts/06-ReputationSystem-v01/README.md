@@ -72,7 +72,7 @@ contract ReputationSystem {
         address evaluatorID; // by which stakeholder
         address evaluatedID; // for which stakeholder
         uint weight; // reputation level of the evaluator at evalution time
-        uint score; // score value of the evaluator
+        uint rate; // rate value of the evaluator
     }
     
     // Feedback list holding all feedbacks
@@ -120,15 +120,15 @@ contract ReputationSystem {
         } else return 0;
     }
     
-    /* Reputate a stakeholder (evaluated) for a business with a score from 0 to 3. */
-    function rate(uint businessProcessID, address evaluatedID, uint score) {
+    /* Reputate a stakeholder (evaluated) for a business with a rate from 0 to 3. */
+    function rate(uint businessProcessID, address evaluatedID, uint rate) {
         address evaluatorID = msg.sender;
         Stakeholder evaluator = stakeholders[evaluatorID];
         Stakeholder evaluated = stakeholders[evaluatedID];
         
         if (canRate(businessProcessID, evaluator, evaluated)) {
             uint reputationOfEvaluator = getReputation(evaluatorID);
-            feedbacks[feedbackCount++] = Feedback(businessProcessID, evaluatorID, evaluatedID, reputationOfEvaluator, score);
+            feedbacks[feedbackCount++] = Feedback(businessProcessID, evaluatorID, evaluatedID, reputationOfEvaluator, rate);
         }
     }
     
@@ -163,17 +163,17 @@ contract ReputationSystem {
        Returns 1.5 if the stakeholder has never been reputated before. */
     function getReputation(address stakeholderID) constant returns (uint) {
         uint totalWeight = 2; // initial weight for everyone 
-        uint totalWeightedScore = 3; // initial weighted score for everyone
+        uint totalWeightedRate = 3; // initial weighted score for everyone
         
         for (uint i = 0; i < feedbackCount; i++) {
             Feedback feedback = feedbacks[i];
             if (feedback.evaluatedID == stakeholderID) {
                totalWeight += feedback.weight;
-               totalWeightedScore += feedback.weight * feedback.score;
+               totalWeightedRate += feedback.weight * feedback.rate;
             }
         }
         
-        return totalWeightedScore/totalWeight; // calculated reputation value
+        return totalWeightedRate/totalWeight; // calculated reputation value
     }
 }
 ```
