@@ -9,17 +9,17 @@ contract ReputationSystem {
     struct Stakeholder {
         string name; // stakeholder name
         address id; // id as address
-        uint profession; // 0 food provider, 1 breeder, 2 animal carrier, 
+        uint role; // 0 food provider, 1 breeder, 2 animal carrier, 
                          // 3 slaughterhouse, 4 refrigerated carrier, 5 brand
     }
     
     mapping (address => Stakeholder) public stakeholders;
-    event StakeholderAdded(string name, address id, uint profession);
+    event StakeholderAdded(string name, address id, uint role);
     
-    // 1st index evaluator profession, 2nd index evaluated profession
+    // 1st index evaluator role, 2nd index evaluated role
     mapping (uint => mapping(uint => bool)) public feedbackRelationships;
     
-    struct BusinessProcess {
+    struct Transition {
         address foodProviderID;
         address breederID;
         address animalCarrierID;
@@ -28,12 +28,12 @@ contract ReputationSystem {
         address brandID;
     }
     
-    mapping (uint => BusinessProcess) public businessProcessList;
-    uint businessProcessID = 1; // starts from 1
-    event BusinessProcessCreated(uint bpID);
+    mapping (uint => Transition) public transitionList;
+    uint transitionID = 1; // starts from 1
+    event TransitionCreated(uint trID);
     
     struct Feedback {
-        uint businessProcessID; // for which business process
+        uint transitionID; // for which transition
         address evaluatorID; // by which stakeholder
         address evaluatedID; // for which stakeholder
         uint weight; // reputation level of the evaluator at evalution time
@@ -44,7 +44,7 @@ contract ReputationSystem {
     mapping (uint => Feedback) public feedbacks;
     uint feedbackCount = 0;
     
-    event FeedbackGiven(uint businessProcessID, string evaluatorName, string evaluatedName, uint rate);
+    event FeedbackGiven(uint transitionID, string evaluatorName, string evaluatedName, uint rate);
    
     /* Constructor */
     function ReputationSystem() {
@@ -69,63 +69,63 @@ contract ReputationSystem {
     }  
     
     /* Add stakeholders to the system. */ 
-    function addStakeholder(string name, uint profession) {
+    function addStakeholder(string name, uint role) {
         address id = msg.sender;
-        stakeholders[id] = Stakeholder(name, id, profession);
-        StakeholderAdded(name, id, profession);
+        stakeholders[id] = Stakeholder(name, id, role);
+        StakeholderAdded(name, id, role);
     }
     
     /* Create a business between stakeholders */
-    function createBusinessProcess(address foodProviderID, address breederID, address animalCarrierID, 
+    function createTransition(address foodProviderID, address breederID, address animalCarrierID, 
                             address slaughterHouseID, address refrigeratedCarrierID, address brandID) {
-        if ((stakeholders[foodProviderID].profession == 0) && (stakeholders[breederID].profession == 1) &&
-            (stakeholders[animalCarrierID].profession == 2) && (stakeholders[slaughterHouseID].profession == 3) &&
-            (stakeholders[refrigeratedCarrierID].profession == 4) && (stakeholders[brandID].profession == 5)) {
+        if ((stakeholders[foodProviderID].role == 0) && (stakeholders[breederID].role == 1) &&
+            (stakeholders[animalCarrierID].role == 2) && (stakeholders[slaughterHouseID].role == 3) &&
+            (stakeholders[refrigeratedCarrierID].role == 4) && (stakeholders[brandID].role == 5)) {
           
-            businessProcessList[businessProcessID] = BusinessProcess(foodProviderID, breederID, animalCarrierID, 
+            transitionList[transitionID] = Transition(foodProviderID, breederID, animalCarrierID, 
                             slaughterHouseID, refrigeratedCarrierID, brandID);
-            BusinessProcessCreated(businessProcessID);
-            businessProcessID++;
+            TransitionCreated(transitionID);
+            transitionID++;
         } else throw;
     }
     
     /* Reputate a stakeholder (evaluated) for a business with a rate from 0 to 3. */
-    function rate(uint businessProcessID, address evaluatedID, uint rate) {
+    function rate(uint transitionID, address evaluatedID, uint rate) {
         address evaluatorID = msg.sender;
         Stakeholder evaluator = stakeholders[evaluatorID];
         Stakeholder evaluated = stakeholders[evaluatedID];
         
-        if (canRate(businessProcessID, evaluator, evaluated)) {
+        if (canRate(transitionID, evaluator, evaluated)) {
             uint reputationOfEvaluator = getReputation(evaluatorID);
-            feedbacks[feedbackCount++] = Feedback(businessProcessID, evaluatorID, evaluatedID, reputationOfEvaluator, rate);
-            FeedbackGiven(businessProcessID, evaluator.name, evaluated.name, rate);
+            feedbacks[feedbackCount++] = Feedback(transitionID, evaluatorID, evaluatedID, reputationOfEvaluator, rate);
+            FeedbackGiven(transitionID, evaluator.name, evaluated.name, rate);
         }
     }
     
-    /* Check if the evaluator can reputate the evaluated for the business */ 
-    function canRate(uint businessProcessID, Stakeholder evaluator, Stakeholder evaluated) private constant returns (bool result) {
+    /* Check if the evaluator can reputate the evaluated for the transition */ 
+    function canRate(uint transitionID, Stakeholder evaluator, Stakeholder evaluated) private constant returns (bool result) {
         // check if these stakeholders are in this business
-        bool b1 = isInsideBusinessProcess(businessProcessID, evaluator.id);
-        bool b2 = isInsideBusinessProcess(businessProcessID, evaluated.id);
+        bool b1 = isInsideTransition(transitionID, evaluator.id);
+        bool b2 = isInsideTransition(transitionID, evaluated.id);
         
         // check if the evaluator has not already reputated the evaluated // TODO
         
         // check if evaluator can evaluate the evaluated regarding to the relation rules
-        bool b3 = feedbackRelationships[evaluator.profession][evaluated.profession];
+        bool b3 = feedbackRelationships[evaluator.role][evaluated.role];
         
         // if all are true return true, false otherwise.
         return (b1 && b2 && b3);
     }
     
-    function isInsideBusinessProcess(uint businessProcessID, address stakeholderID) constant returns (bool result) {
-        BusinessProcess businessProcess = businessProcessList[businessProcessID];
+    function isInsideTransition(uint transitionID, address stakeholderID) constant returns (bool result) {
+        Transition transition = transitionList[transitionID];
         Stakeholder stakeholder = stakeholders[stakeholderID];
-        bool c0 = (stakeholder.profession == 0) && (stakeholderID == businessProcess.foodProviderID);
-        bool c1 = (stakeholder.profession == 1) && (stakeholderID == businessProcess.breederID);
-        bool c2 = (stakeholder.profession == 2) && (stakeholderID == businessProcess.animalCarrierID);
-        bool c3 = (stakeholder.profession == 3) && (stakeholderID == businessProcess.slaughterHouseID);
-        bool c4 = (stakeholder.profession == 4) && (stakeholderID == businessProcess.refrigeratedCarrierID);
-        bool c5 = (stakeholder.profession == 5) && (stakeholderID == businessProcess.brandID);
+        bool c0 = (stakeholder.role == 0) && (stakeholderID == transition.foodProviderID);
+        bool c1 = (stakeholder.role == 1) && (stakeholderID == transition.breederID);
+        bool c2 = (stakeholder.role == 2) && (stakeholderID == transition.animalCarrierID);
+        bool c3 = (stakeholder.role == 3) && (stakeholderID == transition.slaughterHouseID);
+        bool c4 = (stakeholder.role == 4) && (stakeholderID == transition.refrigeratedCarrierID);
+        bool c5 = (stakeholder.role == 5) && (stakeholderID == transition.brandID);
         return (c0 || c1 || c2 || c3 || c4 || c5);
     }    
     
