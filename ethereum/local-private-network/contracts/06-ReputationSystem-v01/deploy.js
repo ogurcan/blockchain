@@ -14,7 +14,7 @@ var reputationSystem = reputationSystemContract.new(
          // Event StakeholderAdded
       	 contract.StakeholderAdded().watch(function(error, result){
 	      if (!error)
-	         console.log("[" + result.args.name + " has been added as a stakeholder with the ID " + result.args.id + " and the profession number " + result.args.role + ".]");
+	         console.log("[" + result.args.name + " has been added as a stakeholder with the ID " + result.args.id + " and the role number " + result.args.role + ".]");
 	 });
 	 // Event BusinessProcessCreated
       	 contract.BusinessProcessCreated().watch(function(error, result){
