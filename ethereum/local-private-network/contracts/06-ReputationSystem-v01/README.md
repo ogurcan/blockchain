@@ -256,36 +256,42 @@ Food provider.
 ```js
 > reputationSystem.addStakeholder("FoodProvider01", 0, {from: eth.accounts[0], gas: 100000});
 "0x80f8dc9586c06d6031bf4bdfef99ca0ec9ea65877ee75493ee6004b58c82eb6e"
+> [FoodProvider01 has been added as a stakeholder with the ID 0xab7c6196f903e7ba969f808ac25b0d48034687b0 and the profession number 0.]
 ```
 
 Breeder.
 ```js
 > reputationSystem.addStakeholder("Breeder01", 1, {from: eth.accounts[1], gas: 100000});
 "0xa70bb2f2370d49ce13f4aa7575983105d1a72eb17f743623ec02f5752dc3107c"
+> [Breeder01 has been added as a stakeholder with the ID 0xe9bf28b5de4999ac5eb8fbe3c88121bcb852de98 and the profession number 1.]
 ```
 
 Animal carrier.
 ```js
 > reputationSystem.addStakeholder("AnimalCarrier01", 2, {from: eth.accounts[2], gas: 100000});
 "0x36bedea26b6944e039c87c12be579132deb4b5534df848bc99ceea2e6450e287"
+> [AnimalCarrier01 has been added as a stakeholder with the ID 0x36f963acd6395c99a5b02eb518f963108e3f4c35 and the profession number 2.]
 ```
 
 Slaughter house.
 ```js
 > reputationSystem.addStakeholder("SlaughterHouse01", 3, {from: eth.accounts[3], gas: 100000});
 "0x51c7ed41103f8ec6340410d0b3b21bba9b5a228a61790294765fa85b44139b9f"
+> [SlaughterHouse01 has been added as a stakeholder with the ID 0x93856142a98d0407f3c5cd54f583af81a82ac7bc and the profession number 3.]
 ```
 
 Refrigerated Carrier.
 ```js
 > reputationSystem.addStakeholder("RefrigeratedCarrier01", 4, {from: eth.accounts[4], gas: 100000});
 "0x181c88f7bdca57f7cf06920310bda77d1507ddb0de80dacd7fc61dd325d3a18e"
+> [RefrigeratedCarrier01 has been added as a stakeholder with the ID 0x74c2b3856accd52f71de391a1c081f24b5578047 and the profession number 4.]
 ```
 
 Brand.
 ```js
 > reputationSystem.addStakeholder("Brand01", 5, {from: eth.accounts[5], gas: 100000});
 "0x25d1c902ca8242e50514c837fd103c298edfe5764293a186aaf84e059d5fa2df"
+> [Brand01 has been added as a stakeholder with the ID 0x0df5d4c134caeff9963e19b60280315560cd5fe3 and the profession number 5.]
 ```
 
 Then create a business process between them.
