@@ -51,6 +51,7 @@ contract ReputationSystem {
     }
     
     mapping (address => Stakeholder) public stakeholders;
+    event StakeholderAdded(string name, address id, uint profession);
     
     // 1st index evaluator profession, 2nd index evaluated profession
     mapping (uint => mapping(uint => bool)) public feedbackRelationships;
@@ -66,6 +67,7 @@ contract ReputationSystem {
     
     mapping (uint => BusinessProcess) public businessProcessList;
     uint businessProcessID = 1; // starts from 1
+    event BusinessProcessCreated(uint bpID);
     
     struct Feedback {
         uint businessProcessID; // for which business process
@@ -78,6 +80,8 @@ contract ReputationSystem {
     // Feedback list holding all feedbacks
     mapping (uint => Feedback) public feedbacks;
     uint feedbackCount = 0;
+    
+    event FeedbackGiven(uint businessProcessID, string evaluatorName, string evaluatedName, uint rate);
    
     /* Constructor */
     function ReputationSystem() {
@@ -105,6 +109,7 @@ contract ReputationSystem {
     function addStakeholder(string name, uint profession) {
         address id = msg.sender;
         stakeholders[id] = Stakeholder(name, id, profession);
+        StakeholderAdded(name, id, profession);
     }
     
     /* Create a business between stakeholders */
@@ -116,6 +121,7 @@ contract ReputationSystem {
           
             businessProcessList[businessProcessID++] = BusinessProcess(foodProviderID, breederID, animalCarrierID, 
                             slaughterHouseID, refrigeratedCarrierID, brandID);
+            BusinessProcessCreated(businessProcessID);
             return businessProcessID;
         } else return 0;
     }
@@ -129,6 +135,7 @@ contract ReputationSystem {
         if (canRate(businessProcessID, evaluator, evaluated)) {
             uint reputationOfEvaluator = getReputation(evaluatorID);
             feedbacks[feedbackCount++] = Feedback(businessProcessID, evaluatorID, evaluatedID, reputationOfEvaluator, rate);
+            FeedbackGiven(businessProcessID, evaluator.name, evaluated.name, rate);
         }
     }
     
@@ -163,7 +170,7 @@ contract ReputationSystem {
        Returns 1.5 if the stakeholder has never been reputated before. */
     function getReputation(address stakeholderID) constant returns (uint) {
         uint totalWeight = 2; // initial weight for everyone 
-        uint totalWeightedRate = 3; // initial weighted score for everyone
+        uint totalWeightedRate = 3; // initial weighted rate for everyone
         
         for (uint i = 0; i < feedbackCount; i++) {
             Feedback feedback = feedbacks[i];
