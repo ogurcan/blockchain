@@ -11,5 +11,10 @@ var reputationsystem = reputationsystemContract.new(
     console.log(e, contract);
     if (typeof contract.address !== 'undefined') {
          console.log('Contract mined! address: ' + contract.address + ' transactionHash: ' + contract.transactionHash);
+         // Event VendorRegistered
+      	contract.StakeholderAdded().watch(function(error, result){
+	      if (!error)
+	         console.log("[" + result.args.name + " has been added as a stakeholder with the ID " + result.args.id + " and the profession number " + result.args.profession + ".]");
+	      });
     }
  })
