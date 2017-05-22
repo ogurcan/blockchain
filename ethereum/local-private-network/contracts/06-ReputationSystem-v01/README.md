@@ -139,7 +139,7 @@ contract ReputationSystem {
         }
     }
     
-    /* Check if the evaluator can reputate the evaluated for the transition */ 
+    /* Check if the evaluator can rate the evaluated for the transition */ 
     function canRate(uint transitionID, Stakeholder evaluator, Stakeholder evaluated) private constant returns (bool result) {
         // check if these stakeholders are in this business
         bool b1 = isInsideTransition(transitionID, evaluator.id);
