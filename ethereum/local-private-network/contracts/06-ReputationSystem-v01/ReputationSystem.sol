@@ -19,7 +19,7 @@ contract ReputationSystem {
     // 1st index evaluator role, 2nd index evaluated role
     mapping (uint => mapping(uint => bool)) public feedbackRelationships;
     
-    struct Transition {
+    struct BusinessProcess {
         address foodProviderID;
         address breederID;
         address animalCarrierID;
@@ -28,12 +28,12 @@ contract ReputationSystem {
         address brandID;
     }
     
-    mapping (uint => Transition) public transitionList;
-    uint transitionID = 1; // starts from 1
-    event TransitionCreated(uint trID);
+    mapping (uint => BusinessProcess) public businessProcessList;
+    uint businessProcessID = 1; // starts from 1
+    event BusinessProcessCreated(uint bpID);
     
     struct Feedback {
-        uint transitionID; // for which transition
+        uint businessProcessID; // for which business process
         address evaluatorID; // by which stakeholder
         address evaluatedID; // for which stakeholder
         uint weight; // reputation level of the evaluator at evalution time
@@ -44,7 +44,7 @@ contract ReputationSystem {
     mapping (uint => Feedback) public feedbacks;
     uint feedbackCount = 0;
     
-    event FeedbackGiven(uint transitionID, string evaluatorName, string evaluatedName, uint rate);
+    event FeedbackGiven(uint businessProcessID, string evaluatorName, string evaluatedName, uint rate);
    
     /* Constructor */
     function ReputationSystem() {
@@ -75,38 +75,38 @@ contract ReputationSystem {
         StakeholderAdded(name, id, role);
     }
     
-    /* Create a transition between stakeholders */
-    function createTransition(address foodProviderID, address breederID, address animalCarrierID, 
+    /* Create a business between stakeholders */
+    function createBusinessProcess(address foodProviderID, address breederID, address animalCarrierID, 
                             address slaughterHouseID, address refrigeratedCarrierID, address brandID) {
         if ((stakeholders[foodProviderID].role == 0) && (stakeholders[breederID].role == 1) &&
             (stakeholders[animalCarrierID].role == 2) && (stakeholders[slaughterHouseID].role == 3) &&
             (stakeholders[refrigeratedCarrierID].role == 4) && (stakeholders[brandID].role == 5)) {
           
-            transitionList[transitionID] = Transition(foodProviderID, breederID, animalCarrierID, 
+            businessProcessList[businessProcessID] = BusinessProcess(foodProviderID, breederID, animalCarrierID, 
                             slaughterHouseID, refrigeratedCarrierID, brandID);
-            TransitionCreated(transitionID);
-            transitionID++;
+            BusinessProcessCreated(businessProcessID);
+            businessProcessID++;
         } else throw;
     }
     
-    /* Rate a stakeholder (evaluated) for a transition with a rate from 0 to 3. */
-    function rate(uint transitionID, address evaluatedID, uint rate) {
+    /* Rate a stakeholder (evaluated) for a business with a rate from 0 to 3. */
+    function rate(uint businessProcessID, address evaluatedID, uint rate) {
         address evaluatorID = msg.sender;
         Stakeholder evaluator = stakeholders[evaluatorID];
         Stakeholder evaluated = stakeholders[evaluatedID];
         
-        if (canRate(transitionID, evaluator, evaluated)) {
+        if (canRate(businessProcessID, evaluator, evaluated)) {
             uint reputationOfEvaluator = getReputation(evaluatorID);
-            feedbacks[feedbackCount++] = Feedback(transitionID, evaluatorID, evaluatedID, reputationOfEvaluator, rate);
-            FeedbackGiven(transitionID, evaluator.name, evaluated.name, rate);
+            feedbacks[feedbackCount++] = Feedback(businessProcessID, evaluatorID, evaluatedID, reputationOfEvaluator, rate);
+            FeedbackGiven(businessProcessID, evaluator.name, evaluated.name, rate);
         }
     }
     
-    /* Check if the evaluator can rate the evaluated for the transition */ 
-    function canRate(uint transitionID, Stakeholder evaluator, Stakeholder evaluated) private constant returns (bool result) {
+    /* Check if the evaluator can rate the evaluated for the business */ 
+    function canRate(uint businessProcessID, Stakeholder evaluator, Stakeholder evaluated) private constant returns (bool result) {
         // check if these stakeholders are in this business
-        bool b1 = isInsideTransition(transitionID, evaluator.id);
-        bool b2 = isInsideTransition(transitionID, evaluated.id);
+        bool b1 = isInsideBusinessProcess(businessProcessID, evaluator.id);
+        bool b2 = isInsideBusinessProcess(businessProcessID, evaluated.id);
         
         // check if the evaluator has not already reputated the evaluated // TODO
         
@@ -117,20 +117,20 @@ contract ReputationSystem {
         return (b1 && b2 && b3);
     }
     
-    function isInsideTransition(uint transitionID, address stakeholderID) constant returns (bool result) {
-        Transition transition = transitionList[transitionID];
+    function isInsideBusinessProcess(uint businessProcessID, address stakeholderID) constant returns (bool result) {
+        BusinessProcess businessProcess = businessProcessList[businessProcessID];
         Stakeholder stakeholder = stakeholders[stakeholderID];
-        bool c0 = (stakeholder.role == 0) && (stakeholderID == transition.foodProviderID);
-        bool c1 = (stakeholder.role == 1) && (stakeholderID == transition.breederID);
-        bool c2 = (stakeholder.role == 2) && (stakeholderID == transition.animalCarrierID);
-        bool c3 = (stakeholder.role == 3) && (stakeholderID == transition.slaughterHouseID);
-        bool c4 = (stakeholder.role == 4) && (stakeholderID == transition.refrigeratedCarrierID);
-        bool c5 = (stakeholder.role == 5) && (stakeholderID == transition.brandID);
+        bool c0 = (stakeholder.role == 0) && (stakeholderID == businessProcess.foodProviderID);
+        bool c1 = (stakeholder.role == 1) && (stakeholderID == businessProcess.breederID);
+        bool c2 = (stakeholder.role == 2) && (stakeholderID == businessProcess.animalCarrierID);
+        bool c3 = (stakeholder.role == 3) && (stakeholderID == businessProcess.slaughterHouseID);
+        bool c4 = (stakeholder.role == 4) && (stakeholderID == businessProcess.refrigeratedCarrierID);
+        bool c5 = (stakeholder.role == 5) && (stakeholderID == businessProcess.brandID);
         return (c0 || c1 || c2 || c3 || c4 || c5);
     }    
     
-    /* Calculate and return the reputation value for the given stakeholder. 
-       Returns 1.5 if the stakeholder has never been reputated before. */
+    /* Calculate and return the rate value for the given stakeholder. 
+       Returns 1.5 if the stakeholder has never been rated before. */
     function getReputation(address stakeholderID) constant returns (uint) {
         uint totalWeight = 2; // initial weight for everyone 
         uint totalWeightedRate = 3; // initial weighted rate for everyone
