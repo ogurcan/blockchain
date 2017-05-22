@@ -50,10 +50,10 @@ contract ReputationSystem {
                          // 3 slaughterhouse, 4 refrigerated carrier, 5 brand
     }
     
-    mapping (address => Stakeholder) stakeholders;
+    mapping (address => Stakeholder) public stakeholders;
     
     // 1st index evaluator profession, 2nd index evaluated profession
-    mapping (uint => mapping(uint => bool)) feedbackRelationships;
+    mapping (uint => mapping(uint => bool)) public feedbackRelationships;
     
     struct BusinessProcess {
         address foodProviderID;
@@ -64,7 +64,7 @@ contract ReputationSystem {
         address brandID;
     }
     
-    mapping (uint => BusinessProcess) businessProcessList;
+    mapping (uint => BusinessProcess) public businessProcessList;
     uint businessProcessID = 1; // starts from 1
     
     struct Feedback {
@@ -121,19 +121,19 @@ contract ReputationSystem {
     }
     
     /* Reputate a stakeholder (evaluated) for a business with a score from 0 to 3. */
-    function reputate(uint businessProcessID, address evaluatedID, uint score) {
+    function rate(uint businessProcessID, address evaluatedID, uint score) {
         address evaluatorID = msg.sender;
         Stakeholder evaluator = stakeholders[evaluatorID];
         Stakeholder evaluated = stakeholders[evaluatedID];
         
-        if (canReputate(businessProcessID, evaluator, evaluated)) {
+        if (canRate(businessProcessID, evaluator, evaluated)) {
             uint reputationOfEvaluator = getReputation(evaluatorID);
             feedbacks[feedbackCount++] = Feedback(businessProcessID, evaluatorID, evaluatedID, reputationOfEvaluator, score);
         }
     }
     
     /* Check if the evaluator can reputate the evaluated for the business */ 
-    function canReputate(uint businessProcessID, Stakeholder evaluator, Stakeholder evaluated) private constant returns (bool result) {
+    function canRate(uint businessProcessID, Stakeholder evaluator, Stakeholder evaluated) private constant returns (bool result) {
         // check if these stakeholders are in this business
         bool b1 = isInsideBusinessProcess(businessProcessID, evaluator.id);
         bool b2 = isInsideBusinessProcess(businessProcessID, evaluated.id);
