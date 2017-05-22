@@ -303,7 +303,7 @@ Brand.
 
 Then create a business process between them.
 ```js
-> reputationSystem.createBusinessProcess(eth.accounts[0], eth.accounts[1], eth.accounts[2], eth.accounts[3], eth.accounts[4], eth.accounts[5], {from: eth.coinbase, gas: 100000});
+> reputationSystem.createBusinessProcess(eth.accounts[0], eth.accounts[1], eth.accounts[2], eth.accounts[3], eth.accounts[4], eth.accounts[5], {from: eth.coinbase, gas: 300000});
 "0xecd6961aa5c32562f02881dfbf304e6b32bfd1f7354d0e20b86e742c2f147e2a"
 ```
 
@@ -317,7 +317,7 @@ Initially, the reputation of all the stakeholders are `1`.
 
 After a while `Breeder01` (`eth.accounts[1]`) reputates `FoodProvider01` (`eth.accounts[0]`) by a score of `3`.
 ```js
-> reputationSystem.rate(1, eth.accounts[0], 3, {from: eth.accounts[1], gas: 100000});
+> reputationSystem.rate(1, eth.accounts[0], 3, {from: eth.accounts[1], gas: 300000});
 "0xacb3b4562c4354900aafaaed546157d5c04c3d7bfc86bb13c1f4d0188728f2b9"
 ```
 
@@ -329,9 +329,9 @@ Now the reputation of `FoodProvider01` is `2`.
 
 Similarly, `AnimalCarrier01` and `SlaughterHouse01` are reputating `Breeder01` with score `1` and `0` respectively.
 ``` js
-> reputationSystem.rate(1, eth.accounts[1], 1, {from: eth.accounts[2], gas: 100000});
+> reputationSystem.rate(1, eth.accounts[1], 1, {from: eth.accounts[2], gas: 300000});
 "0xc57e22bbed0669e515473c7414de4f51be05040b5d39684d2cfd56a0c3dc0d73"
-> reputationSystem.rate(1, eth.accounts[1], 0, {from: eth.accounts[3], gas: 100000});
+> reputationSystem.rate(1, eth.accounts[1], 0, {from: eth.accounts[3], gas: 300000});
 "0x349699477eff10ef86a801bb8e6c3e4adf2fb34a6d3c1a687cbedd6066e02038"
 ```
 
