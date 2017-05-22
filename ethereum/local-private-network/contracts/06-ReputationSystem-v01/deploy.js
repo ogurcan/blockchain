@@ -19,7 +19,7 @@ var reputationSystem = reputationSystemContract.new(
 	 // Event BusinessProcessCreated
       	 contract.BusinessProcessCreated().watch(function(error, result){
 	      if (!error)
-	         console.log("[The transition has been created with the ID " + result.args.bpID + ".]");
+	         console.log("[The business process has been created with the ID " + result.args.bpID + ".]");
 	 });
 	 // Event FeedbackGiven
       	 contract.FeedbackGiven().watch(function(error, result){
