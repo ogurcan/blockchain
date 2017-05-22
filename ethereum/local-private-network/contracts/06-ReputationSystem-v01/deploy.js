@@ -19,7 +19,7 @@ var reputationSystem = reputationSystemContract.new(
 	 // Event FeedbackGiven
       	 contract.FeedbackGiven().watch(function(error, result){
 	      if (!error)
-	         console.log("[" + result.args.evaluaterName + " has rated " + result.args.evaluatedName + " with a rate of " + result.args.rate + ".]");
+	         console.log("[" + result.args.evaluatorName + " has rated " + result.args.evaluatedName + " with a rate of " + result.args.rate + ".]");
 	 });
     }
  })
