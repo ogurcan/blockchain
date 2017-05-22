@@ -13,10 +13,11 @@ contract ReputationSystem {
                          // 3 slaughterhouse, 4 refrigerated carrier, 5 brand
     }
     
-    mapping (address => Stakeholder) stakeholders;
+    mapping (address => Stakeholder) public stakeholders;
+    event StakeholderAdded(string name, address id, uint profession);
     
     // 1st index evaluator profession, 2nd index evaluated profession
-    mapping (uint => mapping(uint => bool)) feedbackRelationships;
+    mapping (uint => mapping(uint => bool)) public feedbackRelationships;
     
     struct BusinessProcess {
         address foodProviderID;
@@ -27,20 +28,23 @@ contract ReputationSystem {
         address brandID;
     }
     
-    mapping (uint => BusinessProcess) businessProcessList;
+    mapping (uint => BusinessProcess) public businessProcessList;
     uint businessProcessID = 1; // starts from 1
+    event BusinessProcessCreated(uint bpID);
     
     struct Feedback {
         uint businessProcessID; // for which business process
         address evaluatorID; // by which stakeholder
         address evaluatedID; // for which stakeholder
         uint weight; // reputation level of the evaluator at evalution time
-        uint score; // score value of the evaluator
+        uint rate; // rate value of the evaluator
     }
     
     // Feedback list holding all feedbacks
     mapping (uint => Feedback) public feedbacks;
     uint feedbackCount = 0;
+    
+    event FeedbackGiven(uint businessProcessID, string evaluatorName, string evaluatedName, uint rate);
    
     /* Constructor */
     function ReputationSystem() {
@@ -68,35 +72,38 @@ contract ReputationSystem {
     function addStakeholder(string name, uint profession) {
         address id = msg.sender;
         stakeholders[id] = Stakeholder(name, id, profession);
+        StakeholderAdded(name, id, profession);
     }
     
     /* Create a business between stakeholders */
     function createBusinessProcess(address foodProviderID, address breederID, address animalCarrierID, 
-                            address slaughterHouseID, address refrigeratedCarrierID, address brandID) returns (uint bpID) {
+                            address slaughterHouseID, address refrigeratedCarrierID, address brandID) {
         if ((stakeholders[foodProviderID].profession == 0) && (stakeholders[breederID].profession == 1) &&
             (stakeholders[animalCarrierID].profession == 2) && (stakeholders[slaughterHouseID].profession == 3) &&
             (stakeholders[refrigeratedCarrierID].profession == 4) && (stakeholders[brandID].profession == 5)) {
           
-            businessProcessList[businessProcessID++] = BusinessProcess(foodProviderID, breederID, animalCarrierID, 
+            businessProcessList[businessProcessID] = BusinessProcess(foodProviderID, breederID, animalCarrierID, 
                             slaughterHouseID, refrigeratedCarrierID, brandID);
-            return businessProcessID;
-        } else return 0;
+            BusinessProcessCreated(businessProcessID);
+            businessProcessID++;
+        } else throw;
     }
     
-    /* Reputate a stakeholder (evaluated) for a business with a score from 0 to 3. */
-    function reputate(uint businessProcessID, address evaluatedID, uint score) {
+    /* Reputate a stakeholder (evaluated) for a business with a rate from 0 to 3. */
+    function rate(uint businessProcessID, address evaluatedID, uint rate) {
         address evaluatorID = msg.sender;
         Stakeholder evaluator = stakeholders[evaluatorID];
         Stakeholder evaluated = stakeholders[evaluatedID];
         
-        if (canReputate(businessProcessID, evaluator, evaluated)) {
+        if (canRate(businessProcessID, evaluator, evaluated)) {
             uint reputationOfEvaluator = getReputation(evaluatorID);
-            feedbacks[feedbackCount++] = Feedback(businessProcessID, evaluatorID, evaluatedID, reputationOfEvaluator, score);
+            feedbacks[feedbackCount++] = Feedback(businessProcessID, evaluatorID, evaluatedID, reputationOfEvaluator, rate);
+            FeedbackGiven(businessProcessID, evaluator.name, evaluated.name, rate);
         }
     }
     
     /* Check if the evaluator can reputate the evaluated for the business */ 
-    function canReputate(uint businessProcessID, Stakeholder evaluator, Stakeholder evaluated) private constant returns (bool result) {
+    function canRate(uint businessProcessID, Stakeholder evaluator, Stakeholder evaluated) private constant returns (bool result) {
         // check if these stakeholders are in this business
         bool b1 = isInsideBusinessProcess(businessProcessID, evaluator.id);
         bool b2 = isInsideBusinessProcess(businessProcessID, evaluated.id);
@@ -126,16 +133,16 @@ contract ReputationSystem {
        Returns 1.5 if the stakeholder has never been reputated before. */
     function getReputation(address stakeholderID) constant returns (uint) {
         uint totalWeight = 2; // initial weight for everyone 
-        uint totalWeightedScore = 3; // initial weighted score for everyone
+        uint totalWeightedRate = 3; // initial weighted rate for everyone
         
         for (uint i = 0; i < feedbackCount; i++) {
             Feedback feedback = feedbacks[i];
             if (feedback.evaluatedID == stakeholderID) {
                totalWeight += feedback.weight;
-               totalWeightedScore += feedback.weight * feedback.score;
+               totalWeightedRate += feedback.weight * feedback.rate;
             }
         }
         
-        return totalWeightedScore/totalWeight; // calculated reputation value
+        return totalWeightedRate/totalWeight; // calculated reputation value
     }
 }
