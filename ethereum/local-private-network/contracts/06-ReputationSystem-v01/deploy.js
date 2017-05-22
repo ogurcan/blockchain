@@ -16,10 +16,10 @@ var reputationSystem = reputationSystemContract.new(
 	      if (!error)
 	         console.log("[" + result.args.name + " has been added as a stakeholder with the ID " + result.args.id + " and the role number " + result.args.role + ".]");
 	 });
-	 // Event BusinessProcessCreated
-      	 contract.BusinessProcessCreated().watch(function(error, result){
+	 // Event TransitionCreated
+      	 contract.TransitionCreated().watch(function(error, result){
 	      if (!error)
-	         console.log("[The business process has been created with the ID " + result.args.trID + ".]");
+	         console.log("[The transition has been created with the ID " + result.args.trID + ".]");
 	 });
 	 // Event FeedbackGiven
       	 contract.FeedbackGiven().watch(function(error, result){
