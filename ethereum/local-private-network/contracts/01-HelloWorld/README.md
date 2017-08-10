@@ -32,6 +32,8 @@ Ethereum contracts are account holding objects on the ethereum blockchain. They 
 
 In this example, we will create, deploy and use a simple `HelloWorld` contract. Even though it looks very simple, you will learn several important details by this example.
 
+> This contract has aldready been developed and can be found in `./contracts/01-HelloWorld/HelloWorld.sol` file. If you are only interected in the deployment and usage of the contract, you can continue from this [section](https://github.com/ogurcan/blockchain/tree/master/ethereum/local-private-network/contracts/01-HelloWorld#deploying-the-contract).
+
 ## Contract: Hello World!
 
 We will build a `Hello World!` contract on the ethereum command line. When executed, this contract is going to print out `HelloWorld` to the console.
