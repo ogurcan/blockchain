@@ -2,7 +2,7 @@
 
 ## Before you begin
 
-Before you begin, make sure that the Go implementation `geth` is installed as described [here](https://github.com/ethereum/go-ethereum/wiki/Building-Ethereum here).
+Before you begin, make sure that the Go implementation `geth` is installed as described [here](https://github.com/ethereum/go-ethereum/wiki/Building-Ethereum).
 
 This example is prepared by using the geth version `1.5.7-stable` which is using Go version `go1.7.4` and tested on `macOS Sierra` and `Ubuntu 14.04.5`. 
 
