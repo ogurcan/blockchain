@@ -2,7 +2,7 @@
 
 ## Before you begin
 
-Before you begin, make sure that the Go implementation `geth` is installed as described [here](https://github.com/ethereum/go-ethereum/wiki/Building-Ethereum here).
+Before you begin, make sure that the Go implementation `geth` is installed as described [here](https://github.com/ethereum/go-ethereum/wiki/Building-Ethereum).
 
 This example is prepared by using the geth version `1.5.7-stable` which is using Go version `go1.7.4` and tested on `macOS Sierra` and `Ubuntu 14.04.5`. 
 
@@ -20,7 +20,7 @@ GOROOT=/usr/local/Cellar/go/1.7.4_2/libexec
 
 ## Introduction
 
-In this example, we will create a local private test network with a single node which has several accounts. The objective is to show you how to initialize a node, how to interact with that node, how to create accounts, how to set initial ethers for the accounts and how to make transactions (e.g., to send ethers).
+In this document, we will create and set up a local private test network with a single node which has several accounts. The objective is to show you how to initialize a node, how to interact with that node, how to create accounts and how to set initial ethers for the accounts.
 
 The things that are required to specify in a private chain are:
 
@@ -244,133 +244,7 @@ To check the balance in terms of ether, type the following command:
 
 Perfect! Now it is time to play around in our small private test network.
 
-## Start Ethereum Mining
-
-The ethereum network needs a mining node to process transactions:
-
-``` js
-> miner.start(1)
-true
->
-``` 
-
-> The `(1)` signifies the number of threads you want to use during mining. That number depends on the prowess of your system, and how much total percent of cpu on your system you want to use. You can generally run it at `miner.start(1)` or `miner.start(2)`. To mine with your gpu, which is better at mining ether, use the following command `miner.startAutoDAG()`.
-
-The first time you run geth on your machine, it will generate a `DAG`. This can take several minutes depending upon the speed of your CPU. Once it finishes generating the DAG.
-
-``` bash
-...
-I0213 16:28:01.652643 vendor/github.com/ethereum/ethash/ethash.go:291] Generating DAG: 22%
-I0213 16:28:04.881279 vendor/github.com/ethereum/ethash/ethash.go:291] Generating DAG: 23%
-I0213 16:28:07.210075 eth/downloader/downloader.go:1474] Quality of service: rtt 20s, conf 1.000, ttl 1m0s
-I0213 16:28:08.136458 vendor/github.com/ethereum/ethash/ethash.go:291] Generating DAG: 24%
-I0213 16:28:11.633341 vendor/github.com/ethereum/ethash/ethash.go:291] Generating DAG: 25%
-...
-```
-
-When start `Generating DAG` reaches `100%`, you will know that the mining has started. Depending on your cpu and ram, it can take from a few minutes to an hour. For this example with the configuration given in the beginning, it took around 7 minutes to start mining.
-
-The mining node (`Node01`) deposits ethereum into its `coinbase` (queried by `eth.coinbase`). By default, the coinbase of a node is its `Account 0` (queried by `eth.accounts[0]`).
-To check if the node is mining, you can time to time check the balance of the `coinbase` or `Account 0`.
-
-``` js
-> eth.getBalance(eth.coinbase)
-220781250000000000000
-> eth.getBalance(eth.accounts[0])
-220781250000000000000
->
-``` 
-
-## Make a Transaction: Send ether from one account to another
-
-Suppose, we want to send  `1.23` ethers from `Account 1` to `Account 2`. To do so, we need to create a transaction object `tx` first:
-
-``` js
-> var tx = {from:  eth.accounts[1], to: eth.accounts[2], value: web3.toWei(1.23, "ether")}
-undefined
-> 
-``` 
-
-Do not take into account the message "undefined". The transaction object `tx` is created. Now we can execute this transaction as follows (by providing the password of the sender account):
-
-``` js
-> personal.sendTransaction(tx, "Node01Account01")
-"0x9c1116b8718fad9e84422e51d94045265d5ef78d553ada1833d8e4964943f5d5"
-> 
-``` 
-
-Voila! The transaction is on the way. It can be seen inside pending transactions. Howeber, with a fast enough computer, you will see this list empty since the transaction has already been performed.
-
-``` js
-> eth.pendingTransactions
-[{
-    blockHash: null,
-    blockNumber: null,
-    from: "0xf50fee0099f5776a9a13ed7e5d554ee16c36bf70",
-    gas: 90000,
-    gasPrice: 21771860000,
-    hash: "0x9c1116b8718fad9e84422e51d94045265d5ef78d553ada1833d8e4964943f5d5",
-    input: "0x",
-    nonce: 0,
-    r: "0x60229effbf98b4e664a5aac86ef8cbe209860be78f9c2f08d67bf753a61feaf3",
-    s: "0x37cab764d8b865303aa2a7cf992f7daefbfe4deb3df43d090f4840fdb2bca46b",
-    to: "0x195998f3491f37d9887cb93ae99c56eec8f67182",
-    transactionIndex: 0,
-    v: "0x1b",
-    value: 1230000000000000000
-}]
->
-``` 
-
-After the transaction is mined and put inside a block, the pending transactions will be empty and the transaction will have a `blockHash`, a `blockNumber` and a `nonce`.
-
-``` js
-> eth.pendingTransactions
-[]
-> eth.getTransaction("0xbfdfbb1658f8eba1b769a809ab2be6deb4645533e558489e9acfc8f81adcdc5d")
-{
-  blockHash: "0x2be3249c2c44b4dd5f4de0c8321f18a97bf4a38e88e0e5fd438a9cada8a11128",
-  blockNumber: 6448,
-    from: "0xf50fee0099f5776a9a13ed7e5d554ee16c36bf70",
-    gas: 90000,
-    gasPrice: 21771860000,
-    hash: "0x9c1116b8718fad9e84422e51d94045265d5ef78d553ada1833d8e4964943f5d5",
-    input: "0x",
-    nonce: 11,
-    r: "0x60229effbf98b4e664a5aac86ef8cbe209860be78f9c2f08d67bf753a61feaf3",
-    s: "0x37cab764d8b865303aa2a7cf992f7daefbfe4deb3df43d090f4840fdb2bca46b",
-    to: "0x195998f3491f37d9887cb93ae99c56eec8f67182",
-    transactionIndex: 0,
-    v: "0x1b",
-    value: 1230000000000000000
-}
->
-```
-
-
-
-Check the balances of the two accounts and verify the transaction about ether transfer.
-
-``` js
-> eth.getBalance(eth.accounts[1])
-18769580000000000000
-> eth.getBalance(eth.accounts[2])
-31230000000000000000
-```
-
-These values are a bit hard to read. So we check the balances as ethers.
-
-``` js
-> web3.fromWei(eth.getBalance(eth.accounts[1]), "ether")
-18.76958
-> web3.fromWei(eth.getBalance(eth.accounts[2]), "ether")
-31.23000
->
-``` 
-
-The balance of `Account 1` is reduced by `1.23042` and the balance of `Account 2` is increase by `1.23`. The reason more than `1.23` is gone from the ether balance of `Account 1` is because it costs ether to execute the send ether transaction.  This transaction fee is given to the miner, i.e. `Account 0`.
-
 ## What is next?
 
-You are ready to learn about contracts now. You can continue to the [Creating, Deploying and Using Contracts](./contracts/01-HelloWorld/README.md) example.
+You are ready to create transactions, do mining etc. You can continue to the [Local Private Network with One Node](./README.md) article.
 
