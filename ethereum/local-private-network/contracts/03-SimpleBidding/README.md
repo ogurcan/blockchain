@@ -37,6 +37,8 @@ The simplified bidding process is as follows. First, vendors register to the con
 
 Now let's proceed to the development of this system using Solidity in Ethereum.
 
+> This contract has aldready been developed and can be found in `./contracts/03-SimpleBidding/SimpleBidding.sol` file. If you are only interested in the deployment and usage of the contract, you can continue from this [section](#deploying-the-contract).
+
 ## Contract: SimpleBidding
 
 In this section, we will develop step by step the `SimpleBidding` contract. 
