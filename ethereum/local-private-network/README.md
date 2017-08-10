@@ -20,60 +20,24 @@ GOROOT=/usr/local/Cellar/go/1.7.4_2/libexec
 
 ## Introduction
 
-In this example, we will create a local private test network with a single node which has several accounts. The objective is to show you how to initialize a node, how to interact with that node, how to create accounts, how to set initial ethers for the accounts and how to make transactions (e.g., to send ethers).
-
-The things that are required to specify in a private chain are:
-
-* Custom Genesis File
-* Custom Data Directory
-* Custom NetworkID 
-
-We also need to create a directory for the test network. 
-
-``` bash
-$ mkdir local-private-network
-```
-
-Then enter to this directory. 
-
-``` bash
-$ cd local-private-network
-```
-
-## Create the Genesis File
-
-The genesis block is the start of the blockchain - the first block, block 0, and the only block that does not point to a predecessor block. The protocol ensures that no other node will agree with your version of the blockchain unless they have the same genesis block, so you can make as many private testnet blockchains as you’d like!
-
-``` bash
-$ nano CustomGenesis.json
-```
-
-Paste the following code, save and exit:
-
-``` javascript 
-{
-   "nonce": "0x0000000000000042",
-   "timestamp": "0x0",
-   "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-   "extraData": "0x0",
-   "gasLimit": "0x8000000",
-   "difficulty": "0x400",
-   "mixhash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-   "coinbase": "0x3333333333333333333333333333333333333333",
-   "alloc": {
-   }
-}
-```
+In this example, we will use a local private test network with a single node which has several predefined accounts. The objective is to show how to initialize a node, how to interact with that node, how to access to accounts and how to make transactions (e.g., to send ethers).
 
 ## Initialize the Node
 
-To initialize the the first node with the custom genesis block, execute the following command:
+First of all, we need to initialize the the node with the custom genesis block by execute the following command:
 
 ``` bash
 $ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --port 30301 --rpcport 8101 --networkid="12345" init ./CustomGenesis.json 2>> ./Node01.log
 ```
 
 where the name of the node is `Node01`, the data directory is `./Node01`, the unique id of the network is `12345`.
+
+This command is given as a shell script inside the `bin` folder as `init.sh`. We suggest you to use this script as follows:
+
+``` bash
+$ sh ./bin/init.sh
+```
+
 
 ## Interact with the Node
 
