@@ -158,4 +158,4 @@ As you can verify also, no cost is paid for the usage of the contract.
 
 ## What is next?
 
-You learned about the very basics of the contracts. Now it is time to into a bit more details. You can continue to the [Receiving Ethers Using a Contract](../ReceiveEther/README.md) example.
+You learned about the very basics of the contracts. Now it is time to into a bit more details. You can continue to the [Receiving Ethers Using a Contract](../02-ReceiveEther/README.md) example.
