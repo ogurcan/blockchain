@@ -1,4 +1,4 @@
-# Setting Up a Local Private Test Network with One Node
+# Local Private Test Network with One Node
 
 ## Before you begin
 
