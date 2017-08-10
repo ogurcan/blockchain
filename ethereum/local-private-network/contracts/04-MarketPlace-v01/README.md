@@ -30,7 +30,7 @@ GOROOT=/usr/lib/go-1.7
 
 In this example, we will elaborate the `SimpleBidding` contract to develop a more realistic `MarketPlace` contract. 
 
-> This contract has aldready been developed and can be found in `./contracts/04-MarketPlace-v01/MarketPlace.sol` file. If you are only interested in the deployment and usage of the contract, you can continue from this [section](#deploying-the-contract).
+> This contract has aldready been developed and can be found in `./contracts/04-MarketPlace-v01/MarketPlace.sol` file. 
 
 ## Contract: MarketPlace
 
