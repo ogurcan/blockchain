@@ -134,76 +134,17 @@ However, no peers will be added since this is a private network:
 >
 ```
 
-## Create Accounts
-Now it is time to do some real stuff like making transactions. However, the node initiated above do not have any [[Ether|ethers]] for making transactions, in addition it is not possible to mine to earn ethers.
+## Dealing with Accounts
 
-In fact, the node do not even have any accounts for holding ethers, and they should have at least one. So, lets start from creating accounts for this node.
-
-Creating account is accomplised by using the `personal.newAccount("password")` command with a given password. Come back to the console of `Node01` and type that command with a simple passwords three times to create three accounts:
-
-``` js
-> personal.newAccount("Node01Account00") 
-"0xf50fee0099f5776a9a13ed7e5d554ee16c36bf70"
-> personal.newAccount("Node01Account01") 
-"0x195998f3491f37d9887cb93ae99c56eec8f67182"
-> personal.newAccount("Node01Account02") 
-"0xa33f1327bd37793d8b5eaca4c7f8f0fc3b302b00"
-> 
-```
-
-The hash codes are the addresses of the created accounts.
-
-> Note that, in your computer the addresses of the accounts will be different.
-
-Note that, nodes may have several accounts (at least one) and they can be listed by using either `personal.listAccounts` or `eth.accounts` command:
-
-``` js
-> personal.listAccounts
-["0xf50fee0099f5776a9a13ed7e5d554ee16c36bf70", "0x195998f3491f37d9887cb93ae99c56eec8f67182", "0xa33f1327bd37793d8b5eaca4c7f8f0fc3b302b00"]
-> eth.accounts
-["0xf50fee0099f5776a9a13ed7e5d554ee16c36bf70", "0x195998f3491f37d9887cb93ae99c56eec8f67182", "0xa33f1327bd37793d8b5eaca4c7f8f0fc3b302b00"]
-> 
-```
-
-## Allocate Initial Ethers to the Accounts
-
-To allocate initial ethers to the accounts, the genesis block (which is inside `CustomGenesis.json`) should be modified as below. However, to be able to make such a modification, you should first exit from the console by using the `exit` command and then stop the execution of `geth` by pressing `Ctrl+C`. 
-
-``` js
-{
-   "nonce": "0x0000000000000042",
-   "timestamp": "0x0",
-   "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-   "extraData": "0x0",
-   "gasLimit": "0x8000000",
-   "difficulty": "0x400",
-   "mixhash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-   "coinbase": "0x3333333333333333333333333333333333333333",
-   "alloc": {
-      "0xf50fee0099f5776a9a13ed7e5d554ee16c36bf70" : {
-	   "balance" : "10000000000000000000"
-      },
-      "0x195998f3491f37d9887cb93ae99c56eec8f67182" : {
-	   "balance" : "20000000000000000000"
-      },
-      "0xa33f1327bd37793d8b5eaca4c7f8f0fc3b302b00" : {
-	   "balance" : "30000000000000000000"
-      }
-   }
-}
-``` 
-
-Now we need to reinitialize the node and attach to it as shown above before.
-
-To veirfy if the accounts are initialized with the correct balance values we specified in the Custom Genesis Block, use the `eth.getBalance()` command on the console of each node using their associated account numbers (which can be retrieved by the `eth.accounts` command).
+To verify if the accounts are initialized with the correct balance values we specified in the Custom Genesis Block, use the `eth.getBalance()` command on the console of each node using their associated account numbers (which can be retrieved by the `eth.accounts` command).
 
 ``` js
 > eth.getBalance(eth.accounts[0])
-10000000000000000000
+1e+21
 > eth.getBalance(eth.accounts[1])
-20000000000000000000
+2e+21
 > eth.getBalance(eth.accounts[2])
-30000000000000000000
+3e+21
 > 
 ``` 
 
@@ -212,9 +153,9 @@ To check the balance in terms of ether, type the following command:
 
 ``` js
 > web3.fromWei(eth.getBalance(eth.accounts[1]), "ether")
-20
+1000
 >
-``` 
+```  
 
 Perfect! Now it is time to play around in our small private test network.
 
