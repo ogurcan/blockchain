@@ -30,6 +30,8 @@ GOROOT=/usr/lib/go-1.7
 
 In this example, we will create, deploy and use a simple contract to show how contracts process transactions. 
 
+> This contract has aldready been developed and can be found in `./contracts/02-ReceiveEther/ReceiveEther.sol` file. If you are only interested in the deployment and usage of the contract, you can continue from this [section](#deploying-the-contract).
+
 ## Contract: ReceiveEther
 
 We will build a `ReceiveEther` contract on the ethereum command line that accepts ethers during 10 minutes. When a transaction send ether to this contract, it is going to transfer the `amount` received to a predefined `receivingAccount`.
