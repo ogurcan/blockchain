@@ -268,18 +268,18 @@ Check the balances of the two accounts and verify the transaction about ether tr
 
 ``` js
 > eth.getBalance(eth.accounts[1])
-18769580000000000000
+998769580000000000000
 > eth.getBalance(eth.accounts[2])
-31230000000000000000
+2.00123e+21
 ```
 
 These values are a bit hard to read. So we check the balances as ethers.
 
 ``` js
 > web3.fromWei(eth.getBalance(eth.accounts[1]), "ether")
-18.76958
+998.76958
 > web3.fromWei(eth.getBalance(eth.accounts[2]), "ether")
-31.23000
+2001.23
 >
 ``` 
 
