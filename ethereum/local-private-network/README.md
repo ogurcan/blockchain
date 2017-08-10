@@ -38,10 +38,12 @@ This command is given as a shell script inside the `bin` folder as `init.sh`. We
 $ sh ./bin/init.sh
 ```
 
+> Note that the initialization should only be done one time since it overrides the genesis block. 
+
 
 ## Interact with the Node
 
-We can interact with the node through [the Geth JavaScript console](https://github.com/ethereum/go-ethereum/wiki/JavaScript-Console). 
+All interactions with the node is handled through [the Geth JavaScript console](https://github.com/ethereum/go-ethereum/wiki/JavaScript-Console).
 
 To do so first enter:
 
@@ -50,6 +52,14 @@ $ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --port 30301 --rpcp
 ```
 
 This will open a geth console (as below) for a node named `Node01` whose `--datadir` is `./Node01`. The `--nodiscover` flag turns off peer discovery and prevents geth from trying to find peers for your network id on the internet. The `2>> ./Node01.log` flag redirects the geth output to the `Node01.log` log file.
+
+This command is given as a shell script inside the `bin` folder as `console.sh`. We suggest you to use this script as follows:
+
+``` bash
+$ sh ./bin/console.sh
+```
+
+The geth console should be as follows:
 
 ``` bash
 Welcome to the Geth JavaScript console!
