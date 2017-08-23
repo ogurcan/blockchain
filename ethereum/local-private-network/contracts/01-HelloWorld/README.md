@@ -126,7 +126,7 @@ After unlocking the account, we can deploy the contract by using the `loadScript
 Then deploy the contract.
 
 ``` js
-> loadScript("./contracts/01-HellowWorld/deploy.js")
+> loadScript("contracts/01-HellowWorld/deploy.js")
 null [object Object]
 true
 > null [object Object]
