@@ -146,7 +146,7 @@ var untitled_receiveether = untitled_receiveetherContract.new(
 Now save the above code as `deploy.js` and deploy it using `loadScript("deploy.js")`.
 
 ``` bash
-> loadScript("./contracts/02-ReceiveEther/deploy.js")
+> loadScript("contracts/02-ReceiveEther/deploy.js")
 null [object Object]
 true
 > null [object Object]
