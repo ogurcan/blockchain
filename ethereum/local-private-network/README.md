@@ -24,19 +24,27 @@ In this example, we will use a local private test network with a single node whi
 
 ## Initialize the Node
 
-First of all, we need to initialize the the node with the custom genesis block by execute the following command:
+First of all, we need to initialize the the node with the custom genesis block by execute the following shell script:
+
+for Linux and OSX
+
+``` bash
+$ sh ./bin/init.sh
+```
+
+for Windows
+
+``` bash
+$ ./bin/init.bat
+```
+
+This scripts executes the following:
 
 ``` bash
 $ geth --identity="Node01" --datadir="./Node01" -verbosity 6 --port 30301 --rpcport 8101 --networkid="12345" init ./CustomGenesis.json 2>> ./Node01.log
 ```
 
 where the name of the node is `Node01`, the data directory is `./Node01`, the unique id of the network is `12345`.
-
-This command is given as a shell script inside the `bin` folder as `init.sh`. We suggest you to use this script as follows:
-
-``` bash
-$ sh ./bin/init.sh
-```
 
 > Note that the initialization should only be done one time since it overrides the genesis block. 
 
