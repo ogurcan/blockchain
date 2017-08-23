@@ -209,7 +209,7 @@ undefined
 Do not take into account the message "undefined". The transaction object `tx` is created. Now we can execute this transaction as follows (by providing the password of the sender account):
 
 ``` js
-> personal.sendTransaction(tx, "Node01Account01")
+> personal.sendTransaction(tx, "node01account")
 "0x9c1116b8718fad9e84422e51d94045265d5ef78d553ada1833d8e4964943f5d5"
 > 
 ``` 
