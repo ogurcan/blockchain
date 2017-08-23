@@ -169,6 +169,8 @@ true
 >
 ``` 
 
+> In Windows, you will see `null` rather `true`. But do not worry and follow the steps to verify if mining works correctly.
+
 > The `(1)` signifies the number of threads you want to use during mining. That number depends on the prowess of your system, and how much total percent of cpu on your system you want to use. You can generally run it at `miner.start(1)` or `miner.start(2)`. To mine with your gpu, which is better at mining ether, use the following command `miner.startAutoDAG()`.
 
 The first time you run geth on your machine, it will generate a `DAG`. This can take several minutes depending upon the speed of your CPU. Once it finishes generating the DAG.
