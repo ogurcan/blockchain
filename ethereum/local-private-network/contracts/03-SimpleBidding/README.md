@@ -478,7 +478,7 @@ true
 Then deploy `deploy.js` using `loadScript()`.
 
 ``` bash
-> loadScript("contracts/SimpleBidding/deploy.js")
+> loadScript("contracts/03-SimpleBidding/deploy.js")
 null [object Object]
 true
 > null [object Object]
