@@ -1,0 +1,41 @@
+@startuml
+hide footbox
+title The MarketPlace contract (v02)
+
+participant Vendor1 << (C,#ADD1B2) Vendor >>
+participant Vendor2 << (C,#ADD1B2) Vendor >>
+participant MarketPlace << (C,#ADD1B2) MarketPlace >>
+actor Client
+
+Vendor1->MarketPlace : registerVendor(name1, barcode, stockCount1, deliverySpeed1)
+Vendor2->MarketPlace : registerVendor(name2, barcode, stockCount2, deliverySpeed2)
+Client->MarketPlace : requestAsset(barcode, quantity, maxDate)
+
+alt successful case
+   MarketPlace->Vendor1 : requestOffer(barcode, quantity, maxDate)
+   MarketPlace->Vendor2 : requestOffer(barcode, quantity, maxDate)
+   Vendor1->Vendor1 : inStock(vendor, barcode)
+   Vendor1->MarketPlace : makeOffer(barcode, price1)      
+   MarketPlace->MarketPlace : processTheOffer(vendor, barcode, quantity)
+   Vendor2->Vendor2 : inStock(vendor, barcode)
+   Vendor2->MarketPlace : makeOffer(barcode, price2)
+   MarketPlace->MarketPlace : processTheOffer(vendor, barcode, quantity)
+   MarketPlace->MarketPlace : selectAnOffer(selection_criteria)
+   MarketPlace-->Vendor1 : offer with 'deliverySpeed2' and 'price2' is accepted.
+   MarketPlace-->Vendor2 : offer with 'deliverySpeed2' and 'price2' is accepted.
+   MarketPlace-->Client : The asset 'barcode' is available with price 'price2' and delivery in 'deliverySpeed2' days. 
+   alt acceptance of the offer
+      Client->MarketPlace : acceptOffer(amount)
+      MarketPlace->MarketPlace : verifiyPayment(amount)
+      MarketPlace-->Client : Payment received for the asset 'barcode' successfully.
+      MarketPlace-> Vendor2: transfer(price2)
+      Vendor2->Vendor2 : updateStock()
+      Vendor2->MarketPlace : confirmShipment(barcode, trackingNo)
+      MarketPlace-->Client : The asset 'barcode' has been shipped with the tracking number 'trackingNo'.
+   else refusal of the offer
+      Client->MarketPlace : refuseOffer()
+   end
+else at any time
+   Client->MarketPlace : cancelRequest()
+end
+@enduml
